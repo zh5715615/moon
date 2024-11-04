@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 @Component
 public class TimerTasks {
     // 程序加载后只会调用一次
-    @PostConstruct
+//    @PostConstruct
     public void initializeTimers() throws InterruptedException {
         while (true) {
             LocalDateTime now = LocalDateTime.now();
