@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tcbv.zhaohui.moon.dao.TbEventDao">
+
+
+    <!-- 通过ID查询单条数据 -->
+    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbEvent">
+        select
+            id,content,result,create_time,update_time,result_time,status
+        from tb_event
+        where id = #{id}
+    </select>
+
+    <!--新增数据-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_event(id,content,result,create_time,update_time,result_time,status)
+        values (#{id},#{content},#{result},#{createTime},#{updateTime},#{resultTime},#{status})
+    </insert>
+
+    <!-- 批量新增数据 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_event(id,content,result,create_time,update_time,result_time,status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.content},#{entity.result},#{entity.createTime},#{entity.updateTime},#{entity.resultTime},#{entity.status})
+        </foreach>
+    </insert>
+
+
+    <!-- 更新数据 -->
+    <update id="update">
+        update tb_event
+        <set>
+            <if test="id != null and id != ''">
+                id = #{id},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="result != null and result != ''">
+                result = #{result},
+            </if>
+            <if test="createTime != null and createTime != ''">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null and updateTime != ''">
+                update_time = #{updateTime},
+            </if>
+            <if test="resultTime != null and resultTime != ''">
+                result_time = #{resultTime},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tb_event where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tcbv.zhaohui.moon.dao.TbTxRecordDao">
+
+    <!-- 通过ID查询单条数据 -->
+    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+        select
+            id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount
+        from tb_tx_record
+        where id = #{id}
+    </select>
+    <select id="queryByIdAndGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+        select
+            id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount
+        from tb_tx_record
+        where user_id = #{userId} and game_type=#{gameType}
+    </select>
+
+    <!--新增数据-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_tx_record(id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount)
+        values (#{id},#{userId},#{gameType},#{singleAndDouble},#{raseAndFall},#{eventId},#{eventResult},#{txHash},#{turns},#{createTime},#{amount})
+    </insert>
+
+    <!-- 批量新增数据 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_tx_record(id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.userId},#{entity.gameType},#{entity.singleAndDouble},#{entity.raseAndFall},#{entity.eventId},#{entity.eventResult},#{entity.txHash},#{entity.turns},#{entity.createTime},#{entity.amount})
+        </foreach>
+    </insert>
+
+
+    <!-- 更新数据 -->
+    <update id="update">
+        update tb_tx_record
+        <set>
+            <if test="id != null and id != ''">
+                id = #{id},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="gameType != null and gameType != ''">
+                game_type = #{gameType},
+            </if>
+            <if test="singleAndDouble != null and singleAndDouble != ''">
+                single_and_double = #{singleAndDouble},
+            </if>
+            <if test="raseAndFall != null and raseAndFall != ''">
+                rase_and_fall = #{raseAndFall},
+            </if>
+            <if test="eventId != null and eventId != ''">
+                event_id = #{eventId},
+            </if>
+            <if test="eventResult != null and eventResult != ''">
+                event_result = #{eventResult},
+            </if>
+            <if test="txHash != null and txHash != ''">
+                tx_hash = #{txHash},
+            </if>
+            <if test="turns != null and turns != ''">
+                turns = #{turns},
+            </if>
+            <if test="createTime != null and createTime != ''">
+                create_time = #{createTime},
+            </if>
+            <if test="amount != null and amount != ''">
+                amount = #{amount},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tb_tx_record where id = #{id}
+    </delete>
+</mapper>
