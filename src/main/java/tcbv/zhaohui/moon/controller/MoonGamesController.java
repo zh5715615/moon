@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
+import tcbv.zhaohui.moon.dto.AddNewGameDTO;
+import tcbv.zhaohui.moon.dto.NewGamePrizeDrawDTO;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
@@ -33,5 +35,19 @@ public class MoonGamesController {
     public Rsp addGameOrderFor(@RequestBody @Valid AddGameOrderForDTO dto) {
         return Rsp.okData(rollDiceGameService.addGameOrderFor(dto));
     }
+
+    @PostMapping("/addNewGame")
+    @ApiOperation(value = "添加时事竞猜")
+    public Rsp addNewGame(@RequestBody @Valid AddNewGameDTO dto) {
+        return Rsp.okData(true);
+    }
+
+
+    @PostMapping("/newGamePrizeDraw")
+    @ApiOperation(value = "时事竞猜开奖")
+    public Rsp newGamePrizeDraw(@RequestBody @Valid NewGamePrizeDrawDTO dto) {
+        return Rsp.okData(true);
+    }
+
 
 }
