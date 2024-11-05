@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.service;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
+import tcbv.zhaohui.moon.dto.GamePrizeDrawDTO;
+import tcbv.zhaohui.moon.dto.VerifyGamePrizeDrawDTO;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.validation.Valid;
@@ -19,9 +21,21 @@ public interface RollDiceGameService {
     PlayResidueTimesVO getQueueAndMemSize(Integer gameType);
 
     /**
-     *
      * @param dto 添加游戏下注单
      * @return
      */
-   Boolean addGameOrderFor(  AddGameOrderForDTO dto);
+    Boolean addGameOrderFor(AddGameOrderForDTO dto);
+
+    /**
+     *
+     * @param dto 根据轮次查询是否开奖
+     * @return
+     */
+    Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto);
+    /**
+     *
+     * @param dto 游戏开奖
+     * @return
+     */
+    Boolean gamePrizeDraw(GamePrizeDrawDTO dto);
 }

@@ -6,12 +6,15 @@ import org.springframework.stereotype.Service;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
+import tcbv.zhaohui.moon.dto.GamePrizeDrawDTO;
+import tcbv.zhaohui.moon.dto.VerifyGamePrizeDrawDTO;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -35,9 +38,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         if (gameType == null) {
             throw new RuntimeException("游戏类型为空");
         }
-        Long gameOne = TimerMaps.getRemainingTime("gameOne");
-        Long gameTwo = TimerMaps.getRemainingTime("gameTwo");
-        if (gameOne == null || gameTwo == null) {
+        LocalDateTime gameOneTime = TimerMaps.getRemainingTime("gameOne");
+        LocalDateTime gameTwoTime = TimerMaps.getRemainingTime("gameTwo");
+        if (gameOneTime == null || gameTwoTime == null) {
             throw new RuntimeException("定时任务查询失败");
         }
         //根据类型查询最新的轮次
@@ -47,9 +50,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         result.setGameType(gameType);
         result.setTurns(gameTypeNumber + 1);
         if (gameType.equals("1")) {
-            result.setIsOk(gameOne - 60 > 0 ? true : false);
+           // result.setIsOk(gameOne - 60 > 0 ? true : false);
         } else if (gameType.equals("2")) {
-            result.setIsOk(gameTwo - 60 > 0 ? true : false);
+           // result.setIsOk(gameTwo - 60 > 0 ? true : false);
         } else {
             throw new RuntimeException("游戏类型失败");
         }
@@ -92,5 +95,25 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         tbTxRecordDao.insert(param);
 
         return true;
+    }
+
+    /**
+     *
+     * @param dto 根据轮次查询是否开奖
+     * @return
+     */
+    @Override
+    public Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto) {
+        return null;
+    }
+
+    /**
+     *
+     * @param dto 游戏开奖
+     * @return
+     */
+    @Override
+    public Boolean gamePrizeDraw(GamePrizeDrawDTO dto) {
+        return null;
     }
 }
