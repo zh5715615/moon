@@ -2,9 +2,7 @@ package tcbv.zhaohui.moon.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
-import tcbv.zhaohui.moon.dto.AddNewGameDTO;
-import tcbv.zhaohui.moon.dto.NewGamePrizeDrawDTO;
+import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
@@ -48,6 +46,14 @@ public class MoonGamesController {
     public Rsp newGamePrizeDraw(@RequestBody @Valid NewGamePrizeDrawDTO dto) {
         return Rsp.okData(true);
     }
-
-
+    @PostMapping("/gamePrizeDraw")
+    @ApiOperation(value = "确认游戏是否开奖")
+    public Rsp verifyGamePrizeDraw(@RequestBody @Valid VerifyGamePrizeDrawDTO dto) {
+        return Rsp.okData(rollDiceGameService.verifyGamePrizeDraw(dto));
+    }
+    @PostMapping("/userMarketing")
+    @ApiOperation(value = "用户推广码生成")
+    public Rsp userMarketing(@RequestBody @Valid UserMarketingDTO dto) {
+        return Rsp.okData(true);
+    }
 }
