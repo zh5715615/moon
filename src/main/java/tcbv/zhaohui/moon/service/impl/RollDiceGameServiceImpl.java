@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -75,14 +76,14 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
      */
     @Override
     public Boolean addGameOrderFor(AddGameOrderForDTO dto) {
-        String userId = dto.getUserId();
+        String userId = dto.getAddress();
         Integer gameType = dto.getGameType();
         Integer dtoTurns = dto.getTurns();
         Integer paramType = dto.getParamType();
         //判断是否还能下注
         PlayResidueTimesVO queueAndMemSize = getQueueAndMemSize(gameType);
         Integer newTurns = queueAndMemSize.getTurns();
-        if (dtoTurns != newTurns) {
+        if (!Objects.equals(dtoTurns, newTurns)) {
             log.error("当前轮次" + newTurns + "下注轮次" + dtoTurns);
             throw new RuntimeException("下注轮次和当前最新轮次不匹配");
         }
@@ -98,7 +99,7 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         TbTxRecord param = TbTxRecord.builder()
                 .id(UUID.randomUUID().toString()).userId(userId).gameType(gameType)
                 .singleAndDouble(paramType).raseAndFall(paramType)
-                .eventId(dto.getEventId()).eventResult(paramType.toString())
+                .eventId(dto.getTxHash()).eventResult(paramType.toString())
                 //.txHash()
                 .turns(dtoTurns).amount(dto.getAmount())
                 .build();

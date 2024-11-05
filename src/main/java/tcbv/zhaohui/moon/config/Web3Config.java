@@ -36,4 +36,10 @@ public class Web3Config {
 
     @Value("${blockchain.proxy.port:1081}")
     private int port;
+
+    @Value("${web3.contract.moon-base.address}")
+    private String moonBaseAddress;
+
+    @Value("${web3.contract.usdt-like-interface.address}")
+    private String usdtLikeInterfaceAddress;
 }
