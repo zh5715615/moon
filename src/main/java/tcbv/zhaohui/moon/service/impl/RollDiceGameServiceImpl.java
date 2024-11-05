@@ -14,7 +14,9 @@ import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.annotation.Resource;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -38,11 +40,19 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         if (gameType == null) {
             throw new RuntimeException("游戏类型为空");
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime gameOneTime = TimerMaps.getRemainingTime("gameOne");
         LocalDateTime gameTwoTime = TimerMaps.getRemainingTime("gameTwo");
         if (gameOneTime == null || gameTwoTime == null) {
             throw new RuntimeException("定时任务查询失败");
         }
+        // 计算两个时间之间的间隔
+        Duration oneTime = Duration.between(gameOneTime, now);
+        Duration twoTime = Duration.between(gameTwoTime, now);
+        // 获取间隔的绝对值，以秒为单位
+        long oneTimes = Math.abs(oneTime.getSeconds());
+        long twoTimes = Math.abs(twoTime.getSeconds());
         //根据类型查询最新的轮次
         Integer gameTypeNumber = tbGameResultDao.findGameTypeNumber(gameType);
 
@@ -50,9 +60,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         result.setGameType(gameType);
         result.setTurns(gameTypeNumber + 1);
         if (gameType.equals("1")) {
-           // result.setIsOk(gameOne - 60 > 0 ? true : false);
+            result.setIsOk(oneTimes - 60 > 0 ? true : false);
         } else if (gameType.equals("2")) {
-           // result.setIsOk(gameTwo - 60 > 0 ? true : false);
+            result.setIsOk(twoTimes - 60 > 0 ? true : false);
         } else {
             throw new RuntimeException("游戏类型失败");
         }
@@ -104,16 +114,10 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
      */
     @Override
     public Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto) {
-        return null;
-    }
-
-    /**
-     *
-     * @param dto 游戏开奖
-     * @return
-     */
-    @Override
-    public Boolean gamePrizeDraw(GamePrizeDrawDTO dto) {
-        return null;
+        Integer gameTypeAndTurnsNumber = tbGameResultDao.findGameTypeAndTurnsNumber(dto.getTurns(), dto.getGameType());
+        if(gameTypeAndTurnsNumber!=null){
+            return true;
+        }
+        return false;
     }
 }

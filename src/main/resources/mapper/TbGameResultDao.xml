@@ -16,7 +16,12 @@
         from tb_game_result
         where game_type = #{gameType}
     </select>
-
+    <select id="findGameTypeAndTurnsNumber"  resultType="java.lang.Integer">
+        select
+            max(turns)
+        from tb_game_result
+        where game_type = #{gameType} and turns=#{turns}
+    </select>
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into tb_game_result(id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns)
@@ -66,4 +71,11 @@
     <delete id="deleteById">
         delete from tb_game_result where id = #{id}
     </delete>
+
+    <select id="findDrawnTimeInfo" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+        select
+            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns
+        from tb_game_result
+        where DRAWN_TIME = #{drawnTime} and game_type=#{gameType}
+    </select>
 </mapper>

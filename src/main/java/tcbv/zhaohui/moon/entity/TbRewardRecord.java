@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.entity;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @date 2024/11/2 14:48
@@ -28,7 +29,7 @@ public class TbRewardRecord implements Serializable {
     /**
      * 奖励金额
      */
-    private Double rewardAmount;
+    private BigDecimal rewardAmount;
     /**
      * 游戏类型
      */

@@ -3,18 +3,16 @@ package tcbv.zhaohui.moon.scheduled;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 /**
  * @author dawn
  * @date 2024/11/2 15:13
  */
 @Component
-public class TimerTasks {
+public class TimerScheduled {
     // 程序加载后只会调用一次
-   // @PostConstruct
+    @Scheduled(fixedDelay  = 2000)
     public void initializeTimers() throws InterruptedException {
         LocalDateTime now = LocalDateTime.now();
         long secondsToNextTenMinutes = calculateSecondsToNextMultiple(now, 10);

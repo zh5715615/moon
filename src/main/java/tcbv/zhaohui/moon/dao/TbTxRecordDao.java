@@ -26,6 +26,12 @@ public interface TbTxRecordDao {
      */
     TbTxRecord queryByIdAndGameInfo(@Param("userId")String userId,@Param("gameType") Integer gameType);
     /**
+     *  根据游戏类型和轮次查询下注的用户
+     *
+     * @return 实例对象
+     */
+    List<TbTxRecord> findTurnsGameInfo(@Param("turns")Integer turns,@Param("gameType") Integer gameType);
+    /**
      * 新增数据
      *
      * @param tbTxRecord 实例对象

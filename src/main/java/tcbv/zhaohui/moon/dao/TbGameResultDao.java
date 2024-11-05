@@ -1,4 +1,5 @@
 package tcbv.zhaohui.moon.dao;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jnr.ffi.annotations.In;
@@ -20,11 +21,17 @@ public interface TbGameResultDao {
      */
     TbGameResult queryById(String id);
     /**
-     * 通过ID查询单条数据
+     * 查询游戏类型最大的轮次
      *
      * @return 实例对象
      */
     Integer findGameTypeNumber(@Param("gameType") Integer gameType);
+    /**
+     * 查询游戏类型最大的轮次
+     *
+     * @return 实例对象
+     */
+    Integer findGameTypeAndTurnsNumber(@Param("turns") Integer turns,@Param("gameType") Integer gameType);
     /**
      * 新增数据
      *
@@ -53,4 +60,6 @@ public interface TbGameResultDao {
      * @return 影响行数
      */
     int deleteById(String id);
+
+    TbGameResult findDrawnTimeInfo(@Param("drawnTime")String drawnTime,@Param("gameType") Integer gameType);
 }

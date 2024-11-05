@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="tcbv.zhaohui.moon.dao.TbTxRecordDao">
-
+    <sql id="SQL_PARAM">
+        id,
+               user_id           as userId,
+               game_type         as gameType,
+               single_and_double as singleAndDouble,
+               rase_and_fall     as raseAndFall,
+               event_id          as eventId,
+               event_result      as eventResult,
+               tx_hash           as txHash,
+               turns,
+               create_time       as createTime,
+               amount
+    </sql>
     <!-- 通过ID查询单条数据 -->
     <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
         select
-            id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount
+        <include refid="SQL_PARAM"/>
         from tb_tx_record
         where id = #{id}
     </select>
     <select id="queryByIdAndGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
-        select
-            id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount
+        select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where user_id = #{userId} and game_type=#{gameType}
     </select>
-
+    <select id="findTurnsGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+        select
+        from tb_tx_record
+        where turns = #{turns}
+          and game_type = #{gameType}
+    </select>
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into tb_tx_record(id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount)

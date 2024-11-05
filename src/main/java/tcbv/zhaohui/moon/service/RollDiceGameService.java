@@ -32,10 +32,4 @@ public interface RollDiceGameService {
      * @return
      */
     Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto);
-    /**
-     *
-     * @param dto 游戏开奖
-     * @return
-     */
-    Boolean gamePrizeDraw(GamePrizeDrawDTO dto);
 }

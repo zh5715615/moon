@@ -1,7 +1,9 @@
 package tcbv.zhaohui.moon.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -10,4 +12,10 @@ import java.io.Serializable;
  */
 @Data
 public class VerifyGamePrizeDrawDTO implements Serializable {
+    @ApiModelProperty("游戏类型 1投骰子 | 2猜BNB涨跌 ")
+    @NotBlank(message = "游戏类型不能为空")
+    private Integer gameType;
+    @ApiModelProperty("轮次")
+    @NotBlank(message = "轮次不能为空")
+    private Integer turns;
 }

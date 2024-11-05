@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.entity;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @date 2024/11/2 14:45
@@ -42,7 +43,7 @@ public class TbGameResult implements Serializable {
      */
     private Integer turns;
     /**
-     * 是否开奖
+     * 开奖时间
      */
-    private Integer isDrawn;
+    private String drawnTime;
 }
