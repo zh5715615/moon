@@ -45,7 +45,7 @@ public class SwaggerConfig {
         // 用ApiInfoBuilder进行定制
         return new ApiInfoBuilder()
                 // 设置标题
-                .title("标题：城市服务")
+                .title("标题：Moon服务")
                 // 描述
                 .description("描述：这是服务模块")
                 .build();

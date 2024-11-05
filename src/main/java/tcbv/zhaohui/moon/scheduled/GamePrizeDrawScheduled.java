@@ -25,19 +25,19 @@ public class GamePrizeDrawScheduled {
         LocalDateTime now = LocalDateTime.now();
 
         // 计算两个时间之间的间隔
-        Duration oneTime = Duration.between(gameOneTime, now);
-        Duration twoTime = Duration.between(gameTwoTime, now);
-        // 获取间隔的绝对值，以秒为单位
-        long oneTimes = Math.abs(oneTime.getSeconds());
-        long twoTimes = Math.abs(twoTime.getSeconds());
-        if(oneTimes<60){
-            //判断时间是否已经开奖
-
-        }
-        if(twoTimes<60){
-            //判断时间是否已经开奖
-
-        }
+//        Duration oneTime = Duration.between(gameOneTime, now);
+//        Duration twoTime = Duration.between(gameTwoTime, now);
+//        // 获取间隔的绝对值，以秒为单位
+//        long oneTimes = Math.abs(oneTime.getSeconds());
+//        long twoTimes = Math.abs(twoTime.getSeconds());
+//        if(oneTimes<60){
+//            //判断时间是否已经开奖
+//
+//        }
+//        if(twoTimes<60){
+//            //判断时间是否已经开奖
+//
+//        }
 
     }
 }
