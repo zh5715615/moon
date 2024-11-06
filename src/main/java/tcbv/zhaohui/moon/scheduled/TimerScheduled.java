@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Component
 public class TimerScheduled {
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 1000)
     public void initializeTimers() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime gameOwo = TimerMaps.getRemainingTime("gameOne");

@@ -96,6 +96,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         if (tbTxRecord != null) {
             throw new RuntimeException("已下注，请勿重复下注");
         }
+        //todo判断余额是否充足
+
         TbTxRecord param = TbTxRecord.builder()
                 .id(UUID.randomUUID().toString()).userId(userId).gameType(gameType)
                 .singleAndDouble(paramType).raseAndFall(paramType)

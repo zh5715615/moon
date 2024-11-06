@@ -18,6 +18,9 @@ public class AddGameOrderForDTO implements Serializable {
     @ApiModelProperty("参数类型 1单/涨 | 2双/跌 ")
     @NotBlank(message = "参数类型")
     private Integer paramType;
+    @ApiModelProperty("用户地址")
+    @NotBlank(message = "用户地址不能为空")
+    private String address;
     @ApiModelProperty("用户id")
     @NotBlank(message = "用户id不能为空")
     private String userId;
@@ -27,6 +30,8 @@ public class AddGameOrderForDTO implements Serializable {
     @ApiModelProperty("投注数量")
     @NotBlank(message = "投注数量不能为空")
     private String amount;
+    @ApiModelProperty("交易Hash")
+    private String txHash;
     @ApiModelProperty("事件id")
     private String eventId;
 
