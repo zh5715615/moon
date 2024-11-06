@@ -1,7 +1,5 @@
 package tcbv.zhaohui.moon.controller;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.*;
@@ -26,9 +24,6 @@ public class MoonGamesController {
 
     @GetMapping("/playResidueTimes")
     @ApiOperation(value = "根据类型获取轮次和是否允许下注")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
-    })
     public Rsp<PlayResidueTimesVO> playResidueTimes(@RequestParam(name = "gameType", required = true) Integer gameType) {
         return Rsp.okData(rollDiceGameService.getQueueAndMemSize(gameType));
     }
@@ -51,7 +46,6 @@ public class MoonGamesController {
     public Rsp newGamePrizeDraw(@RequestBody @Valid NewGamePrizeDrawDTO dto) {
         return Rsp.okData(true);
     }
-
     @PostMapping("/gamePrizeDraw")
     @ApiOperation(value = "确认游戏是否开奖")
     public Rsp verifyGamePrizeDraw(@RequestBody @Valid VerifyGamePrizeDrawDTO dto) {
