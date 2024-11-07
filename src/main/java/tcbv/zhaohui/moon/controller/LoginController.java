@@ -28,7 +28,7 @@ public class LoginController {
             return Rsp.error("登录签名校验失败");
         }
         String token = "test"; //TODO 这个地方需要给个token存到user表，为后续操作提供token
-        //TODO 下面还要添加一个逻辑，user表有则更新token，无则插入新数据
-        return Rsp.okData(new LoginVo(loginDto.getAddress(), token));
+        //TODO 下面还要添加一个逻辑，user表有则更新token，无则插入新数据, 返回uuid的userId
+        return Rsp.okData(new LoginVo(loginDto.getAddress(), "", token));
     }
 }
