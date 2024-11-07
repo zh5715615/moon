@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.web3j.abi.datatypes.Int;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
@@ -37,7 +38,7 @@ public class GamePrizeDrawScheduled {
     private TbTxRecordDao tbTxRecordDao;
     @Resource
     private TbRewardRecordDao tbRewardRecordDao;
-
+    @Transactional
     @Scheduled(fixedDelay = 20000)
     public void executeTask() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -116,19 +117,18 @@ public class GamePrizeDrawScheduled {
         }).collect(Collectors.toList()));
         if(entities.size()>0){
             tbRewardRecordDao.insertBatch(entities);
-            //最终结果录入
-            TbGameResult param = TbGameResult.builder()
-                    .id(UUID.randomUUID().toString()).gameType(gameType)
-                    .turns(turns).drawnTime(drawnTime)
-                    .build();
-            if (gameType==gameTypeOne) {
-                param.setSingleAndDouble(result);
-            } else if (gameType==gameTypeTwo) {
-                param.setRaseAndFall(result);
-            }
-            tbGameResultDao.insert(param);
         }
-
+        //最终结果录入
+        TbGameResult param = TbGameResult.builder()
+                .id(UUID.randomUUID().toString()).gameType(gameType)
+                .turns(turns).drawnTime(drawnTime)
+                .build();
+        if (gameType==gameTypeOne) {
+            param.setSingleAndDouble(result);
+        } else if (gameType==gameTypeTwo) {
+            param.setRaseAndFall(result);
+        }
+        tbGameResultDao.insert(param);
     }
 
 }

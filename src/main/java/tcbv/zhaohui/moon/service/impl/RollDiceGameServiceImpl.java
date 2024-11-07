@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
@@ -77,6 +78,7 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
      * @return
      */
     @Override
+    @Transactional
     public Boolean addGameOrderFor(AddGameOrderForDTO dto) {
         String userId = dto.getAddress();
         Integer gameType = dto.getGameType();
