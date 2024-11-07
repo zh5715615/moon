@@ -16,7 +16,7 @@ public class PlayResidueTimesVO implements Serializable {
     private Boolean isOk;
     @ApiModelProperty("当前轮次")
     private Integer turns;
-    @ApiModelProperty("游戏类型 1投骰子 | 2猜BNB涨跌 ")
+    @ApiModelProperty("游戏类型 1投骰子 | 2猜BNB涨跌 | 3猜事件")
     private Integer gameType;
 
 }
