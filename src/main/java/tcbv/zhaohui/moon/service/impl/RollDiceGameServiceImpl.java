@@ -43,8 +43,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime gameOneTime = TimerMaps.getRemainingTime("gameOne");
-        LocalDateTime gameTwoTime = TimerMaps.getRemainingTime("gameTwo");
+        LocalDateTime gameOneTime = TimerMaps.getRemainingTime(TimerMaps.GAMEONE);
+        LocalDateTime gameTwoTime = TimerMaps.getRemainingTime(TimerMaps.GAMETWO);
         if (gameOneTime == null || gameTwoTime == null) {
             throw new RuntimeException("定时任务查询失败");
         }
