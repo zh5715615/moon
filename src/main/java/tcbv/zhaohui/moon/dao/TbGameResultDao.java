@@ -40,13 +40,6 @@ public interface TbGameResultDao {
      */
     int insert(TbGameResult tbGameResult);
     /**
-     * 批量新增数据
-     *
-     * @param entities List<TbGameResult> 实例对象列表
-     * @return 影响行数
-     */
-    int insertBatch(@Param("entities") List<TbGameResult> entities);
-    /**
      * 更新数据
      *
      * @param tbGameResult 实例对象

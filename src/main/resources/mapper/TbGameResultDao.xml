@@ -6,7 +6,7 @@
     <!-- 通过ID查询单条数据 -->
     <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
         select
-            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns
+            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result
         where id = #{id}
     </select>
@@ -24,17 +24,8 @@
     </select>
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_game_result(id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns)
-        values (#{id},#{gameType},#{singleAndDouble},#{raseAndFall},#{eventId},#{eventResult},#{turns})
-    </insert>
-
-    <!-- 批量新增数据 -->
-    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_game_result(id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.id},#{entity.gameType},#{entity.singleAndDouble},#{entity.raseAndFall},#{entity.eventId},#{entity.eventResult},#{entity.turns})
-        </foreach>
+        insert into tb_game_result(id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,drawn_time)
+        values (#{id},#{gameType},#{singleAndDouble},#{raseAndFall},#{eventId},#{eventResult},#{turns},#{drawnTime})
     </insert>
 
 
@@ -74,7 +65,7 @@
 
     <select id="findDrawnTimeInfo" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
         select
-            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns
+            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result
         where DRAWN_TIME = #{drawnTime} and game_type=#{gameType}
     </select>

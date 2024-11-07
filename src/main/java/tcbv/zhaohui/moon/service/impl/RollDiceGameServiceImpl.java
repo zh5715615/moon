@@ -56,13 +56,15 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         long twoTimes = Math.abs(twoTime.getSeconds());
         //根据类型查询最新的轮次
         Integer gameTypeNumber = tbGameResultDao.findGameTypeNumber(gameType);
-
+        if(gameTypeNumber==null){
+            gameTypeNumber=0;
+        }
         PlayResidueTimesVO result = new PlayResidueTimesVO();
         result.setGameType(gameType);
         result.setTurns(gameTypeNumber + 1);
-        if (gameType.equals("1")) {
+        if (gameType==1) {
             result.setIsOk(oneTimes - 60 > 0 ? true : false);
-        } else if (gameType.equals("2")) {
+        } else if (gameType==2) {
             result.setIsOk(twoTimes - 60 > 0 ? true : false);
         } else {
             throw new RuntimeException("游戏类型失败");

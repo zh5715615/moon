@@ -27,7 +27,7 @@
         where user_id = #{userId} and game_type=#{gameType}
     </select>
     <select id="findTurnsGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
-        select
+        select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where turns = #{turns}
           and game_type = #{gameType}

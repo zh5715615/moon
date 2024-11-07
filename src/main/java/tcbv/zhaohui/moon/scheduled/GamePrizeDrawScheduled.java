@@ -45,6 +45,7 @@ public class GamePrizeDrawScheduled {
         LocalDateTime gameTwoTime = TimerMaps.getRemainingTime("gameTwo");
         if (gameOneTime == null && gameTwoTime == null) {
             log.error("开奖游戏剩余时间获取失败");
+            return;
         }
         // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
@@ -110,22 +111,23 @@ public class GamePrizeDrawScheduled {
                     .id(UUID.randomUUID().toString()).turns(turns).userId(e.getUserId())
                     .rewardAmount(new BigDecimal(e.getAmount()).negate())
                     .gameType(gameType.toString()).createTime(drawnTime)
-                    //.txHash()
+                    .txHash("1")
                     .build();
         }).collect(Collectors.toList()));
-        tbRewardRecordDao.insertBatch(entities);
-
-        //最终结果录入
-        TbGameResult param = TbGameResult.builder()
-                .id(UUID.randomUUID().toString()).gameType(gameType)
-                .turns(turns).drawnTime(drawnTime)
-                .build();
-        if (gameType.equals(gameTypeOne)) {
-            param.setSingleAndDouble(result);
-        } else if (gameType.equals(gameTypeTwo)) {
-            param.setRaseAndFall(result);
+        if(entities.size()>0){
+            tbRewardRecordDao.insertBatch(entities);
+            //最终结果录入
+            TbGameResult param = TbGameResult.builder()
+                    .id(UUID.randomUUID().toString()).gameType(gameType)
+                    .turns(turns).drawnTime(drawnTime)
+                    .build();
+            if (gameType==gameTypeOne) {
+                param.setSingleAndDouble(result);
+            } else if (gameType==gameTypeTwo) {
+                param.setRaseAndFall(result);
+            }
+            tbGameResultDao.insert(param);
         }
-        tbGameResultDao.insert(param);
 
     }
 

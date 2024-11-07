@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -13,7 +14,7 @@ import java.io.Serializable;
 @Data
 public class NewGamePrizeDrawDTO implements Serializable {
     @ApiModelProperty("轮次")
-    @NotBlank(message = "轮次不能为空")
+    @NotNull(message = "轮次不能为空")
     private Integer turns;
     @ApiModelProperty("投注数量")
     @NotBlank(message = "投注数量不能为空")

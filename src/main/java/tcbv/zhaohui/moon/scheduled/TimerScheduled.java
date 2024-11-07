@@ -31,6 +31,7 @@ public class TimerScheduled {
             if (gameTwo == null) {
                 TimerMaps.setRemainingTime("gameTwo", nextTen);
             }
+            return;
         }
         // 计算两个时间之间的间隔
         Duration oneTime = Duration.between(gameOwo, now);
