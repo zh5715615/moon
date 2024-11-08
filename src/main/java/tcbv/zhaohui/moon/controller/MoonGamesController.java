@@ -5,12 +5,17 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.*;
+import tcbv.zhaohui.moon.entity.TbGameResult;
+import tcbv.zhaohui.moon.entity.TbRewardRecord;
+import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * (TbWatchAddress)表控制层
@@ -37,6 +42,33 @@ public class MoonGamesController {
     @ApiOperation(value = "添加游戏下注单")
     public Rsp addGameOrderFor(@RequestBody @Valid AddGameOrderForDTO dto) {
         return Rsp.okData(rollDiceGameService.addGameOrderFor(dto));
+    }
+
+    @PostMapping("/userOrderList")
+    @ApiOperation(value = "查询游戏下注单列表")
+    public Rsp<PageResultVo<TbTxRecord>> userOrderList(@RequestBody @Valid OrderListDTO dto) {
+        return Rsp.ok();
+    }
+
+    @PostMapping("/userRewardList")
+    @ApiOperation(value = "查询中奖列表")
+    public Rsp<PageResultVo<TbRewardRecord>> userRewardList(@RequestBody @Valid RewardListDTO dto) {
+        return Rsp.ok();
+    }
+
+    @PostMapping("/gameResultList")
+    @ApiOperation(value = "查询各游戏轮次的开奖结果")
+    public Rsp<PageResultVo<TbGameResult>> gameResultList(@RequestBody @Valid GameResultDto dto) {
+        return Rsp.ok();
+    }
+
+    @GetMapping("/preTurnsResult")
+    @ApiOperation(value = "前一轮次游戏开奖结果")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
+    })
+    public Rsp<TbGameResult> preTurnsResult(@RequestParam("gameType") @NotBlank(message = "游戏类型不能为空") Integer gameType) {
+        return Rsp.ok();
     }
 
     @PostMapping("/addNewGame")

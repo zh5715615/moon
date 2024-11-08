@@ -9,6 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2024/11/2 15:12
  */
 public class TimerMaps {
+
+    public static final String GAMEONE = "gameOne";
+
+    public static final String GAMETWO = "gameTwo";
+
     private static final Map<String, LocalDateTime> timerMap = new ConcurrentHashMap<>();
 
     public static void setRemainingTime(String key, LocalDateTime time) {

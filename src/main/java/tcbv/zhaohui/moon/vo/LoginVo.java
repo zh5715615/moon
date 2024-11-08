@@ -14,6 +14,9 @@ public class LoginVo {
     @ApiModelProperty("钱包地址")
     private String address;
 
+    @ApiModelProperty("用户id")
+    private String userId;
+
     @ApiModelProperty("token")
     private String token;
 }

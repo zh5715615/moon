@@ -16,8 +16,8 @@ public class TimerScheduled {
     @Scheduled(fixedDelay = 1000)
     public void initializeTimers() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime gameOwo = TimerMaps.getRemainingTime("gameOne");
-        LocalDateTime gameTwo = TimerMaps.getRemainingTime("gameTwo");
+        LocalDateTime gameOwo = TimerMaps.getRemainingTime(TimerMaps.GAMEONE);
+        LocalDateTime gameTwo = TimerMaps.getRemainingTime(TimerMaps.GAMETWO);
         if (gameOwo == null || gameTwo == null) {
             // 获取当前时间的分钟部分
             int currentMinute = now.getMinute();
@@ -26,10 +26,10 @@ public class TimerScheduled {
             // 在当前时间上加上这个分钟数
             LocalDateTime nextTen = now.plusMinutes(minutesToNextTen);
             if (gameOwo == null) {
-                TimerMaps.setRemainingTime("gameOne", nextTen);
+                TimerMaps.setRemainingTime(TimerMaps.GAMEONE, nextTen);
             }
             if (gameTwo == null) {
-                TimerMaps.setRemainingTime("gameTwo", nextTen);
+                TimerMaps.setRemainingTime(TimerMaps.GAMETWO, nextTen);
             }
             return;
         }
@@ -42,12 +42,12 @@ public class TimerScheduled {
         if (oneTimes <= 0) {
             // 十分钟后的时间
             LocalDateTime tenMinutesLater = now.plusMinutes(10);
-            TimerMaps.setRemainingTime("gameOne", tenMinutesLater);
+            TimerMaps.setRemainingTime(TimerMaps.GAMEONE, tenMinutesLater);
         }
         if (twoTimes <= 0) {
             // 十分钟后的时间
             LocalDateTime tenMinutesLater = now.plusMinutes(5);
-            TimerMaps.setRemainingTime("gameTwo", tenMinutesLater);
+            TimerMaps.setRemainingTime(TimerMaps.GAMETWO, tenMinutesLater);
         }
 
     }
