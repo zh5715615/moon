@@ -4,11 +4,11 @@
 
 
     <!-- 通过ID查询单条数据 -->
-    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+    <select id="queryByGameTypeNow" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
         select
             id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result
-        where id = #{id}
+        where game_type = #{gameType} ORDER BY DRAWN_TIME DESC LIMIT 1
     </select>
     <select id="findGameTypeNumber"  resultType="java.lang.Integer">
         select

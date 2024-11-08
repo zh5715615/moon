@@ -47,19 +47,19 @@ public class MoonGamesController {
     @PostMapping("/userOrderList")
     @ApiOperation(value = "查询游戏下注单列表")
     public Rsp<PageResultVo<TbTxRecord>> userOrderList(@RequestBody @Valid OrderListDTO dto) {
-        return Rsp.ok();
+        return Rsp.okData(rollDiceGameService.userOrderList(dto));
     }
 
     @PostMapping("/userRewardList")
     @ApiOperation(value = "查询中奖列表")
     public Rsp<PageResultVo<TbRewardRecord>> userRewardList(@RequestBody @Valid RewardListDTO dto) {
-        return Rsp.ok();
+        return Rsp.okData(rollDiceGameService.userRewardList(dto));
     }
 
     @PostMapping("/gameResultList")
     @ApiOperation(value = "查询各游戏轮次的开奖结果")
     public Rsp<PageResultVo<TbGameResult>> gameResultList(@RequestBody @Valid GameResultDto dto) {
-        return Rsp.ok();
+        return Rsp.okData(rollDiceGameService.gameResultList(dto));
     }
 
     @GetMapping("/preTurnsResult")
@@ -68,7 +68,7 @@ public class MoonGamesController {
             @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
     })
     public Rsp<TbGameResult> preTurnsResult(@RequestParam("gameType") @NotBlank(message = "游戏类型不能为空") Integer gameType) {
-        return Rsp.ok();
+        return Rsp.okData(rollDiceGameService.preTurnsResult(gameType));
     }
 
     @PostMapping("/addNewGame")

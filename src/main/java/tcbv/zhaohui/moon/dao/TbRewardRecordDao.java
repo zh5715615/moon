@@ -19,7 +19,12 @@ public interface TbRewardRecordDao {
      * @return 实例对象
      */
     TbRewardRecord queryById(String id);
-
+    /**
+     * 查询用户游戏下注单列表
+     *
+     * @return 实例对象
+     */
+    List<TbRewardRecord> findByUserDraw(String userId,Integer gameType);
     /**
      * 新增数据
      *

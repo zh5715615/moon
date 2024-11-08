@@ -11,6 +11,14 @@
         where id = #{id}
     </select>
 
+    <select id="findByUserDraw" resultType="tcbv.zhaohui.moon.entity.TbRewardRecord">
+        select
+            id,turns,user_id,reward_amount,game_type,create_time,tx_hash
+        from tb_reward_record
+        where user_id = #{userId} and game_type=#{gameType} order by create_time desc
+    </select>
+
+
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into tb_reward_record(id,turns,user_id,reward_amount,game_type,create_time,tx_hash)

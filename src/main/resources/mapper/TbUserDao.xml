@@ -4,46 +4,25 @@
 
 
     <!-- 通过ID查询单条数据 -->
-    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbUser">
+    <select id="queryByAddress" resultType="tcbv.zhaohui.moon.entity.TbUser">
         select
-            id,address,user_name,create_time
+            id,address as userName,create_time as createTime,token
         from tb_user
-        where id = #{id}
+        where address = #{address}
     </select>
 
 
     <!--新增数据-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_user(id,address,user_name,create_time)
-        values (#{id},#{address},#{userName},#{createTime})
+    <insert id="insert">
+        insert into tb_user(id,address,token,create_time)
+        values (#{id},#{address},#{token},now())
     </insert>
 
-    <!-- 批量新增数据 -->
-    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_user(id,address,user_name,create_time)
-        values
-        <foreach collection="entities" item="entity" separator=",">
-            (#{entity.id},#{entity.address},#{entity.userName},#{entity.createTime})
-        </foreach>
-    </insert>
 
     <!-- 更新数据 -->
     <update id="update">
         update tb_user
-        <set>
-            <if test="id != null and id != ''">
-                id = #{id},
-            </if>
-            <if test="address != null and address != ''">
-                address = #{address},
-            </if>
-            <if test="userName != null and userName != ''">
-                user_name = #{userName},
-            </if>
-            <if test="createTime != null and createTime != ''">
-                create_time = #{createTime},
-            </if>
-        </set>
+        set token = #{token}
         where id = #{id}
     </update>
 

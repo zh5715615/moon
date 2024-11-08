@@ -93,3 +93,9 @@ web3:
       address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
     usdt-like-interface:
       address: "0x55d398326f99059ff775485246999027b3197955"
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql

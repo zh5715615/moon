@@ -2,12 +2,16 @@ package tcbv.zhaohui.moon.service;
 
 
 import org.springframework.web.bind.annotation.RequestBody;
-import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
-import tcbv.zhaohui.moon.dto.GamePrizeDrawDTO;
-import tcbv.zhaohui.moon.dto.VerifyGamePrizeDrawDTO;
+import org.springframework.web.bind.annotation.RequestParam;
+import tcbv.zhaohui.moon.dto.*;
+import tcbv.zhaohui.moon.entity.TbGameResult;
+import tcbv.zhaohui.moon.entity.TbRewardRecord;
+import tcbv.zhaohui.moon.entity.TbTxRecord;
+import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author dawn
@@ -32,4 +36,33 @@ public interface RollDiceGameService {
      * @return
      */
     Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto);
+
+    /**
+     *
+     * @param dto 查询游戏下注单列表
+     * @return
+     */
+    PageResultVo<TbTxRecord> userOrderList(@RequestBody @Valid OrderListDTO dto);
+
+    /**
+     *
+     * @param dto 查询中奖列表
+     * @return
+     */
+    PageResultVo<TbRewardRecord> userRewardList(@RequestBody @Valid RewardListDTO dto);
+
+    /**
+     *
+     * @param dto 查询各游戏轮次的开奖结果
+     * @return
+     */
+
+    PageResultVo<TbGameResult> gameResultList(@RequestBody @Valid GameResultDto dto);
+
+    /**
+     *
+     * @param gameType 前一轮次游戏开奖结果
+     * @return
+     */
+    TbGameResult preTurnsResult(Integer gameType);
 }

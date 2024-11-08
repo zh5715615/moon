@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 
 import java.util.List;
@@ -19,6 +20,13 @@ public interface TbTxRecordDao {
      * @return 实例对象
      */
     TbTxRecord queryById(String id);
+
+    /**
+     * 查询用户游戏下注单列表
+     *
+     * @return 实例对象
+     */
+    List<TbTxRecord> findByUserDraw(String userId, Integer gameType);
     /**
      *  根据游戏类型 用户id查询是否已经下注
      *

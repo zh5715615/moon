@@ -18,7 +18,7 @@ public interface TbUserDao {
      * @param id 主键
      * @return 实例对象
      */
-    TbUser queryById(String id);
+    TbUser queryByAddress(@Param("address") String address);
     /**
      * 新增数据
      *
@@ -26,13 +26,6 @@ public interface TbUserDao {
      * @return 影响行数
      */
     int insert(TbUser tbUser);
-    /**
-     * 批量新增数据
-     *
-     * @param entities List<TbUser> 实例对象列表
-     * @return 影响行数
-     */
-    int insertBatch(@Param("entities") List<TbUser> entities);
     /**
      * 更新数据
      *

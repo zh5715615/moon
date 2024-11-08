@@ -1,23 +1,29 @@
 package tcbv.zhaohui.moon.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
+import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
-import tcbv.zhaohui.moon.dto.AddGameOrderForDTO;
-import tcbv.zhaohui.moon.dto.GamePrizeDrawDTO;
-import tcbv.zhaohui.moon.dto.VerifyGamePrizeDrawDTO;
+import tcbv.zhaohui.moon.dto.*;
+import tcbv.zhaohui.moon.entity.TbGameResult;
+import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
+import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,6 +38,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     private TbGameResultDao tbGameResultDao;
     @Resource
     private TbTxRecordDao tbTxRecordDao;
+    @Resource
+    private TbRewardRecordDao tbRewardRecordDao;
 
     /**
      * @param gameType
@@ -57,15 +65,15 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         long twoTimes = Math.abs(twoTime.getSeconds());
         //根据类型查询最新的轮次
         Integer gameTypeNumber = tbGameResultDao.findGameTypeNumber(gameType);
-        if(gameTypeNumber==null){
-            gameTypeNumber=0;
+        if (gameTypeNumber == null) {
+            gameTypeNumber = 0;
         }
         PlayResidueTimesVO result = new PlayResidueTimesVO();
         result.setGameType(gameType);
         result.setTurns(gameTypeNumber + 1);
-        if (gameType==1) {
+        if (gameType == 1) {
             result.setIsOk(oneTimes - 60 > 0 ? true : false);
-        } else if (gameType==2) {
+        } else if (gameType == 2) {
             result.setIsOk(twoTimes - 60 > 0 ? true : false);
         } else {
             throw new RuntimeException("游戏类型失败");
@@ -115,16 +123,66 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     }
 
     /**
-     *
      * @param dto 根据轮次查询是否开奖
      * @return
      */
     @Override
     public Boolean verifyGamePrizeDraw(VerifyGamePrizeDrawDTO dto) {
         Integer gameTypeAndTurnsNumber = tbGameResultDao.findGameTypeAndTurnsNumber(dto.getTurns(), dto.getGameType());
-        if(gameTypeAndTurnsNumber!=null){
+        if (gameTypeAndTurnsNumber != null) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param dto 查询游戏下注单列表
+     * @return
+     */
+    @Override
+    public PageResultVo<TbTxRecord> userOrderList(OrderListDTO dto) {
+        Page<Object> objects = PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        List<TbTxRecord> byUserDraw = tbTxRecordDao.findByUserDraw(dto.getUserId(), dto.getGameType());
+        PageResultVo result = new PageResultVo();
+        result.setList(byUserDraw);
+        result.setTotal(objects.getTotal());
+        result.setPageSize(objects.getPageSize());
+        result.setPageNum(objects.getPageNum());
+        return result;
+    }
+
+    /**
+     * @param dto 查询中奖列表
+     * @return
+     */
+    @Override
+    public PageResultVo<TbRewardRecord> userRewardList(RewardListDTO dto) {
+        Page<Object> objects = PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        List<TbRewardRecord> byUserDraw = tbRewardRecordDao.findByUserDraw(dto.getUserId(), dto.getGameType());
+        PageResultVo result = new PageResultVo();
+        result.setList(byUserDraw);
+        result.setTotal(objects.getTotal());
+        result.setPageSize(objects.getPageSize());
+        result.setPageNum(objects.getPageNum());
+        return result;
+    }
+
+    /**
+     * @param dto 查询各游戏轮次的开奖结果
+     * @return
+     */
+    @Override
+    public PageResultVo<TbGameResult> gameResultList(GameResultDto dto) {
+
+        return null;
+    }
+
+    /**
+     * @param gameType 前一轮次游戏开奖结果
+     * @return
+     */
+    @Override
+    public TbGameResult preTurnsResult(Integer gameType) {
+        return tbGameResultDao.queryByGameTypeNow(gameType);
     }
 }

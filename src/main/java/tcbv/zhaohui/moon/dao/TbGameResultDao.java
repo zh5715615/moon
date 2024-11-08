@@ -14,12 +14,12 @@ import tcbv.zhaohui.moon.entity.TbGameResult;
 @Mapper
 public interface TbGameResultDao {
     /**
-     * 通过ID查询单条数据
+     * 查询最新的数据
      *
-     * @param id 主键
+     * @param gameType 主键
      * @return 实例对象
      */
-    TbGameResult queryById(String id);
+    TbGameResult queryByGameTypeNow(@Param("gameType") Integer gameType);
     /**
      * 查询游戏类型最大的轮次
      *
