@@ -2,16 +2,20 @@ package tcbv.zhaohui.moon.scheduled;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.abi.datatypes.Int;
+import tcbv.zhaohui.moon.beans.CandleGraphBean;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
+import tcbv.zhaohui.moon.utils.BnbPriceUtil;
+import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -89,8 +93,11 @@ public class GamePrizeDrawScheduled {
 
     //BNB涨跌结果获取
     private int raseAndFall() {
-        //TODO 涨跌暂时用随机，后续拿实际bnb k线数据
-        return (int) (Math.random() * 2) + 1;
+        Pair<Long, Long> pair = CustomizeTimeUtil.getFiveMinuteRange(LocalDateTime.now(), 5);
+        long startTime = pair.getLeft();
+        long endTime = pair.getRight();
+        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime);
+        return candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice() ? 1 : 2;
     }
 
     public void clearingUserAward(Integer gameType, Integer turns, String drawnTime, Integer result) {

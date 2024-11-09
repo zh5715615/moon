@@ -50,17 +50,17 @@ public class MoonGamesController {
     @PostMapping("/addGameOrderFor")
     @ApiOperation(value = "添加游戏下注单")
     public Rsp addGameOrderFor(@RequestBody @Valid AddGameOrderForDTO dto) {
-        try {
-            RecordBean recordBean = moonBaseService.getRecord(new BigInteger(dto.getRecordId(), 16));
-            if (recordBean == null) {
-                return Rsp.error("记录不存在");
-            }
-            if (!recordBean.getPlayer().equals(dto.getAddress())) {
-                return Rsp.error("用户地址不匹配，tx address is " + dto.getAddress() + " record address is " + recordBean.getPlayer());
-            }
-        } catch (Exception e) {
-            return Rsp.error(e.getMessage());
-        }
+//        try {
+//            RecordBean recordBean = moonBaseService.getRecord(new BigInteger(dto.getRecordId(), 16));
+//            if (recordBean == null) {
+//                return Rsp.error("记录不存在");
+//            }
+//            if (!recordBean.getPlayer().equals(dto.getAddress())) {
+//                return Rsp.error("用户地址不匹配，tx address is " + dto.getAddress() + " record address is " + recordBean.getPlayer());
+//            }
+//        } catch (Exception e) {
+//            return Rsp.error(e.getMessage());
+//        }
         return Rsp.okData(rollDiceGameService.addGameOrderFor(dto));
     }
 
