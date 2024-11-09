@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
@@ -22,6 +23,7 @@ import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -208,5 +210,23 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     @Override
     public TbGameResult preTurnsResult(Integer gameType) {
         return tbGameResultDao.queryByGameTypeNow(gameType);
+    }
+
+    @Override
+    public boolean isBetOn(String userId, Integer gameType, Integer turns) {
+        List<TbTxRecord> tbTxRecords = tbTxRecordDao.isBetOn(userId, turns, gameType);
+        if (CollectionUtils.isEmpty(tbTxRecords)) {
+            return false;
+        }
+        if (tbTxRecords.size() > 1) {
+            log.error("数据库中存在脏数据，userId = {}, gameType = {}, turns = {}", userId, gameType, turns);
+            return true;
+        }
+        return true;
+    }
+
+    @Override
+    public long betNumber(int gameType, int turns, Integer betType) {
+        return tbTxRecordDao.betNumber(gameType, turns, betType);
     }
 }

@@ -2,17 +2,15 @@ package tcbv.zhaohui.moon.service;
 
 
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
-import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import java.math.BigInteger;
 
 /**
  * @author dawn
@@ -66,4 +64,21 @@ public interface RollDiceGameService {
      * @return
      */
     TbGameResult preTurnsResult(Integer gameType);
+
+    /**
+     * 是否已经投注
+     * @param gameType 游戏类型
+     * @param turns 轮次
+     * @return true 是 | false 否
+     */
+    boolean isBetOn(String userId, Integer gameType, Integer turns);
+
+    /**
+     * 下注统计
+     * @param gameType 游戏类型
+     * @param turns 轮次
+     * @param betType 下注类型
+     * @return 统计数量
+     */
+    long betNumber(int gameType, int turns, Integer betType);
 }

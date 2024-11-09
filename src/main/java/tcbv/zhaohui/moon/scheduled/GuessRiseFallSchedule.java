@@ -25,7 +25,7 @@ public class GuessRiseFallSchedule {
         LocalDateTime localDateTime = LocalDateTime.now(); // 当前时间
         Pair<Long, Long> pair = CustomizeTimeUtil.getFiveMinuteRange(localDateTime, 5);
         long startTime = pair.getLeft();
-        long endTime = pair.getRight();
+        long endTime = pair.getRight() - 1;
         log.info("Start Timestamp: {}, DateTime is {}", startTime, CustomizeTimeUtil.formatTimestamp(startTime));
         log.info("End Timestamp: {}, DateTime is {}", endTime, CustomizeTimeUtil.formatTimestamp(endTime));
 
@@ -33,7 +33,7 @@ public class GuessRiseFallSchedule {
             CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime);
             LocalDateTime currentTime = LocalDateTime.now();
             long currentTimestamp = CustomizeTimeUtil.localDateTime2Long(currentTime);
-            log.info("currentTimestamp = {}, candleGraphBean.getEndTime() = {}", currentTimestamp, candleGraphBean.getEndTime());
+//            log.info("currentTimestamp = {}, candleGraphBean.getEndTime() = {}", currentTimestamp, candleGraphBean.getEndTime());
             if (currentTimestamp < candleGraphBean.getEndTime()) {
                 log.debug("还未到开奖时间");
                 try {

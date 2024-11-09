@@ -67,4 +67,8 @@ public interface TbTxRecordDao {
      * @return 影响行数
      */
     int deleteById(String id);
+
+    List<TbTxRecord> isBetOn(@Param("userId") String userId, @Param("turns") Integer turns, @Param("gameType") Integer gameType);
+
+    long betNumber(@Param("gameType") int gameType, @Param("turns") int turns, @Param("betType") Integer betType);
 }

@@ -38,6 +38,28 @@
         where turns = #{turns}
           and game_type = #{gameType}
     </select>
+
+    <select id="isBetOn" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+        select <include refid="SQL_PARAM"/>
+        from tb_tx_record
+        where turns = #{turns}
+        and game_type = #{gameType}
+        and user_id = #{userId}
+    </select>
+
+    <select id="betNumber" resultType="java.lang.Long">
+        select sum(amount) as total_bet
+        from tb_tx_record
+        where game_type = #{gameType}
+        and turns = #{turns}
+        <if test="gameType != null and gameType == 1">
+            and single_and_double = #{betType}
+        </if>
+        <if test="gameType != null and gameType == 2">
+            and rase_and_fall = #{betType}
+        </if>
+    </select>
+
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into tb_tx_record(id,user_id,game_type,single_and_double,rase_and_fall,event_id,event_result,tx_hash,turns,create_time,amount)

@@ -5,11 +5,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import tcbv.zhaohui.moon.beans.RecordBean;
-import tcbv.zhaohui.moon.contract.MoonBase;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
-import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.service.impl.MoonBaseService;
@@ -21,7 +18,7 @@ import tcbv.zhaohui.moon.vo.UserRewardListVO;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.math.BigInteger;
+import javax.validation.constraints.NotNull;
 
 /**
  * (TbWatchAddress)表控制层
@@ -112,5 +109,28 @@ public class MoonGamesController {
     @ApiOperation(value = "用户推广码生成")
     public Rsp userMarketing(@RequestBody @Valid UserMarketingDTO dto) {
         return Rsp.okData(true);
+    }
+
+    @GetMapping("/isBetOn")
+    @ApiOperation(value = "是否重复投注")
+    public Rsp<Boolean> isBetOn(@RequestParam("userId") @NotBlank(message = "用户id不能为空") String userId,
+                       @RequestParam("gameType") @NotNull(message = "游戏类型不能为空") Integer gameType,
+                       @RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns) {
+        boolean ret = rollDiceGameService.isBetOn(userId, gameType, turns);
+        return Rsp.okData(ret);
+    }
+
+    @GetMapping("/dicRollerBetNumber")
+    @ApiOperation(value = "投骰子单个数字")
+    public Rsp<Long> dicRollerSingleNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
+                                     @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
+        return Rsp.okData(rollDiceGameService.betNumber(1, turns, betType));
+    }
+
+    @GetMapping("/guessBnbBetNumber")
+    @ApiOperation(value = "投骰子单个数字")
+    public Rsp<Long> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
+                                    @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
+        return Rsp.okData(rollDiceGameService.betNumber(2, turns, betType));
     }
 }

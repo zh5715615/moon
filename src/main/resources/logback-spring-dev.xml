@@ -160,19 +160,19 @@
     </appender>
 
     <!--根据设置日志级别，屏蔽相关的日志：以下包及子包的日志会屏蔽掉-->
-    <logger name="org.springframework.jdbc.datasource" level="DEBUG"/>
+    <logger name="org.springframework.jdbc.datasource" level="INFO"/>
     <logger name="org.springframework" level="WARN"/>
-    <logger name="org.apache.rocketmq" level="DEBUG"/>
+    <logger name="org.apache.rocketmq" level="INFO"/>
     <logger name="org.apache" level="WARN"/>
     <logger name="com.alibaba.druid" level="INFO"/>
     <logger name="org.mongodb.driver" level="WARN"/>
-    <logger name="s.d.s" level="DEBUG"/>
+    <logger name="s.d.s" level="INFO"/>
     <logger name="org.web3j.protocol" level="ERROR"/>
     <logger name="io.grpc.netty" level="ERROR"/>
     <logger name="okhttp3" level="ERROR"/>
 
     <!-- 项目中info级别的日志会输出到以下日志对象中 -->
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="DEBUG_FILE"/>
         <appender-ref ref="INFO_FILE"/>

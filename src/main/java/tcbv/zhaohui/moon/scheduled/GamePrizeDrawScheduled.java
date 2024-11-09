@@ -140,7 +140,7 @@ public class GamePrizeDrawScheduled {
                     .build();
         }).collect(Collectors.toList()));
         if(entities.size()>0){
-            tbRewardRecordDao.insertBatch(entities);
+//            tbRewardRecordDao.insertBatch(entities);
         }
         //最终结果录入
         TbGameResult param = TbGameResult.builder()
