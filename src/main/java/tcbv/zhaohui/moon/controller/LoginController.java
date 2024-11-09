@@ -29,11 +29,11 @@ public class LoginController {
     @ApiOperation("钱包登录")
     public Rsp<LoginVo> walletLogin(@RequestBody WalletLoginDto loginDto) {
         log.info("登录参数:" + loginDto);
-//        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
-//                loginDto.getAddress());
-//        if (!result) {
-//            return Rsp.error("登录签名校验失败");
-//        }
+        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
+                loginDto.getAddress());
+        if (!result) {
+            return Rsp.error("登录签名校验失败");
+        }
         String token = UUID.randomUUID().toString();
         TbUser tbUser = tbUserDao.queryByAddress(loginDto.getAddress());
         if(tbUser==null){
