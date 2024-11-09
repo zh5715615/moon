@@ -81,6 +81,18 @@ public class GamePrizeDrawScheduled {
         }
     }
 
+    //取摇色子的点数
+    private int singleAndDouble() {
+        //TODO 暂时用随机数代替，后续改为实际算法
+        return (int) (Math.random() * 16) + 3;
+    }
+
+    //BNB涨跌结果获取
+    private int raseAndFall() {
+        //TODO 涨跌暂时用随机，后续拿实际bnb k线数据
+        return (int) (Math.random() * 2) + 1;
+    }
+
     public void clearingUserAward(Integer gameType, Integer turns, String drawnTime, Integer result) {
 
         //判断时间是否已经开奖

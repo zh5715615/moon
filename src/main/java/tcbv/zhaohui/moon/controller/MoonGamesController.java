@@ -3,12 +3,16 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tcbv.zhaohui.moon.beans.RecordBean;
+import tcbv.zhaohui.moon.contract.MoonBase;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
+import tcbv.zhaohui.moon.service.impl.MoonBaseService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
@@ -17,6 +21,7 @@ import tcbv.zhaohui.moon.vo.UserRewardListVO;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.math.BigInteger;
 
 /**
  * (TbWatchAddress)表控制层
@@ -30,6 +35,9 @@ public class MoonGamesController {
     @Resource
     private RollDiceGameService rollDiceGameService;
 
+    @Autowired
+    private MoonBaseService moonBaseService;
+
     @GetMapping("/playResidueTimes")
     @ApiOperation(value = "根据类型获取轮次和是否允许下注")
     @ApiImplicitParams({
@@ -42,6 +50,17 @@ public class MoonGamesController {
     @PostMapping("/addGameOrderFor")
     @ApiOperation(value = "添加游戏下注单")
     public Rsp addGameOrderFor(@RequestBody @Valid AddGameOrderForDTO dto) {
+        try {
+            RecordBean recordBean = moonBaseService.getRecord(new BigInteger(dto.getRecordId(), 16));
+            if (recordBean == null) {
+                return Rsp.error("记录不存在");
+            }
+            if (!recordBean.getPlayer().equals(dto.getAddress())) {
+                return Rsp.error("用户地址不匹配，tx address is " + dto.getAddress() + " record address is " + recordBean.getPlayer());
+            }
+        } catch (Exception e) {
+            return Rsp.error(e.getMessage());
+        }
         return Rsp.okData(rollDiceGameService.addGameOrderFor(dto));
     }
 

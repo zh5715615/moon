@@ -1,8 +1,10 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import tcbv.zhaohui.moon.beans.RecordBean;
 import tcbv.zhaohui.moon.contract.MoonBase;
 import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
@@ -24,12 +26,20 @@ public class MoonBaseService extends EthereumService implements IMoonBaseService
         super.init();
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         moonBase = MoonBase.load(contractAddress, web3j, transactionManager, contractGasProvider);
-        //TODO 合约初始化还存在问题，暂时注释掉
-//        try {
-//            decimals = (int) decimals();
-//            symbol = tokenSymbol();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+    }
+
+    @Override
+    public RecordBean getRecord(BigInteger recordId) throws Exception {
+        Tuple6<String, BigInteger, BigInteger, BigInteger, String, String> tuple6 = moonBase.getRecord(recordId).send();
+        if (tuple6 == null) {
+            return null;
+        }
+        String token = tuple6.getValue1();
+        BigInteger amount = tuple6.getValue2();
+        BigInteger fee = tuple6.getValue3();
+        BigInteger redeemAmount = tuple6.getValue4();
+        String player = tuple6.getValue5();
+        String extraData = tuple6.getValue6();
+        return new RecordBean(token, amount, fee, redeemAmount, player, extraData);
     }
 }

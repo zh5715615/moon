@@ -23,7 +23,7 @@ public class AddGameOrderForDTO implements Serializable {
     @NotBlank(message = "用户地址不能为空")
     private String address;
     @ApiModelProperty("用户id")
-//    @NotBlank(message = "用户id不能为空") TODO 展示注掉，后面在用
+    @NotBlank(message = "用户id不能为空")
     private String userId;
     @ApiModelProperty("轮次")
     @NotNull(message = "轮次不能为空")
@@ -35,5 +35,6 @@ public class AddGameOrderForDTO implements Serializable {
     private String txHash;
     @ApiModelProperty("事件id")
     private String eventId;
-
+    @ApiModelProperty("记录id")
+    private String recordId;
 }
