@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
+import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -52,13 +53,13 @@ public class MoonGamesController {
 
     @PostMapping("/userRewardList")
     @ApiOperation(value = "查询中奖列表")
-    public Rsp<PageResultVo<TbRewardRecord>> userRewardList(@RequestBody @Valid RewardListDTO dto) {
+    public Rsp<PageResultVo<UserRewardListVO>> userRewardList(@RequestBody @Valid RewardListDTO dto) {
         return Rsp.okData(rollDiceGameService.userRewardList(dto));
     }
 
     @PostMapping("/gameResultList")
     @ApiOperation(value = "查询各游戏轮次的开奖结果")
-    public Rsp<PageResultVo<TbGameResult>> gameResultList(@RequestBody @Valid GameResultDto dto) {
+    public Rsp<TbGameResult> gameResultList(@RequestBody @Valid GameResultDto dto) {
         return Rsp.okData(rollDiceGameService.gameResultList(dto));
     }
 

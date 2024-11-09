@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import tcbv.zhaohui.moon.entity.TbRewardRecord;
+import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 /**
  * 开奖记录表;(tb_reward_record)表数据库访问层
@@ -24,7 +25,7 @@ public interface TbRewardRecordDao {
      *
      * @return 实例对象
      */
-    List<TbRewardRecord> findByUserDraw(String userId,Integer gameType);
+    List<UserRewardListVO> findByUserDraw(String userId, Integer gameType);
     /**
      * 新增数据
      *

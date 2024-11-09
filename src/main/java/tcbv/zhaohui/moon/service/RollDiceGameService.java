@@ -9,6 +9,7 @@ import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
+import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -49,7 +50,7 @@ public interface RollDiceGameService {
      * @param dto 查询中奖列表
      * @return
      */
-    PageResultVo<TbRewardRecord> userRewardList(@RequestBody @Valid RewardListDTO dto);
+    PageResultVo<UserRewardListVO> userRewardList(@RequestBody @Valid RewardListDTO dto);
 
     /**
      *
@@ -57,7 +58,7 @@ public interface RollDiceGameService {
      * @return
      */
 
-    PageResultVo<TbGameResult> gameResultList(@RequestBody @Valid GameResultDto dto);
+    TbGameResult gameResultList(@RequestBody @Valid GameResultDto dto);
 
     /**
      *

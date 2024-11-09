@@ -11,11 +11,27 @@
         where id = #{id}
     </select>
 
-    <select id="findByUserDraw" resultType="tcbv.zhaohui.moon.entity.TbRewardRecord">
-        select
-            id,turns,user_id,reward_amount,game_type,create_time,tx_hash
-        from tb_reward_record
-        where user_id = #{userId} and game_type=#{gameType} order by create_time desc
+    <select id="findByUserDraw" resultType="tcbv.zhaohui.moon.vo.UserRewardListVO">
+        select A.id,
+               A.turns,
+               A.user_id,
+               A.reward_amount,
+               A.game_type,
+               A.create_time,
+               B.single_and_double as singleAndDoubleB,
+               B.rase_and_fall     as raseAndFallB,
+               B.event_id          as eventId,
+               B.event_result      as eventResult,
+               C.amount,
+               C.single_and_double as singleAndDoubleC,
+               C.rase_and_fall     as raseAndFallC
+        from tb_reward_record A
+                 INNER JOIN tb_game_result B ON A.TURNS = B.TURNS AND A.game_type = B.game_type
+                 INNER JOIN tb_tx_record C ON C.user_id = A.user_id AND A.turns = C.turns
+        where A.user_id = #{userId}
+          and A.game_type = #{gameType}
+        order by A.create_time desc
+
     </select>
 
 

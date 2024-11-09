@@ -22,6 +22,12 @@
         from tb_game_result
         where game_type = #{gameType} and turns=#{turns}
     </select>
+    <select id="findGameTypeAndTurnsInfo"  resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+        select
+            id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
+        from tb_game_result
+        where game_type = #{gameType} and turns=#{turns}
+    </select>
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into tb_game_result(id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,drawn_time)

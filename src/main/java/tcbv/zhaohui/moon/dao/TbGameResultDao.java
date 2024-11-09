@@ -33,6 +33,12 @@ public interface TbGameResultDao {
      */
     Integer findGameTypeAndTurnsNumber(@Param("turns") Integer turns,@Param("gameType") Integer gameType);
     /**
+     * 根据类型和轮次查询信息
+     *
+     * @return 实例对象
+     */
+    TbGameResult findGameTypeAndTurnsInfo(@Param("turns") Integer turns,@Param("gameType") Integer gameType);
+    /**
      * 新增数据
      *
      * @param tbGameResult 实例对象

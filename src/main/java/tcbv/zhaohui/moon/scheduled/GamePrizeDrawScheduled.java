@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class GamePrizeDrawScheduled {
     @Transactional
     @Scheduled(fixedDelay = 20000)
     public void executeTask() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime gameOneTime = TimerMaps.getRemainingTime(TimerMaps.GAMEONE);
         LocalDateTime gameTwoTime = TimerMaps.getRemainingTime(TimerMaps.GAMETWO);
         if (gameOneTime == null && gameTwoTime == null) {
@@ -59,25 +60,29 @@ public class GamePrizeDrawScheduled {
         // 获取间隔的绝对值，以秒为单位
         long oneTimes = Math.abs(oneTime.getSeconds());
         long twoTimes = Math.abs(twoTime.getSeconds());
+        Random rand = new Random();
+         Integer result = rand.nextInt(10);
         if (oneTimes < 60) {
             Integer turns = tbGameResultDao.findGameTypeNumber(gameTypeOne);
             if (turns == null) {
                 turns = 0;
             }
             turns++;
-            clearingUserAward(gameTypeOne, turns, oneSimpleTimes, null);
+            clearingUserAward(gameTypeOne, turns, oneSimpleTimes, result);
         }
         if (twoTimes < 60) {
             Integer turns = tbGameResultDao.findGameTypeNumber(gameTypeTwo);
             if (turns == null) {
                 turns = 0;
             }
+
             turns++;
-            clearingUserAward(gameTypeTwo, turns, twoSimpleTimes, null);
+            clearingUserAward(gameTypeTwo, turns, twoSimpleTimes, result);
         }
     }
 
     public void clearingUserAward(Integer gameType, Integer turns, String drawnTime, Integer result) {
+
         //判断时间是否已经开奖
         TbGameResult drawnTimeInfo = tbGameResultDao.findDrawnTimeInfo(drawnTime, gameType);
         if (drawnTimeInfo != null) {
@@ -88,7 +93,6 @@ public class GamePrizeDrawScheduled {
         List<TbTxRecord> defeated = Lists.newArrayList();
         //查询用户下注记录
         List<TbTxRecord> turnsGameInfo = tbTxRecordDao.findTurnsGameInfo(turns, gameType);
-        //todo 需要确认一下看是批量还是单个上链
         if (gameType == gameTypeOne) {
             //胜者
             victory = turnsGameInfo.stream().filter(x -> x.getSingleAndDouble() == result).collect(Collectors.toList());
@@ -98,6 +102,7 @@ public class GamePrizeDrawScheduled {
             defeated = turnsGameInfo.stream().filter(x -> x.getRaseAndFall() != result).collect(Collectors.toList());
 
         }
+        //todo 开奖结果目前先随机数，后续接入
         //开奖记录存储
         entities.addAll(victory.stream().map(e -> {
             return TbRewardRecord.builder()

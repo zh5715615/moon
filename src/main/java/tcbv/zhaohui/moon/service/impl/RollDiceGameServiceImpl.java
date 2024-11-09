@@ -18,8 +18,10 @@ import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
+import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -156,9 +158,32 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
      * @return
      */
     @Override
-    public PageResultVo<TbRewardRecord> userRewardList(RewardListDTO dto) {
+    public PageResultVo<UserRewardListVO> userRewardList(RewardListDTO dto) {
         Page<Object> objects = PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
-        List<TbRewardRecord> byUserDraw = tbRewardRecordDao.findByUserDraw(dto.getUserId(), dto.getGameType());
+        List<UserRewardListVO> byUserDraw = tbRewardRecordDao.findByUserDraw(dto.getUserId(), dto.getGameType());
+
+        if (byUserDraw != null && byUserDraw.size() > 0) {
+            for (UserRewardListVO userRewardListVO : byUserDraw) {
+                if (dto.getGameType() == 1) {
+                    userRewardListVO.setResult(userRewardListVO.getSingleAndDoubleB());
+                    if (userRewardListVO.getSingleAndDoubleC() == userRewardListVO.getSingleAndDoubleB()) {
+                        userRewardListVO.setIsWinning(true);
+                    } else {
+                        userRewardListVO.setIsWinning(false);
+                    }
+                } else if (dto.getGameType() == 2) {
+                    userRewardListVO.setResult(userRewardListVO.getRaseAndFallB());
+                    if (userRewardListVO.getRaseAndFallC() == userRewardListVO.getRaseAndFallB()) {
+                        userRewardListVO.setIsWinning(true);
+                    } else {
+                        userRewardListVO.setIsWinning(false);
+                    }
+                }
+            if(!userRewardListVO.getIsWinning()){
+                userRewardListVO.setRewardAmount(new BigDecimal(0));
+            }
+            }
+        }
         PageResultVo result = new PageResultVo();
         result.setList(byUserDraw);
         result.setTotal(objects.getTotal());
@@ -172,9 +197,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
      * @return
      */
     @Override
-    public PageResultVo<TbGameResult> gameResultList(GameResultDto dto) {
-
-        return null;
+    public TbGameResult gameResultList(GameResultDto dto) {
+        return tbGameResultDao.findGameTypeAndTurnsInfo(dto.getTurns(), dto.getGameType());
     }
 
     /**
