@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @author dawn
  * @date 2024/11/2 15:13
  */
-@Component
+//@Component
 public class TimerScheduled {
 
     @Scheduled(fixedDelay = 1000)

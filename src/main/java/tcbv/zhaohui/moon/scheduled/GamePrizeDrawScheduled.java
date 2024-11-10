@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * @author dawn  游戏开奖
  * @date 2024/11/5 10:45
  */
-@Component
+//@Component
 @Slf4j
 public class GamePrizeDrawScheduled {
     private final Integer gameTypeOne = 1;

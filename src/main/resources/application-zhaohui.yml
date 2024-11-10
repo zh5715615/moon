@@ -98,7 +98,7 @@ blockchain:
   proxy:
     enable: true
     hostname: 127.0.0.1
-    port: 1081
+    port: 1080
 
 pagehelper:
   helperDialect: mysql

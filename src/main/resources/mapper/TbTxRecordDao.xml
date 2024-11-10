@@ -48,7 +48,7 @@
     </select>
 
     <select id="betNumber" resultType="java.lang.Long">
-        select sum(amount) as total_bet
+        select IFNULL(sum(amount), 0) as total_bet
         from tb_tx_record
         where game_type = #{gameType}
         and turns = #{turns}

@@ -1,6 +1,9 @@
 package tcbv.zhaohui.moon.scheduled;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,5 +25,36 @@ public class TimerMaps {
 
     public static LocalDateTime getRemainingTime(String key) {
         return timerMap.get(key);
+    }
+
+    private static final Map<Integer, Boolean> gameStatus = new HashMap<>();
+
+    static {
+        gameStatus.put(1, false);
+        gameStatus.put(2, false);
+    }
+
+    public static void startDiceRoller() {
+        gameStatus.put(1, true);
+    }
+
+    public static void stopDiceRoller() {
+        gameStatus.put(1, false);
+    }
+
+    public static boolean getDicRollerStatus() {
+        return gameStatus.get(1);
+    }
+
+    public static void startGuessBnbPrice() {
+        gameStatus.put(2, true);
+    }
+
+    public static void stopGuessBnbPrice() {
+        gameStatus.put(2, false);
+    }
+
+    public static boolean getGuessBnbPriceStatus() {
+        return gameStatus.get(2);
     }
 }

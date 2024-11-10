@@ -5,9 +5,11 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
+import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.service.impl.MoonBaseService;
 import tcbv.zhaohui.moon.utils.Rsp;
@@ -35,13 +37,29 @@ public class MoonGamesController {
     @Autowired
     private MoonBaseService moonBaseService;
 
+    @Resource
+    private TbGameResultDao gameResultDao;
+
     @GetMapping("/playResidueTimes")
     @ApiOperation(value = "根据类型获取轮次和是否允许下注")
     @ApiImplicitParams({
             @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
     })
     public Rsp<PlayResidueTimesVO> playResidueTimes(@RequestParam(name = "gameType", required = true) Integer gameType) {
-        return Rsp.okData(rollDiceGameService.getQueueAndMemSize(gameType));
+        boolean status;
+        if (gameType == 1) {
+            status = TimerMaps.getDicRollerStatus();
+        } else if (gameType == 2) {
+            status = TimerMaps.getGuessBnbPriceStatus();
+        } else {
+            return Rsp.error("暂时没有这个游戏类型");
+        }
+        PlayResidueTimesVO playResidueTimesVO = new PlayResidueTimesVO();
+        playResidueTimesVO.setGameType(gameType);
+        playResidueTimesVO.setTurns(gameResultDao.maxTurns(gameType));
+        playResidueTimesVO.setIsOk(status);
+
+        return Rsp.okData(playResidueTimesVO);
     }
 
     @PostMapping("/addGameOrderFor")

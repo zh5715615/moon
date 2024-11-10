@@ -61,4 +61,11 @@ public interface TbGameResultDao {
     int deleteById(String id);
 
     TbGameResult findDrawnTimeInfo(@Param("drawnTime")String drawnTime,@Param("gameType") Integer gameType);
+
+    /**
+     * 获取游戏最大轮次
+     * @param gameType 游戏类型
+     * @return 轮次
+     */
+    Integer maxTurns(@Param("gameType") int gameType);
 }

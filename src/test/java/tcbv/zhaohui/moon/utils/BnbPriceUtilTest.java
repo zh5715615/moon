@@ -18,7 +18,7 @@ public class BnbPriceUtilTest {
     public void testBnbUsdtKline() {
         long currentTime = System.currentTimeMillis();
         long previousTime = currentTime - 60 * 60 * 1000;
-        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(previousTime, currentTime, true, "127.0.0.1", 1081);
+        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(previousTime, currentTime, true, "127.0.0.1", 1080);
         log.info("CandleGraphBean is {}", GsonUtil.toJson(candleGraphBean));
     }
 
