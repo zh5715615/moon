@@ -39,6 +39,7 @@ public class DiceRollerSchedule extends AllocReward {
 
     @Scheduled(cron = "0 0/10 * * * ? ")
     public void startScheduleOn() {
+        TimerMaps.startDiceRoller();
         Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             gameTurns = 0;
@@ -54,6 +55,7 @@ public class DiceRollerSchedule extends AllocReward {
 
     @Scheduled(cron = "0 9/10 * * * ? ")
     public void startScheduleOff() {
+        TimerMaps.startDiceRoller();
         log.info("摇骰子开奖时间，不能下注.");
         Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {

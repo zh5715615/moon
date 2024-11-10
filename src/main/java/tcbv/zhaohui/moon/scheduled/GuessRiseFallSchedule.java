@@ -41,6 +41,7 @@ public class GuessRiseFallSchedule extends AllocReward {
 
     @Scheduled(cron = "0 0/5 * * * ? ")
     public void startScheduleOn() {
+        TimerMaps.startGuessBnbPrice();
         Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             gameTurns = 0;
@@ -56,6 +57,7 @@ public class GuessRiseFallSchedule extends AllocReward {
 
     @Scheduled(cron = "0 4/5 * * * ? ")
     public void startScheduleOff() {
+        TimerMaps.stopGuessBnbPrice();
         log.info("猜BNB涨跌投注时间，不能下注.");
         LocalDateTime localDateTime = LocalDateTime.now(); // 当前时间
         Pair<Long, Long> pair = CustomizeTimeUtil.getFiveMinuteRange(localDateTime, 5);
