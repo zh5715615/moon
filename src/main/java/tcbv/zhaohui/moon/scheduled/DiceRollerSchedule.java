@@ -71,7 +71,7 @@ public class DiceRollerSchedule extends AllocReward {
         if (!CollectionUtils.isEmpty(txHashList)) {
             BigInteger sum = BigInteger.ZERO;
             for (String s : txHashList) {
-                BigInteger b = new BigInteger(s, 16);
+                BigInteger b = new BigInteger(s.substring(2), 16);
                 sum = sum.and(b);
             }
             result = sum.mod(BigInteger.valueOf(16)).add(BigInteger.valueOf(3)).intValue();
