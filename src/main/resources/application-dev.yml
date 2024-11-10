@@ -94,6 +94,12 @@ web3:
     usdt-like-interface:
       address: "0x55d398326f99059ff775485246999027b3197955"
 
+blockchain:
+  proxy:
+    enable: true
+    hostname: 127.0.0.1
+    port: 1081
+
 pagehelper:
   helperDialect: mysql
   reasonable: true

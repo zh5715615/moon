@@ -22,7 +22,7 @@ import java.util.List;
 public class BnbPriceUtil {
     private BnbPriceUtil() {}
 
-    public static CandleGraphBean bnbUsdtKline(long startTime, long endTime) {
+    public static CandleGraphBean bnbUsdtKline(long startTime, long endTime, boolean isEnable, String proxyIp, int proxyPort) {
         RestTemplate restTemplate = new RestTemplate();
 
         UriComponentsBuilder builder = UriComponentsBuilder
@@ -35,9 +35,6 @@ public class BnbPriceUtil {
                 .queryParam("limit", "20");
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        boolean isEnable = true;
-        String proxyIp = "127.0.0.1";
-        int proxyPort = 1081;
         if (isEnable) {
             requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyIp, proxyPort)));
         }

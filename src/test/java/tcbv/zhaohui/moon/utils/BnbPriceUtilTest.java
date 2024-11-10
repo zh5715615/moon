@@ -18,7 +18,7 @@ public class BnbPriceUtilTest {
     public void testBnbUsdtKline() {
         long currentTime = System.currentTimeMillis();
         long previousTime = currentTime - 60 * 60 * 1000;
-        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(previousTime, currentTime);
+        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(previousTime, currentTime, true, "127.0.0.1", 1081);
         log.info("CandleGraphBean is {}", GsonUtil.toJson(candleGraphBean));
     }
 
@@ -43,7 +43,7 @@ public class BnbPriceUtilTest {
         log.info("End Timestamp: {}, DateTime is {}", endTime, CustomizeTimeUtil.formatTimestamp(endTime));
 
         while (true) {
-            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime);
+            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime, true, "127.0.0.1", 1081);
             LocalDateTime currentTime = LocalDateTime.now();
             long currentTimestamp = CustomizeTimeUtil.localDateTime2Long(currentTime);
             if (currentTimestamp < candleGraphBean.getEndTime()) {

@@ -113,6 +113,11 @@ public class MoonGamesController {
 
     @GetMapping("/isBetOn")
     @ApiOperation(value = "是否重复投注")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="userId", value="用户id", required = true),
+            @ApiImplicitParam(name="gameType", value="游戏类型: 1摇色子 | 2猜BNB涨跌", required = true),
+            @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
+    })
     public Rsp<Boolean> isBetOn(@RequestParam("userId") @NotBlank(message = "用户id不能为空") String userId,
                        @RequestParam("gameType") @NotNull(message = "游戏类型不能为空") Integer gameType,
                        @RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns) {
@@ -121,14 +126,22 @@ public class MoonGamesController {
     }
 
     @GetMapping("/dicRollerBetNumber")
-    @ApiOperation(value = "投骰子单个数字")
+    @ApiOperation(value = "投骰子单双投注统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
+            @ApiImplicitParam(name="betType", value="投注结果 1单 | 2双", required = true)
+    })
     public Rsp<Long> dicRollerSingleNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                      @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
         return Rsp.okData(rollDiceGameService.betNumber(1, turns, betType));
     }
 
     @GetMapping("/guessBnbBetNumber")
-    @ApiOperation(value = "投骰子单个数字")
+    @ApiOperation(value = "猜BNB涨跌投注统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
+            @ApiImplicitParam(name="betType", value="投注结果 1涨 | 2跌", required = true)
+    })
     public Rsp<Long> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                     @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
         return Rsp.okData(rollDiceGameService.betNumber(2, turns, betType));

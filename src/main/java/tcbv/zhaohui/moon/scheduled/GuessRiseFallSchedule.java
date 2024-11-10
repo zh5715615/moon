@@ -2,9 +2,11 @@ package tcbv.zhaohui.moon.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.beans.CandleGraphBean;
+import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.utils.BnbPriceUtil;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
@@ -14,6 +16,10 @@ import java.time.LocalDateTime;
 @Component
 @Slf4j
 public class GuessRiseFallSchedule {
+
+    @Autowired
+    private Web3Config web3Config;
+
     @Scheduled(cron = "0 0/5 * * * ? ")
     public void startScheduleOn() {
         log.info("猜BNB涨跌投注时间，可以下注.");
@@ -30,7 +36,8 @@ public class GuessRiseFallSchedule {
         log.info("End Timestamp: {}, DateTime is {}", endTime, CustomizeTimeUtil.formatTimestamp(endTime));
 
         while (true) {
-            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime);
+            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime,
+                    web3Config.isProxy(), web3Config.getHostname(), web3Config.getPort());
             LocalDateTime currentTime = LocalDateTime.now();
             long currentTimestamp = CustomizeTimeUtil.localDateTime2Long(currentTime);
 //            log.info("currentTimestamp = {}, candleGraphBean.getEndTime() = {}", currentTimestamp, candleGraphBean.getEndTime());

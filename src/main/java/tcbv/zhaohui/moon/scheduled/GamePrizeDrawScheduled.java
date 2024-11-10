@@ -3,11 +3,13 @@ package tcbv.zhaohui.moon.scheduled;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.web3j.abi.datatypes.Int;
 import tcbv.zhaohui.moon.beans.CandleGraphBean;
+import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
@@ -43,6 +45,10 @@ public class GamePrizeDrawScheduled {
     private TbTxRecordDao tbTxRecordDao;
     @Resource
     private TbRewardRecordDao tbRewardRecordDao;
+
+    @Autowired
+    private Web3Config web3Config;
+
     @Transactional
     @Scheduled(fixedDelay = 20000)
     public void executeTask() {
@@ -96,7 +102,8 @@ public class GamePrizeDrawScheduled {
         Pair<Long, Long> pair = CustomizeTimeUtil.getFiveMinuteRange(LocalDateTime.now(), 5);
         long startTime = pair.getLeft();
         long endTime = pair.getRight();
-        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime);
+        CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime,
+                web3Config.isProxy(), web3Config.getHostname(), web3Config.getPort());
         return candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice() ? 1 : 2;
     }
 
