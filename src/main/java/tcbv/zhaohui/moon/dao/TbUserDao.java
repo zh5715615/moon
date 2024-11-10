@@ -40,4 +40,11 @@ public interface TbUserDao {
      * @return 影响行数
      */
     int deleteById(String id);
+
+    /**
+     * 查询指定userId数据
+     * @param userId
+     * @return
+     */
+    TbUser queryById(@Param("userId") String userId);
 }

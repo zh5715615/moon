@@ -70,5 +70,7 @@ public interface TbTxRecordDao {
 
     List<TbTxRecord> isBetOn(@Param("userId") String userId, @Param("turns") Integer turns, @Param("gameType") Integer gameType);
 
-    long betNumber(@Param("gameType") int gameType, @Param("turns") int turns, @Param("betType") Integer betType);
+    double betNumber(@Param("gameType") int gameType, @Param("turns") int turns, @Param("betType") Integer betType);
+
+    List<TbTxRecord> winnerList(@Param("gameType") int gameType, @Param("turns") int turns, @Param("winner") int winner);
 }

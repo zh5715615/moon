@@ -226,8 +226,7 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     }
 
     @Override
-    public Long betNumber(int gameType, int turns, Integer betType) {
-        Long number = tbTxRecordDao.betNumber(gameType, turns, betType);
-        return number == null ? 0 : number;
+    public Double betNumber(int gameType, int turns, Integer betType) {
+        return tbTxRecordDao.betNumber(gameType, turns, betType);
     }
 }

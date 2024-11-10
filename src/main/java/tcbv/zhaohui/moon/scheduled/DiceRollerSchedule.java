@@ -1,32 +1,40 @@
 package tcbv.zhaohui.moon.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
+import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
+import tcbv.zhaohui.moon.entity.TbUser;
+import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class DiceRollerSchedule {
+public class DiceRollerSchedule extends AllocReward {
 
     @Resource
     private TbTxRecordDao txRecordDao;
 
     @Resource
     private TbGameResultDao gameResultDao;
+
+    @Resource
+    private TbUserDao userDao;
+
+    @Autowired
+    private IMoonBaseService moonBaseService;
 
     @Scheduled(cron = "0 0/10 * * * ? ")
     public void startScheduleOn() {
@@ -68,5 +76,7 @@ public class DiceRollerSchedule {
         gameResult.setSingleAndDouble(result);
         gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
         gameResultDao.update(gameResult);
+
+        allocReward(moonBaseService, userDao, txRecordDao, gameTurns, result % 2 + 1);
     }
 }

@@ -10,6 +10,12 @@
         from tb_user
         where address = #{address}
     </select>
+    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbUser">
+        select
+            id,address as userName,create_time as createTime,token
+        from tb_user
+        where id = #{userId}
+    </select>
 
 
     <!--新增数据-->

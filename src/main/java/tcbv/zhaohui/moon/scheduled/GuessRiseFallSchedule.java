@@ -9,7 +9,9 @@ import tcbv.zhaohui.moon.beans.CandleGraphBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
+import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.entity.TbGameResult;
+import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.BnbPriceUtil;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
@@ -20,7 +22,7 @@ import java.util.UUID;
 
 @Component
 @Slf4j
-public class GuessRiseFallSchedule {
+public class GuessRiseFallSchedule extends AllocReward {
 
     @Autowired
     private Web3Config web3Config;
@@ -30,6 +32,12 @@ public class GuessRiseFallSchedule {
 
     @Resource
     private TbGameResultDao gameResultDao;
+
+    @Resource
+    private TbUserDao userDao;
+
+    @Autowired
+    private IMoonBaseService moonBaseService;
 
     @Scheduled(cron = "0 0/5 * * * ? ")
     public void startScheduleOn() {
@@ -43,7 +51,6 @@ public class GuessRiseFallSchedule {
         gameResult.setId(UUID.randomUUID().toString());
         gameResult.setGameType(2);
         gameResult.setTurns(gameTurns);
-        gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
         gameResultDao.insert(gameResult);
     }
 
@@ -71,7 +78,8 @@ public class GuessRiseFallSchedule {
                 }
                 continue;
             }
-            log.info("当前涨跌情况：{}", candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice() ? "涨" : "跌");
+            boolean rise = candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice();
+            log.info("当前涨跌情况：{}", rise ? "涨" : "跌");
 
             Integer gameTurns = gameResultDao.maxTurns(2);
             if (gameTurns == null) {
@@ -81,9 +89,11 @@ public class GuessRiseFallSchedule {
             if (gameResult == null) {
                 return;
             }
-            gameResult.setRaseAndFall(candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice() ? 1 : 2);
+            gameResult.setRaseAndFall(rise ? 1 : 2);
             gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
             gameResultDao.update(gameResult);
+
+            allocReward(moonBaseService, userDao, txRecordDao, gameTurns, rise ? 1 : 2);
             break;
         }
     }

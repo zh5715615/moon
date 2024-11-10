@@ -149,7 +149,7 @@ public class MoonGamesController {
             @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
             @ApiImplicitParam(name="betType", value="投注结果 1单 | 2双", required = true)
     })
-    public Rsp<Long> dicRollerSingleNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
+    public Rsp<Double> dicRollerSingleNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                      @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
         return Rsp.okData(rollDiceGameService.betNumber(1, turns, betType));
     }
@@ -160,7 +160,7 @@ public class MoonGamesController {
             @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
             @ApiImplicitParam(name="betType", value="投注结果 1涨 | 2跌", required = true)
     })
-    public Rsp<Long> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
+    public Rsp<Double> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                     @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
         return Rsp.okData(rollDiceGameService.betNumber(2, turns, betType));
     }

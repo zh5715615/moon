@@ -11,6 +11,9 @@ import tcbv.zhaohui.moon.utils.EthMathUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MoonBaseService extends EthereumService implements IMoonBaseService {
@@ -41,5 +44,11 @@ public class MoonBaseService extends EthereumService implements IMoonBaseService
         String player = tuple6.getValue5();
         String extraData = tuple6.getValue6();
         return new RecordBean(token, amount, fee, redeemAmount, player, extraData);
+    }
+
+    @Override
+    public String allocReward(List<String> userList, List<BigInteger> amountList) throws Exception {
+        byte[] bt = new byte[0];
+        return moonBase.distributeAirdrop2(bt, web3Config.getMoonBaseAddress(), amountList, userList).send().getTransactionHash();
     }
 }

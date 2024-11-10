@@ -80,5 +80,5 @@ public interface RollDiceGameService {
      * @param betType 下注类型
      * @return 统计数量
      */
-    Long betNumber(int gameType, int turns, Integer betType);
+    Double betNumber(int gameType, int turns, Integer betType);
 }

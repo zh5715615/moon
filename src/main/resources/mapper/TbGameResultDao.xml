@@ -45,10 +45,10 @@
             <if test="gameType != null and gameType != ''">
                 game_type = #{gameType},
             </if>
-            <if test="singleAndDouble != null and singleAndDouble != ''">
+            <if test="singleAndDouble != null">
                 single_and_double = #{singleAndDouble},
             </if>
-            <if test="raseAndFall != null and raseAndFall != ''">
+            <if test="raseAndFall != null">
                 rase_and_fall = #{raseAndFall},
             </if>
             <if test="eventId != null and eventId != ''">
@@ -59,6 +59,9 @@
             </if>
             <if test="turns != null and turns != ''">
                 turns = #{turns},
+            </if>
+            <if test="drawnTime != null and drawnTime != ''">
+                drawn_time = #{drawnTime},
             </if>
         </set>
         where id = #{id}
