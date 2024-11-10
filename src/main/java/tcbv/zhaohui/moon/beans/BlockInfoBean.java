@@ -21,7 +21,7 @@ public class BlockInfoBean {
 
     private long txCount; //交易数量
 
-    private String toAddress; //trx接收地址
+    private String toAddress; //接收地址
 
     private double amount; //交易金额
 

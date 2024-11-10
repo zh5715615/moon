@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
@@ -21,6 +22,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * (TbWatchAddress)表控制层
@@ -47,9 +49,9 @@ public class MoonGamesController {
     })
     public Rsp<PlayResidueTimesVO> playResidueTimes(@RequestParam(name = "gameType", required = true) Integer gameType) {
         boolean status;
-        if (gameType == 1) {
+        if (Objects.equals(gameType, MoonConstant.DICE_ROLLER_GAME)) {
             status = TimerMaps.getDicRollerStatus();
-        } else if (gameType == 2) {
+        } else if (gameType.equals(MoonConstant.GUESS_BNB_PRICE_NAME)) {
             status = TimerMaps.getGuessBnbPriceStatus();
         } else {
             return Rsp.error("暂时没有这个游戏类型");

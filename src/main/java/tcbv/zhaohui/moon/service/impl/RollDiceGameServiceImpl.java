@@ -92,10 +92,10 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     @Override
     @Transactional
     public Boolean addGameOrderFor(AddGameOrderForDTO dto) {
-        String userId = dto.getAddress();
+        String userId = dto.getUserId();
         Integer gameType = dto.getGameType();
         Integer dtoTurns = dto.getTurns();
-        Integer paramType = dto.getParamType();
+        Integer paramType = dto.getParamType(); // 投注类型
         //判断是否还能下注
         PlayResidueTimesVO queueAndMemSize = getQueueAndMemSize(gameType);
         Integer newTurns = queueAndMemSize.getTurns();
