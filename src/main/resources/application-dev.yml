@@ -2,7 +2,7 @@ spring:
   application:
     name: moon
   datasource:
-    url: jdbc:mysql://1.13.162.44:18082/moon-zhaohui?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
+    url: jdbc:mysql://1.13.162.44:18082/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
     username: root
     password: Zh5715615~
     driver-class-name: com.mysql.cj.jdbc.Driver
