@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.entity;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -34,5 +35,5 @@ public class TbTxRecord  implements Serializable {
     /** 创建时间 */
     private Date createTime ;
     /** 投注数量 */
-    private String amount ;
+    private BigDecimal amount ;
 }

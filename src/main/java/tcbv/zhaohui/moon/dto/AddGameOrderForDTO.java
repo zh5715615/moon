@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author dawn
@@ -29,8 +30,8 @@ public class AddGameOrderForDTO implements Serializable {
     @NotNull(message = "轮次不能为空")
     private Integer turns;
     @ApiModelProperty("投注数量")
-    @NotBlank(message = "投注数量不能为空")
-    private String amount;
+    @NotNull(message = "投注数量不能为空")
+    private BigDecimal amount;
     @ApiModelProperty("交易Hash")
     private String txHash;
     @ApiModelProperty("事件id")

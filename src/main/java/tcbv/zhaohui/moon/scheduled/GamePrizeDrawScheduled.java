@@ -126,7 +126,7 @@ public class GamePrizeDrawScheduled {
         entities.addAll(victory.stream().map(e -> {
             return TbRewardRecord.builder()
                     .id(UUID.randomUUID().toString()).turns(turns).userId(e.getUserId())
-                    .rewardAmount(new BigDecimal(e.getAmount()).add(new BigDecimal(e.getAmount())))
+                    .rewardAmount(e.getAmount().add(e.getAmount()))
                     .gameType(gameType.toString()).createTime(drawnTime)
                     //.txHash()
                     .build();
@@ -134,7 +134,7 @@ public class GamePrizeDrawScheduled {
         entities.addAll(defeated.stream().map(e -> {
             return TbRewardRecord.builder()
                     .id(UUID.randomUUID().toString()).turns(turns).userId(e.getUserId())
-                    .rewardAmount(new BigDecimal(e.getAmount()).negate())
+                    .rewardAmount(e.getAmount().negate())
                     .gameType(gameType.toString()).createTime(drawnTime)
                     .txHash("1")
                     .build();
