@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
@@ -14,19 +15,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class AllocReward {
+public abstract class AllocReward {
+    protected abstract Integer getGameType();
+
     protected void allocReward(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao, int turns, int winner) {
-        int loser = 1;
-        if (winner == 1) {
-            loser = 2;
-        } else if (winner == 2) {
-            loser = 1;
+        int loser;
+        if (getGameType().equals(MoonConstant.DICE_ROLLER_GAME)) {
+            if (winner == MoonConstant.DICE_ROLLER_SINGLE) {
+                loser = MoonConstant.DICE_ROLLER_DOUBLE;
+            } else if (winner == MoonConstant.DICE_ROLLER_DOUBLE) {
+                loser = MoonConstant.DICE_ROLLER_SINGLE;
+            } else {
+                log.error("开奖异常，没有胜方败方");
+                return;
+            }
+        } else if (getGameType().equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
+            if (winner == MoonConstant.GUESS_BNB_RISE) {
+                loser = MoonConstant.GUESS_BNB_FALL;
+            } else if (winner == MoonConstant.GUESS_BNB_FALL) {
+                loser = MoonConstant.GUESS_BNB_RISE;
+            } else {
+                log.error("开奖异常，没有胜方败方");
+                return;
+            }
         } else {
-            log.error("开奖异常，没有胜方败方");
+            log.error("游戏类型错误");
             return;
         }
-        double loserAmount = txRecordDao.betNumber(1, turns, loser);
-        List<TbTxRecord> list = txRecordDao.winnerList(1, turns, winner);
+
+        double loserAmount = txRecordDao.betNumber(getGameType(), turns, loser);
+        List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
         if (CollectionUtils.isEmpty(list)) {
             return;
         }

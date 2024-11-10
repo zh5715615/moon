@@ -2,18 +2,16 @@ package tcbv.zhaohui.moon.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
-import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
@@ -23,10 +21,7 @@ import tcbv.zhaohui.moon.vo.UserRewardListVO;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -54,35 +49,19 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         if (gameType == null) {
             throw new RuntimeException("游戏类型为空");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime gameOneTime = TimerMaps.getRemainingTime(TimerMaps.GAMEONE);
-        LocalDateTime gameTwoTime = TimerMaps.getRemainingTime(TimerMaps.GAMETWO);
-        if (gameOneTime == null || gameTwoTime == null) {
-            throw new RuntimeException("定时任务查询失败");
-        }
-        // 计算两个时间之间的间隔
-        Duration oneTime = Duration.between(gameOneTime, now);
-        Duration twoTime = Duration.between(gameTwoTime, now);
-        // 获取间隔的绝对值，以秒为单位
-        long oneTimes = Math.abs(oneTime.getSeconds());
-        long twoTimes = Math.abs(twoTime.getSeconds());
-        //根据类型查询最新的轮次
-        Integer gameTypeNumber = tbGameResultDao.findGameTypeNumber(gameType);
-        if (gameTypeNumber == null) {
-            gameTypeNumber = 0;
-        }
-        PlayResidueTimesVO result = new PlayResidueTimesVO();
-        result.setGameType(gameType);
-        result.setTurns(gameTypeNumber + 1);
-        if (gameType == 1) {
-            result.setIsOk(oneTimes - 60 > 0 ? true : false);
-        } else if (gameType == 2) {
-            result.setIsOk(twoTimes - 60 > 0 ? true : false);
+        boolean status;
+        if (Objects.equals(gameType, MoonConstant.DICE_ROLLER_GAME)) {
+            status = TimerMaps.getDicRollerStatus();
+        } else if (gameType.equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
+            status = TimerMaps.getGuessBnbPriceStatus();
         } else {
-            throw new RuntimeException("游戏类型失败");
+            throw new RuntimeException("暂时没有这个游戏类型");
         }
-        return result;
+        PlayResidueTimesVO playResidueTimesVO = new PlayResidueTimesVO();
+        playResidueTimesVO.setGameType(gameType);
+        playResidueTimesVO.setTurns(tbGameResultDao.maxTurns(gameType));
+        playResidueTimesVO.setIsOk(status);
+        return playResidueTimesVO;
     }
 
     /**
@@ -96,33 +75,46 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         Integer gameType = dto.getGameType();
         Integer dtoTurns = dto.getTurns();
         Integer paramType = dto.getParamType(); // 投注类型
+
         //判断是否还能下注
         PlayResidueTimesVO queueAndMemSize = getQueueAndMemSize(gameType);
         Integer newTurns = queueAndMemSize.getTurns();
         if (!Objects.equals(dtoTurns, newTurns)) {
-            log.error("当前轮次" + newTurns + "下注轮次" + dtoTurns);
+            log.error("当前轮次" + newTurns + ", 下注轮次" + dtoTurns);
             throw new RuntimeException("下注轮次和当前最新轮次不匹配");
         }
         Boolean isOk = queueAndMemSize.getIsOk();
         if (!isOk) {
             throw new RuntimeException("开奖时间，禁止下注");
         }
+
         //查询是否已经下注了
-        TbTxRecord tbTxRecord = tbTxRecordDao.queryByIdAndGameInfo(userId, gameType);
+        TbTxRecord tbTxRecord = tbTxRecordDao.queryByIdAndGameInfo(userId, gameType, dtoTurns);
         if (tbTxRecord != null) {
             throw new RuntimeException("已下注，请勿重复下注");
         }
+
         //todo判断余额是否充足
+        TbTxRecord.TbTxRecordBuilder build = TbTxRecord.builder()
+                .id(UUID.randomUUID().toString())
+                .userId(userId)
+                .gameType(gameType);
+        if (paramType.equals(MoonConstant.DICE_ROLLER_GAME)) {
+            build.singleAndDouble(paramType);
+        } else if (paramType.equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
+            build.raseAndFall(paramType);
+        }
 
-        TbTxRecord param = TbTxRecord.builder()
-                .id(UUID.randomUUID().toString()).userId(userId).gameType(gameType)
-                .singleAndDouble(paramType).raseAndFall(paramType)
-                .eventId(dto.getTxHash()).eventResult(paramType.toString())
-                //.txHash()
-                .turns(dtoTurns).amount(dto.getAmount())
-                .build();
-        tbTxRecordDao.insert(param);
-
+        if (dto.getEventId() != null) {
+            build.eventId(dto.getTxHash())
+                 .eventResult(paramType.toString());
+        }
+        TbTxRecord txRecord = build.txHash(dto.getTxHash())
+             .turns(dtoTurns)
+             .createTime(new Date())
+             .amount(dto.getAmount())
+             .build();
+        tbTxRecordDao.insert(txRecord);
         return true;
     }
 
@@ -166,16 +158,16 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
 
         if (byUserDraw != null && byUserDraw.size() > 0) {
             for (UserRewardListVO userRewardListVO : byUserDraw) {
-                if (dto.getGameType() == 1) {
+                if (Objects.equals(dto.getGameType(), MoonConstant.DICE_ROLLER_GAME)) {
                     userRewardListVO.setResult(userRewardListVO.getSingleAndDoubleB());
-                    if (userRewardListVO.getSingleAndDoubleC() == userRewardListVO.getSingleAndDoubleB()) {
+                    if (Objects.equals(userRewardListVO.getSingleAndDoubleC(), userRewardListVO.getSingleAndDoubleB())) {
                         userRewardListVO.setIsWinning(true);
                     } else {
                         userRewardListVO.setIsWinning(false);
                     }
-                } else if (dto.getGameType() == 2) {
+                } else if (Objects.equals(dto.getGameType(), MoonConstant.GUESS_BNB_PRICE_GAME)) {
                     userRewardListVO.setResult(userRewardListVO.getRaseAndFallB());
-                    if (userRewardListVO.getRaseAndFallC() == userRewardListVO.getRaseAndFallB()) {
+                    if (Objects.equals(userRewardListVO.getRaseAndFallC(), userRewardListVO.getRaseAndFallB())) {
                         userRewardListVO.setIsWinning(true);
                     } else {
                         userRewardListVO.setIsWinning(false);

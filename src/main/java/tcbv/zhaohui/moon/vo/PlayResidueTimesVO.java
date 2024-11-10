@@ -2,7 +2,6 @@ package tcbv.zhaohui.moon.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import tcbv.zhaohui.moon.enums.GameType;
 
 import java.io.Serializable;
 

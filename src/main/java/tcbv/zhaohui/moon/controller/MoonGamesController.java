@@ -10,7 +10,6 @@ import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
-import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.service.impl.MoonBaseService;
 import tcbv.zhaohui.moon.utils.Rsp;
@@ -22,7 +21,6 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 /**
  * (TbWatchAddress)表控制层
@@ -48,20 +46,7 @@ public class MoonGamesController {
             @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
     })
     public Rsp<PlayResidueTimesVO> playResidueTimes(@RequestParam(name = "gameType", required = true) Integer gameType) {
-        boolean status;
-        if (Objects.equals(gameType, MoonConstant.DICE_ROLLER_GAME)) {
-            status = TimerMaps.getDicRollerStatus();
-        } else if (gameType.equals(MoonConstant.GUESS_BNB_PRICE_NAME)) {
-            status = TimerMaps.getGuessBnbPriceStatus();
-        } else {
-            return Rsp.error("暂时没有这个游戏类型");
-        }
-        PlayResidueTimesVO playResidueTimesVO = new PlayResidueTimesVO();
-        playResidueTimesVO.setGameType(gameType);
-        playResidueTimesVO.setTurns(gameResultDao.maxTurns(gameType));
-        playResidueTimesVO.setIsOk(status);
-
-        return Rsp.okData(playResidueTimesVO);
+        return Rsp.okData(rollDiceGameService.getQueueAndMemSize(gameType));
     }
 
     @PostMapping("/addGameOrderFor")
@@ -153,7 +138,7 @@ public class MoonGamesController {
     })
     public Rsp<Double> dicRollerSingleNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                      @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
-        return Rsp.okData(rollDiceGameService.betNumber(1, turns, betType));
+        return Rsp.okData(rollDiceGameService.betNumber(MoonConstant.DICE_ROLLER_GAME, turns, betType));
     }
 
     @GetMapping("/guessBnbBetNumber")
@@ -164,6 +149,14 @@ public class MoonGamesController {
     })
     public Rsp<Double> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
                                     @RequestParam("betType") @NotNull(message = "下注类型不能为空") Integer betType) {
-        return Rsp.okData(rollDiceGameService.betNumber(2, turns, betType));
+        return Rsp.okData(rollDiceGameService.betNumber(MoonConstant.GUESS_BNB_PRICE_GAME, turns, betType));
+    }
+
+    @GetMapping("/diceRollerPoints")
+    @ApiOperation(value = "获取摇骰子点数")
+    public Rsp<Integer> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns) {
+        TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(turns, MoonConstant.DICE_ROLLER_GAME);
+        int points = gameResult.getSingleAndDouble();
+        return Rsp.okData(points);
     }
 }

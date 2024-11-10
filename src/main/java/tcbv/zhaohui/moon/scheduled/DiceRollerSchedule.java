@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dao.TbUserDao;
@@ -38,7 +39,7 @@ public class DiceRollerSchedule extends AllocReward {
 
     @Scheduled(cron = "0 0/10 * * * ? ")
     public void startScheduleOn() {
-        Integer gameTurns = gameResultDao.maxTurns(1);
+        Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             gameTurns = 0;
         }
@@ -46,7 +47,7 @@ public class DiceRollerSchedule extends AllocReward {
         log.info("第{}轮摇骰子投注时间，可以下注.", gameTurns);
         TbGameResult gameResult = new TbGameResult();
         gameResult.setId(UUID.randomUUID().toString());
-        gameResult.setGameType(1);
+        gameResult.setGameType(getGameType());
         gameResult.setTurns(gameTurns);
         gameResultDao.insert(gameResult);
     }
@@ -54,15 +55,15 @@ public class DiceRollerSchedule extends AllocReward {
     @Scheduled(cron = "0 9/10 * * * ? ")
     public void startScheduleOff() {
         log.info("摇骰子开奖时间，不能下注.");
-        Integer gameTurns = gameResultDao.maxTurns(1);
+        Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             return;
         }
-        TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(gameTurns, 1);
+        TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(gameTurns, getGameType());
         if (gameResult == null) {
             return;
         }
-        List<TbTxRecord> txRecordList = txRecordDao.findTurnsGameInfo(gameTurns,1);
+        List<TbTxRecord> txRecordList = txRecordDao.findTurnsGameInfo(gameTurns,getGameType());
         List<String> txHashList = txRecordList.stream().map(TbTxRecord::getTxHash).collect(Collectors.toList());
         int result = 0;
         if (!CollectionUtils.isEmpty(txHashList)) {
@@ -78,5 +79,10 @@ public class DiceRollerSchedule extends AllocReward {
         gameResultDao.update(gameResult);
 
         allocReward(moonBaseService, userDao, txRecordDao, gameTurns, result % 2 + 1);
+    }
+
+    @Override
+    protected Integer getGameType() {
+        return MoonConstant.DICE_ROLLER_GAME;
     }
 }

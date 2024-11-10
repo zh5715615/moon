@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="tcbv.zhaohui.moon.dao.TbTxRecordDao">
+
+    <resultMap type="tcbv.zhaohui.moon.entity.TbTxRecord" id="TbTxRecordMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+        <result property="gameType" column="game_type" jdbcType="INTEGER"/>
+        <result property="singleAndDouble" column="single_and_double" jdbcType="INTEGER"/>
+        <result property="raseAndFall" column="rase_and_fall" jdbcType="INTEGER"/>
+        <result property="eventId" column="event_id" jdbcType="VARCHAR"/>
+        <result property="eventResult" column="event_result" jdbcType="VARCHAR"/>
+        <result property="txHash" column="tx_hash" jdbcType="VARCHAR"/>
+        <result property="turns" column="turns" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="amount" column="amount" jdbcType="NUMERIC"/>
+    </resultMap>
+
     <sql id="SQL_PARAM">
         id,
                user_id           as userId,
@@ -15,13 +30,13 @@
                amount
     </sql>
     <!-- 通过ID查询单条数据 -->
-    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="queryById" resultMap="TbTxRecordMap">
         select
         <include refid="SQL_PARAM"/>
         from tb_tx_record
         where id = #{id}
     </select>
-    <select id="findByUserDraw" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="findByUserDraw" resultMap="TbTxRecordMap">
         select
         <include refid="SQL_PARAM"/>
         from tb_tx_record
@@ -30,7 +45,7 @@
     <select id="queryByIdAndGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
-        where user_id = #{userId} and game_type=#{gameType}
+        where user_id = #{userId} and game_type = #{gameType} and turns = #{turns}
     </select>
     <select id="findTurnsGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
         select <include refid="SQL_PARAM"/>
@@ -39,7 +54,7 @@
           and game_type = #{gameType}
     </select>
 
-    <select id="isBetOn" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="isBetOn" resultMap="TbTxRecordMap">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where turns = #{turns}
@@ -59,7 +74,7 @@
             and rase_and_fall = #{betType}
         </if>
     </select>
-    <select id="winnerList" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="winnerList" resultMap="TbTxRecordMap">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where turns = #{turns}

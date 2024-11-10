@@ -15,7 +15,7 @@ public interface TbUserDao {
     /**
      * 通过ID查询单条数据
      *
-     * @param id 主键
+     * @param address 合约地址
      * @return 实例对象
      */
     TbUser queryByAddress(@Param("address") String address);

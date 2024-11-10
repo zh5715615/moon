@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.beans.CandleGraphBean;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
@@ -14,7 +15,6 @@ import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.BnbPriceUtil;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
-import tcbv.zhaohui.moon.utils.GsonUtil;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -41,7 +41,7 @@ public class GuessRiseFallSchedule extends AllocReward {
 
     @Scheduled(cron = "0 0/5 * * * ? ")
     public void startScheduleOn() {
-        Integer gameTurns = gameResultDao.maxTurns(2);
+        Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             gameTurns = 0;
         }
@@ -49,7 +49,7 @@ public class GuessRiseFallSchedule extends AllocReward {
         log.info("第{}轮猜BNB涨跌投注时间，可以下注.", gameTurns);
         TbGameResult gameResult = new TbGameResult();
         gameResult.setId(UUID.randomUUID().toString());
-        gameResult.setGameType(2);
+        gameResult.setGameType(getGameType());
         gameResult.setTurns(gameTurns);
         gameResultDao.insert(gameResult);
     }
@@ -81,20 +81,25 @@ public class GuessRiseFallSchedule extends AllocReward {
             boolean rise = candleGraphBean.getClosePrice() > candleGraphBean.getOpenPrice();
             log.info("当前涨跌情况：{}", rise ? "涨" : "跌");
 
-            Integer gameTurns = gameResultDao.maxTurns(2);
+            Integer gameTurns = gameResultDao.maxTurns(getGameType());
             if (gameTurns == null) {
                 return;
             }
-            TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(gameTurns, 2);
+            TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(gameTurns, getGameType());
             if (gameResult == null) {
                 return;
             }
-            gameResult.setRaseAndFall(rise ? 1 : 2);
+            gameResult.setRaseAndFall(rise ? MoonConstant.GUESS_BNB_RISE : MoonConstant.GUESS_BNB_FALL);
             gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
             gameResultDao.update(gameResult);
 
-            allocReward(moonBaseService, userDao, txRecordDao, gameTurns, rise ? 1 : 2);
+            allocReward(moonBaseService, userDao, txRecordDao, gameTurns, rise ? MoonConstant.GUESS_BNB_RISE : MoonConstant.GUESS_BNB_FALL);
             break;
         }
+    }
+
+    @Override
+    protected Integer getGameType() {
+        return MoonConstant.GUESS_BNB_PRICE_GAME;
     }
 }

@@ -2,9 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="tcbv.zhaohui.moon.dao.TbGameResultDao">
 
-
+    <resultMap type="tcbv.zhaohui.moon.entity.TbGameResult" id="TbGameResultMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="gameType" column="game_type" jdbcType="INTEGER"/>
+        <result property="singleAndDouble" column="single_and_double" jdbcType="INTEGER"/>
+        <result property="raseAndFall" column="rase_and_fall" jdbcType="INTEGER"/>
+        <result property="eventId" column="event_id" jdbcType="VARCHAR"/>
+        <result property="eventResult" column="event_result" jdbcType="VARCHAR"/>
+        <result property="turns" column="turns" jdbcType="INTEGER"/>
+        <result property="drawnTime" column="drawn_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
     <!-- 通过ID查询单条数据 -->
-    <select id="queryByGameTypeNow" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+    <select id="queryByGameTypeNow" resultMap="TbGameResultMap">
         select
             id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result
@@ -22,7 +32,7 @@
         from tb_game_result
         where game_type = #{gameType} and turns=#{turns}
     </select>
-    <select id="findGameTypeAndTurnsInfo"  resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+    <select id="findGameTypeAndTurnsInfo"  resultMap="TbGameResultMap">
         select
             id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result
@@ -72,7 +82,7 @@
         delete from tb_game_result where id = #{id}
     </delete>
 
-    <select id="findDrawnTimeInfo" resultType="tcbv.zhaohui.moon.entity.TbGameResult">
+    <select id="findDrawnTimeInfo" resultMap="TbGameResultMap">
         select
             id,game_type,single_and_double,rase_and_fall,event_id,event_result,turns,DRAWN_TIME
         from tb_game_result

@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="tcbv.zhaohui.moon.dao.TbUserDao">
 
+    <resultMap type="tcbv.zhaohui.moon.entity.TbUser" id="TbUserMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="token" column="token" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
 
     <!-- 通过ID查询单条数据 -->
     <select id="queryByAddress" resultType="tcbv.zhaohui.moon.entity.TbUser">

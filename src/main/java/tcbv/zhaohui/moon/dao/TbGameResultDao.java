@@ -37,7 +37,7 @@ public interface TbGameResultDao {
      *
      * @return 实例对象
      */
-    TbGameResult findGameTypeAndTurnsInfo(@Param("turns") Integer turns,@Param("gameType") Integer gameType);
+    TbGameResult findGameTypeAndTurnsInfo(@Param("turns") Integer turns, @Param("gameType") Integer gameType);
     /**
      * 新增数据
      *
