@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.dao;
 
+import org.apache.ibatis.annotations.Mapper;
 import tcbv.zhaohui.moon.entity.TbEventOption;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import java.util.List;
  * @author makejava
  * @since 2024-11-11 16:34:01
  */
+@Mapper
 public interface TbEventOptionDao {
 
     /**
