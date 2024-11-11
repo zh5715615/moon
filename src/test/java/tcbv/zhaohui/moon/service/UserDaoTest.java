@@ -49,8 +49,8 @@ public class UserDaoTest {
 
     @Test
     public void test1() {
-        int winner = 1;
-        int turns = 499;
+        int winner = 2;
+        int turns = 496;
         int loser;
         if (getGameType().equals(MoonConstant.DICE_ROLLER_GAME)) {
             if (winner == MoonConstant.DICE_ROLLER_SINGLE) {

@@ -156,7 +156,7 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         Page<Object> objects = PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         List<UserRewardListVO> byUserDraw = tbRewardRecordDao.findByUserDraw(dto.getUserId(), dto.getGameType());
 
-        if (byUserDraw != null && byUserDraw.size() > 0) {
+        if (byUserDraw != null && !byUserDraw.isEmpty()) {
             for (UserRewardListVO userRewardListVO : byUserDraw) {
                 if (Objects.equals(dto.getGameType(), MoonConstant.DICE_ROLLER_GAME)) {
                     userRewardListVO.setResult(userRewardListVO.getSingleAndDoubleB());
