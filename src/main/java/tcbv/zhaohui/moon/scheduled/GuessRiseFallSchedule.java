@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-//@Component
+@Component
 @Slf4j
 public class GuessRiseFallSchedule extends AllocReward {
 
