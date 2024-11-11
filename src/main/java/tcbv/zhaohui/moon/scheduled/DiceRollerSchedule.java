@@ -22,7 +22,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@Component
+@Component
 @Slf4j
 public class DiceRollerSchedule extends AllocReward {
 
