@@ -54,18 +54,21 @@ public abstract class AllocReward {
         List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
         if (CollectionUtils.isEmpty(list)) {
             List<TbTxRecord> loserList = txRecordDao.loserList(getGameType(), turns, loser);
-            List<TbRewardRecord> loserRecordList = new ArrayList<>();
-            for (TbTxRecord txRecord : loserList) {
-                TbRewardRecord loserRecord = new TbRewardRecord();
-                loserRecord.setId(UUID.randomUUID().toString());
-                loserRecord.setTurns(txRecord.getTurns());
-                loserRecord.setUserId(txRecord.getUserId());
-                loserRecord.setRewardAmount(BigDecimal.ZERO);
-                loserRecord.setGameType(txRecord.getGameType() + "");
-                loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
-                loserRecordList.add(loserRecord);
+            log.info("loserList is {}", GsonUtil.toJson(loserList));
+            if (!CollectionUtils.isEmpty(loserList)) {
+                List<TbRewardRecord> loserRecordList = new ArrayList<>();
+                for (TbTxRecord txRecord : loserList) {
+                    TbRewardRecord loserRecord = new TbRewardRecord();
+                    loserRecord.setId(UUID.randomUUID().toString());
+                    loserRecord.setTurns(txRecord.getTurns());
+                    loserRecord.setUserId(txRecord.getUserId());
+                    loserRecord.setRewardAmount(BigDecimal.ZERO);
+                    loserRecord.setGameType(txRecord.getGameType() + "");
+                    loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+                    loserRecordList.add(loserRecord);
+                }
+                rewardRecordDao.insertBatch(loserRecordList);
             }
-            rewardRecordDao.insertBatch(loserRecordList);
             return;
         }
 
