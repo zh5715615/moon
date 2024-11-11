@@ -65,6 +65,7 @@ public abstract class AllocReward {
             log.info("loserAmount is {}, rate is {}", loserAmount, rate);
             BigDecimal reward = BigDecimal.valueOf(loserAmount * rate);
             log.info("reward is {}", reward.doubleValue());
+            log.info("tbTxRecord is {}", GsonUtil.toJson(tbTxRecord));
             TbUser user = userDao.queryById(tbTxRecord.getUserId());
             log.info("user is {}", user == null ? null : GsonUtil.toJson(user));
             rewardAmountList.add(reward.toBigInteger());
