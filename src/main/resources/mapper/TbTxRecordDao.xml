@@ -70,7 +70,7 @@
         where turns = #{turns}
             and game_type = #{gameType}
             <if test="gameType != null and gameType == 1">
-                and (single_and_double &lt;&gt; 0 and ((single_and_double % 2) + 1) = #{winner})
+                and (single_and_double &lt;&gt; 0 and (2 - (single_and_double % 2)) = #{winner})
             </if>
             <if test="gameType != null and gameType == 2">
                 and rase_and_fall = #{winner}

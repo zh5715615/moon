@@ -48,7 +48,7 @@ public class MoonBaseService extends EthereumService implements IMoonBaseService
 
     @Override
     public String allocReward(List<String> userList, List<BigInteger> amountList) throws Exception {
-        byte[] bt = new byte[0];
+        byte[] bt = new byte[32];
         return moonBase.distributeAirdrop2(bt, web3Config.getMoonBaseAddress(), amountList, userList).send().getTransactionHash();
     }
 }

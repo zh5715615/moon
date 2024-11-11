@@ -1,11 +1,13 @@
 package tcbv.zhaohui.moon.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.config.MoonConstant;
+import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
@@ -43,6 +45,18 @@ public class UserDaoTest {
     @Resource
     private TbGameResultDao gameResultDao;
 
+    @Autowired
+    private IEthereumService ethereumService;
+
+    @Autowired
+    private Web3Config web3Config;
+
+    @BeforeEach
+    public void before() {
+        ethereumService.init();
+        moonBaseService.init(web3Config.getMoonBaseAddress());
+    }
+
     @Test
     public void testQueryById() {
         TbUser user = userDao.queryById("016587eb-727b-4533-af8f-cc9950e2e9ad");
@@ -79,8 +93,8 @@ public class UserDaoTest {
         }
 
         double loserAmount = txRecordDao.betNumber(getGameType(), turns, loser);
-//        double winnerAmount = txRecordDao.betNumber(getGameType(), turns, winner);
-//        double poolTotalAmount = loserAmount + winnerAmount;
+        double winnerAmount = txRecordDao.betNumber(getGameType(), turns, winner);
+        double poolTotalAmount = loserAmount + winnerAmount;
         List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
         log.info("list is {}", GsonUtil.toJson(list));
         if (CollectionUtils.isEmpty(list)) {
@@ -104,6 +118,7 @@ public class UserDaoTest {
         }
 
         List<BigInteger> rewardAmountList = new ArrayList<>();
+        List<BigInteger> totalAmountList = new ArrayList<>();
         List<String> userAddressList = new ArrayList<>();
         BigDecimal totalAmount = list.stream().map(TbTxRecord::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         List<TbRewardRecord> rewardRecordList = new ArrayList<>();
@@ -111,11 +126,13 @@ public class UserDaoTest {
             double rate = tbTxRecord.getAmount().doubleValue() / totalAmount.doubleValue();
             log.info("loserAmount is {}, rate is {}", loserAmount, rate);
             BigDecimal reward = BigDecimal.valueOf(loserAmount * rate);
+            BigDecimal totalReward = BigDecimal.valueOf(poolTotalAmount * rate);
             log.info("reward is {}", reward.doubleValue());
             log.info("tbTxRecord is {}", GsonUtil.toJson(tbTxRecord));
             TbUser user = userDao.queryById(tbTxRecord.getUserId());
             log.info("user is {}", user == null ? null : GsonUtil.toJson(user));
             rewardAmountList.add(reward.toBigInteger());
+            totalAmountList.add(totalReward.toBigInteger().multiply(BigInteger.TEN.pow(6)));
             userAddressList.add(user.getAddress());
 
             TbRewardRecord rewardRecord = new TbRewardRecord();
@@ -128,7 +145,7 @@ public class UserDaoTest {
             rewardRecordList.add(rewardRecord);
         }
         try {
-            String txHash = moonBaseService.allocReward(userAddressList, rewardAmountList);
+            String txHash = moonBaseService.allocReward(userAddressList, totalAmountList);
             log.info("中奖发放奖励hash值为{}", txHash);
             for (TbRewardRecord rewardRecord : rewardRecordList) {
                 rewardRecord.setTxHash(txHash);
