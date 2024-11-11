@@ -90,7 +90,7 @@ web3:
     limit: "3000000"
   contract:
     moon-base:
-      address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
+      address: "0x6D8731A214704F2839e00c7FB9801772be674A4a"
     usdt-like-interface:
       address: "0x55d398326f99059ff775485246999027b3197955"
 

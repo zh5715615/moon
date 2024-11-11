@@ -9,6 +9,7 @@ import tcbv.zhaohui.moon.beans.CandleGraphBean;
 import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
+import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.entity.TbGameResult;
@@ -29,6 +30,9 @@ public class GuessRiseFallSchedule extends AllocReward {
 
     @Resource
     private TbTxRecordDao txRecordDao;
+
+    @Resource
+    private TbRewardRecordDao rewardRecordDao;
 
     @Resource
     private TbGameResultDao gameResultDao;
@@ -95,7 +99,7 @@ public class GuessRiseFallSchedule extends AllocReward {
             gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
             gameResultDao.update(gameResult);
 
-            allocReward(moonBaseService, userDao, txRecordDao, gameTurns, rise ? MoonConstant.GUESS_BNB_RISE : MoonConstant.GUESS_BNB_FALL);
+            allocReward(moonBaseService, userDao, txRecordDao, rewardRecordDao, gameTurns, rise ? MoonConstant.GUESS_BNB_RISE : MoonConstant.GUESS_BNB_FALL);
             break;
         }
     }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
+import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.entity.TbGameResult;
@@ -30,6 +31,9 @@ public class DiceRollerSchedule extends AllocReward {
 
     @Resource
     private TbGameResultDao gameResultDao;
+
+    @Resource
+    private TbRewardRecordDao rewardRecordDao;
 
     @Resource
     private TbUserDao userDao;
@@ -80,7 +84,7 @@ public class DiceRollerSchedule extends AllocReward {
         gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
         gameResultDao.update(gameResult);
 
-        allocReward(moonBaseService, userDao, txRecordDao, gameTurns, result % 2 + 1);
+        allocReward(moonBaseService, userDao, txRecordDao, rewardRecordDao, gameTurns, result % 2 + 1);
     }
 
     @Override
