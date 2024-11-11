@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -27,10 +28,12 @@ public class AddEventDTO implements Serializable {
 
     @ApiModelProperty(value = "投注开始时间")
     @NotNull(message = "投注开始时间不能为空")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date betTime;
 
     @ApiModelProperty(value = "开奖时间")
     @NotNull(message = "开奖时间不能为空")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date resultTime;
 
     @ApiModelProperty(value = "事件选项")

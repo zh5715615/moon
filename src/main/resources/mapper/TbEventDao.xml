@@ -28,32 +28,32 @@ id, name, content, option_id, create_time, update_time, bet_time, result_time, s
 id, name, content, option_id, create_time, update_time, bet_time, result_time, status
         from tb_event
         <where>
-            <if test="id != null">
-                and id = #{id}
+            <if test="entity.id != null">
+                and id = #{entity.id}
             </if>
-            <if test="name != null and name != ''">
-                and name = #{name}
+            <if test="entity.name != null and entity.name != ''">
+                and name = #{entity.name}
             </if>
-            <if test="content != null and content != ''">
-                and content = #{content}
+            <if test="entity.content != null and entity.content != ''">
+                and content = #{entity.content}
             </if>
-            <if test="optionId != null and optionId != ''">
-                and option_id = #{optionId}
+            <if test="entity.optionId != null and entity.optionId != ''">
+                and option_id = #{entity.optionId}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
+            <if test="entity.createTime != null">
+                and create_time = #{entity.createTime}
             </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
+            <if test="entity.updateTime != null">
+                and update_time = #{entity.updateTime}
             </if>
-            <if test="betTime != null">
-                and bet_time = #{betTime}
+            <if test="entity.betTime != null">
+                and bet_time = #{entity.betTime}
             </if>
-            <if test="resultTime != null">
-                and result_time = #{resultTime}
+            <if test="entity.resultTime != null">
+                and result_time = #{entity.resultTime}
             </if>
-            <if test="status != null">
-                and status = #{status}
+            <if test="entity.status != null">
+                and status = #{entity.status}
             </if>
         </where>
         limit #{pageable.offset}, #{pageable.pageSize}
@@ -96,26 +96,26 @@ id, name, content, option_id, create_time, update_time, bet_time, result_time, s
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
-        values (#{name}#{content}#{optionId}#{createTime}#{updateTime}#{betTime}#{resultTime}#{status})
+        insert into tb_event(id, name, content, option_id, create_time, update_time, bet_time, result_time)
+        values (#{id},#{name},#{content},#{optionId},#{createTime},#{updateTime},#{betTime},#{resultTime})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
+        insert into tb_event(name, content, option_id, create_time, update_time, bet_time, result_time)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.name}#{entity.content}#{entity.optionId}#{entity.createTime}#{entity.updateTime}#{entity.betTime}#{entity.resultTime}#{entity.status})
+        (#{entity.name},#{entity.content},#{entity.optionId},#{entity.createTime},#{entity.updateTime},#{entity.betTime},#{entity.resultTime})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
+        insert into tb_event(name, content, option_id, create_time, update_time, bet_time, result_time)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.name}#{entity.content}#{entity.optionId}#{entity.createTime}#{entity.updateTime}#{entity.betTime}#{entity.resultTime}#{entity.status})
+            (#{entity.name},#{entity.content},#{entity.optionId},#{entity.createTime},#{entity.updateTime},#{entity.betTime},#{entity.resultTime})
         </foreach>
         on duplicate key update
-name = values(name)content = values(content)option_id = values(option_id)create_time = values(create_time)update_time = values(update_time)bet_time = values(bet_time)result_time = values(result_time)status = values(status)
+name = values(name),content = values(content),option_id = values(option_id),create_time = values(create_time),update_time = values(update_time),bet_time = values(bet_time),result_time = values(result_time)
     </insert>
 
     <!--通过主键修改数据-->

@@ -30,7 +30,7 @@ public interface TbEventDao {
      * @param pageable         分页对象
      * @return 对象列表
      */
-    List<TbEvent> queryAllByLimit(TbEvent tbEvent, @Param("pageable") Pageable pageable);
+    List<TbEvent> queryAllByLimit(@Param("entity") TbEvent tbEvent, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数

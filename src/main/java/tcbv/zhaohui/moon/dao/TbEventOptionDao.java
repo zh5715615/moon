@@ -81,5 +81,6 @@ public interface TbEventOptionDao {
      */
     int deleteById(String id);
 
+    List<TbEventOption> queryByEventId(String eventId);
 }
 

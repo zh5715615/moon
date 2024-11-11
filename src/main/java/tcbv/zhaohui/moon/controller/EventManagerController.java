@@ -13,6 +13,7 @@ import tcbv.zhaohui.moon.entity.TbEvent;
 import tcbv.zhaohui.moon.entity.TbEventOption;
 import tcbv.zhaohui.moon.service.IEventManagerService;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.EventVo;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 
 import javax.validation.Valid;
@@ -72,5 +73,16 @@ public class EventManagerController {
         vo.setPageSize(page.getSize());
         vo.setList(page.getContent());
         return Rsp.okData(vo);
+    }
+
+    @GetMapping("/detail/{id}")
+    @ApiOperation(value = "事件详情")
+    public Rsp<EventVo> detail(@PathVariable("id") String id) {
+        TbEvent event = eventManagerService.queryById(id);
+        List<TbEventOption> eventOptionList = eventManagerService.queryOptionById(id);
+        EventVo eventVo = new EventVo();
+        BeanUtils.copyProperties(event, eventVo);
+        eventVo.setEventOptionList(eventOptionList);
+        return Rsp.okData(eventVo);
     }
 }

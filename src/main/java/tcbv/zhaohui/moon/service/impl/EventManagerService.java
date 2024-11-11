@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcbv.zhaohui.moon.dao.TbEventDao;
@@ -50,6 +51,18 @@ public class EventManagerService implements IEventManagerService {
     @Override
     public Page<TbEvent> queryByPage(TbEvent tbEvent, PageRequest pageRequest) {
         long total = this.eventDao.count(tbEvent);
-        return new PageImpl<>(this.eventDao.queryAllByLimit(tbEvent, pageRequest), pageRequest, total);
+        int offset = pageRequest.getPageNumber() == 1 ? 0 : (pageRequest.getPageNumber() - 1) * pageRequest.getPageSize();
+        Pageable pageable = PageRequest.of(offset, pageRequest.getPageSize());
+        return new PageImpl<>(this.eventDao.queryAllByLimit(tbEvent, pageable), pageRequest, total);
+    }
+
+    @Override
+    public TbEvent queryById(String id) {
+        return eventDao.queryById(id);
+    }
+
+    @Override
+    public List<TbEventOption> queryOptionById(String eventId) {
+        return eventOptionDao.queryByEventId(eventId);
     }
 }

@@ -22,4 +22,8 @@ public interface IEventManagerService {
      * @return 查询结果
      */
     Page<TbEvent> queryByPage(TbEvent tbEvent, PageRequest pageRequest);
+
+    TbEvent queryById(String id);
+
+    List<TbEventOption> queryOptionById(String id);
 }

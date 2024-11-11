@@ -13,7 +13,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="TbEventOptionMap">
         select
-id, event_id, option, create_time, update_time
+id, event_id, `option`, create_time, update_time
         from tb_event_option
         where id = #{id}
     </select>
@@ -21,7 +21,7 @@ id, event_id, option, create_time, update_time
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="TbEventOptionMap">
         select
-id, event_id, option, create_time, update_time
+id, event_id, `option`, create_time, update_time
         from tb_event_option
         <where>
             <if test="id != null and id != ''">
@@ -31,7 +31,7 @@ id, event_id, option, create_time, update_time
                 and event_id = #{eventId}
             </if>
             <if test="option != null and option != ''">
-                and option = #{option}
+                and `option` = #{option}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -55,7 +55,7 @@ id, event_id, option, create_time, update_time
                 and event_id = #{eventId}
             </if>
             <if test="option != null and option != ''">
-                and option = #{option}
+                and `option` = #{option}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -65,18 +65,24 @@ id, event_id, option, create_time, update_time
             </if>
         </where>
     </select>
+    <select id="queryByEventId" resultMap="TbEventOptionMap">
+        select
+            id, event_id, `option`, create_time, update_time
+        from tb_event_option
+        where event_id = #{eventId}
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event_option(event_idoptioncreate_timeupdate_time)
-        values (#{eventId}#{option}#{createTime}#{updateTime})
+        insert into tb_event_option(id, event_id, `option`, create_time)
+        values (#{id},#{eventId},#{option},#{createTime})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event_option(event_idoptioncreate_timeupdate_time)
+        insert into tb_event_option(id, event_id, `option`, create_time)
         values
         <foreach collection="entities" item="entity" separator=",">
-        (#{entity.eventId}#{entity.option}#{entity.createTime}#{entity.updateTime})
+        (#{entity.id},#{entity.eventId},#{entity.option},#{entity.createTime})
         </foreach>
     </insert>
 
@@ -87,7 +93,7 @@ id, event_id, option, create_time, update_time
             (#{entity.eventId}#{entity.option}#{entity.createTime}#{entity.updateTime})
         </foreach>
         on duplicate key update
-event_id = values(event_id)option = values(option)create_time = values(create_time)update_time = values(update_time)
+event_id = values(event_id)`option` = values(`option`)create_time = values(create_time)update_time = values(update_time)
     </insert>
 
     <!--通过主键修改数据-->
@@ -98,7 +104,7 @@ event_id = values(event_id)option = values(option)create_time = values(create_ti
                 event_id = #{eventId},
             </if>
             <if test="option != null and option != ''">
-                option = #{option},
+                `option` = #{option},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},
