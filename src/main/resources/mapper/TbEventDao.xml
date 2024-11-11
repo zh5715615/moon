@@ -3,7 +3,7 @@
 <mapper namespace="tcbv.zhaohui.moon.dao.TbEventDao">
 
     <resultMap type="tcbv.zhaohui.moon.entity.TbEvent" id="TbEventMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="id" column="id" jdbcType="VARCHAR"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="optionId" column="option_id" jdbcType="VARCHAR"/>

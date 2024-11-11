@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.entity.TbUser;
 import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
+import tcbv.zhaohui.moon.utils.GsonUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,8 +62,11 @@ public abstract class AllocReward {
         List<TbRewardRecord> rewardRecordList = new ArrayList<>();
         for (TbTxRecord tbTxRecord : list) {
             double rate = tbTxRecord.getAmount().doubleValue() / totalAmount.doubleValue();
+            log.info("loserAmount is {}, rate is {}", loserAmount, rate);
             BigDecimal reward = BigDecimal.valueOf(loserAmount * rate);
+            log.info("reward is {}", reward.doubleValue());
             TbUser user = userDao.queryById(tbTxRecord.getUserId());
+            log.info("user is {}", user == null ? null : GsonUtil.toJson(user));
             rewardAmountList.add(reward.toBigInteger());
             userAddressList.add(user.getAddress());
 

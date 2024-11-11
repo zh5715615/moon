@@ -1,5 +1,7 @@
 package tcbv.zhaohui.moon.entity;
 
+import lombok.Data;
+
 import java.util.Date;
 import java.io.Serializable;
 
@@ -9,12 +11,13 @@ import java.io.Serializable;
  * @author makejava
  * @since 2024-11-11 17:06:51
  */
+@Data
 public class TbEvent implements Serializable {
     private static final long serialVersionUID = -44003241752990490L;
 /**
      * 事件id
      */
-    private Integer id;
+    private String id;
 /**
      * 事件名称
      */
@@ -47,79 +50,5 @@ public class TbEvent implements Serializable {
      * 计算状态;1有效 | 2注销 | 3已结算
      */
     private Integer status;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getOptionId() {
-        return optionId;
-    }
-
-    public void setOptionId(String optionId) {
-        this.optionId = optionId;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Date getBetTime() {
-        return betTime;
-    }
-
-    public void setBetTime(Date betTime) {
-        this.betTime = betTime;
-    }
-
-    public Date getResultTime() {
-        return resultTime;
-    }
-
-    public void setResultTime(Date resultTime) {
-        this.resultTime = resultTime;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
 }
 

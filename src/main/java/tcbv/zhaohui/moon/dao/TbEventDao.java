@@ -19,7 +19,7 @@ public interface TbEventDao {
      * @param id 主键
      * @return 实例对象
      */
-    TbEvent queryById(Integer id);
+    TbEvent queryById(String id);
 
     /**
      * 查询指定行数据
@@ -77,7 +77,7 @@ public interface TbEventDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(Integer id);
+    int deleteById(String id);
 
 }
 
