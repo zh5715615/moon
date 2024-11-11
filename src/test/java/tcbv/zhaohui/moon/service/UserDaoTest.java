@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.config.MoonConstant;
+import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
 import tcbv.zhaohui.moon.dao.TbTxRecordDao;
 import tcbv.zhaohui.moon.dao.TbUserDao;
+import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbRewardRecord;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.entity.TbUser;
@@ -22,6 +24,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 @Slf4j
@@ -37,6 +40,9 @@ public class UserDaoTest {
     @Resource
     private TbRewardRecordDao rewardRecordDao;
 
+    @Resource
+    private TbGameResultDao gameResultDao;
+
     @Test
     public void testQueryById() {
         TbUser user = userDao.queryById("016587eb-727b-4533-af8f-cc9950e2e9ad");
@@ -44,13 +50,10 @@ public class UserDaoTest {
     }
 
     private Integer getGameType() {
-        return MoonConstant.GUESS_BNB_PRICE_GAME;
+        return MoonConstant.DICE_ROLLER_GAME;
     }
 
-    @Test
-    public void test1() {
-        int winner = 2;
-        int turns = 496;
+    private void allocReward(int winner, int turns) {
         int loser;
         if (getGameType().equals(MoonConstant.DICE_ROLLER_GAME)) {
             if (winner == MoonConstant.DICE_ROLLER_SINGLE) {
@@ -135,5 +138,37 @@ public class UserDaoTest {
         } finally {
             rewardRecordDao.insertBatch(rewardRecordList);
         }
+    }
+
+    @Test
+    public void test1() {
+        int winner = 2;
+        int turns = 496;
+        allocReward(winner, turns);
+    }
+
+    @Test
+    public void test2() {
+        Integer gameTurns = 280;
+        TbGameResult gameResult = gameResultDao.findGameTypeAndTurnsInfo(gameTurns, getGameType());
+        if (gameResult == null) {
+            return;
+        }
+        List<TbTxRecord> txRecordList = txRecordDao.findTurnsGameInfo(gameTurns,getGameType());
+        List<String> txHashList = txRecordList.stream().map(TbTxRecord::getTxHash).collect(Collectors.toList());
+        int result = 0;
+        if (!CollectionUtils.isEmpty(txHashList)) {
+            BigInteger sum = BigInteger.ZERO;
+            for (String s : txHashList) {
+                BigInteger b = new BigInteger(s.substring(2), 16);
+                sum = sum.and(b);
+            }
+            result = sum.mod(BigInteger.valueOf(16)).add(BigInteger.valueOf(3)).intValue();
+        }
+        gameResult.setSingleAndDouble(result);
+        gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+        gameResultDao.update(gameResult);
+
+        allocReward(2 - result % 2, gameTurns);
     }
 }

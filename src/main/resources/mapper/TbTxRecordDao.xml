@@ -32,12 +32,12 @@
         from tb_tx_record
         where  user_id = #{userId} and game_type=#{gameType} order by create_time desc
     </select>
-    <select id="queryByIdAndGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="queryByIdAndGameInfo" resultMap="TbTxRecordMap">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where user_id = #{userId} and game_type = #{gameType} and turns = #{turns}
     </select>
-    <select id="findTurnsGameInfo" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+    <select id="findTurnsGameInfo" resultMap="TbTxRecordMap">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
         where turns = #{turns}

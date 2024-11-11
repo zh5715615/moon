@@ -84,7 +84,7 @@ public class DiceRollerSchedule extends AllocReward {
         gameResult.setDrawnTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
         gameResultDao.update(gameResult);
 
-        allocReward(moonBaseService, userDao, txRecordDao, rewardRecordDao, gameTurns, result % 2 + 1);
+        allocReward(moonBaseService, userDao, txRecordDao, rewardRecordDao, gameTurns, 2 - result % 2);
     }
 
     @Override
