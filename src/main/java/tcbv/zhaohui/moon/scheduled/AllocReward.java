@@ -53,6 +53,19 @@ public abstract class AllocReward {
         double loserAmount = txRecordDao.betNumber(getGameType(), turns, loser);
         List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
         if (CollectionUtils.isEmpty(list)) {
+            List<TbTxRecord> loserList = txRecordDao.loserList(getGameType(), turns, loser);
+            List<TbRewardRecord> loserRecordList = new ArrayList<>();
+            for (TbTxRecord txRecord : loserList) {
+                TbRewardRecord loserRecord = new TbRewardRecord();
+                loserRecord.setId(UUID.randomUUID().toString());
+                loserRecord.setTurns(txRecord.getTurns());
+                loserRecord.setUserId(txRecord.getUserId());
+                loserRecord.setRewardAmount(BigDecimal.ZERO);
+                loserRecord.setGameType(txRecord.getGameType() + "");
+                loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+                loserRecordList.add(loserRecord);
+            }
+            rewardRecordDao.insertBatch(loserRecordList);
             return;
         }
 
