@@ -10,13 +10,13 @@
     </resultMap>
 
     <!-- 通过ID查询单条数据 -->
-    <select id="queryByAddress" resultType="tcbv.zhaohui.moon.entity.TbUser">
+    <select id="queryByAddress" resultMap="TbUserMap">
         select
             id,address as userName,create_time as createTime,token
         from tb_user
         where address = #{address}
     </select>
-    <select id="queryById" resultType="tcbv.zhaohui.moon.entity.TbUser">
+    <select id="queryById" resultMap="TbUserMap">
         select
             id,address as userName,create_time as createTime,token
         from tb_user
