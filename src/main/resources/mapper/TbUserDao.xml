@@ -12,13 +12,13 @@
     <!-- 通过ID查询单条数据 -->
     <select id="queryByAddress" resultMap="TbUserMap">
         select
-            id,address as userName,create_time as createTime,token
+            id,address,create_time,token
         from tb_user
         where address = #{address}
     </select>
     <select id="queryById" resultMap="TbUserMap">
         select
-            id,address as userName,create_time as createTime,token
+            id,address,create_time,token
         from tb_user
         where id = #{userId}
     </select>

@@ -17,17 +17,7 @@
     </resultMap>
 
     <sql id="SQL_PARAM">
-        id,
-               user_id           as userId,
-               game_type         as gameType,
-               single_and_double as singleAndDouble,
-               rase_and_fall     as raseAndFall,
-               event_id          as eventId,
-               event_result      as eventResult,
-               tx_hash           as txHash,
-               turns,
-               create_time       as createTime,
-               amount
+        id, user_id, game_type, single_and_double, rase_and_fall, event_id, event_result, tx_hash, turns, create_time, amount
     </sql>
     <!-- 通过ID查询单条数据 -->
     <select id="queryById" resultMap="TbTxRecordMap">

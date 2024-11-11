@@ -51,7 +51,10 @@ public abstract class AllocReward {
         }
 
         double loserAmount = txRecordDao.betNumber(getGameType(), turns, loser);
+//        double winnerAmount = txRecordDao.betNumber(getGameType(), turns, winner);
+//        double poolTotalAmount = loserAmount + winnerAmount;
         List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
+        log.info("list is {}", GsonUtil.toJson(list));
         if (CollectionUtils.isEmpty(list)) {
             List<TbTxRecord> loserList = txRecordDao.loserList(getGameType(), turns, loser);
             log.info("loserList is {}", GsonUtil.toJson(loserList));
@@ -62,7 +65,7 @@ public abstract class AllocReward {
                     loserRecord.setId(UUID.randomUUID().toString());
                     loserRecord.setTurns(txRecord.getTurns());
                     loserRecord.setUserId(txRecord.getUserId());
-                    loserRecord.setRewardAmount(BigDecimal.ZERO);
+                    loserRecord.setRewardAmount(txRecord.getAmount().negate());
                     loserRecord.setGameType(txRecord.getGameType() + "");
                     loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
                     loserRecordList.add(loserRecord);
@@ -91,7 +94,7 @@ public abstract class AllocReward {
             rewardRecord.setId(UUID.randomUUID().toString());
             rewardRecord.setTurns(tbTxRecord.getTurns());
             rewardRecord.setUserId(tbTxRecord.getUserId());
-            rewardRecord.setRewardAmount(EthMathUtil.bigIntegerToBigDecimal(reward.toBigInteger(), 1));
+            rewardRecord.setRewardAmount(EthMathUtil.bigIntegerToBigDecimal(reward.toBigInteger(), 0));
             rewardRecord.setGameType(tbTxRecord.getGameType() + "");
             rewardRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
             rewardRecordList.add(rewardRecord);
