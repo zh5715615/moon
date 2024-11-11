@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.AddEventDTO;
 import tcbv.zhaohui.moon.dto.EventResultDTO;
@@ -48,21 +50,27 @@ public class EventManagerController {
 
     @DeleteMapping("/delEvent/{id}")
     @ApiOperation(value = "删除事件")
-    public Rsp delEvent(@PathVariable("id") String id) {
+    public Rsp<Boolean> delEvent(@PathVariable("id") String id) {
         return Rsp.okData(eventManagerService.delEvent(id));
     }
 
     @PostMapping("/publicResult")
     @ApiOperation(value = "公布事件结果")
     public Rsp publicResult(@RequestBody @Valid EventResultDTO dto) {
-//        eventManagerService.publicResult(dto.getEventId(), dto.getOptionId());
-        return Rsp.okData(true);
+        eventManagerService.publicResult(dto.getEventId(), dto.getOptionId());
+        return Rsp.ok();
     }
 
     @PostMapping("/eventList")
     @ApiOperation(value = "事件列表")
     public Rsp<PageResultVo<TbEvent>> eventList(@RequestBody @Valid PageDto dto) {
-        PageResultVo vo = new PageResultVo();
+        PageResultVo<TbEvent> vo = new PageResultVo<>();
+        PageRequest pageRequest = PageRequest.of(dto.getPageNum(), dto.getPageSize());
+        Page<TbEvent> page = eventManagerService.queryByPage(new TbEvent(), pageRequest);
+        vo.setTotal(page.getTotalElements());
+        vo.setPageNum(page.getNumber());
+        vo.setPageSize(page.getSize());
+        vo.setList(page.getContent());
         return Rsp.okData(vo);
     }
 }
