@@ -4,61 +4,146 @@
 
     <resultMap type="tcbv.zhaohui.moon.entity.TbEvent" id="TbEventMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
         <result property="content" column="content" jdbcType="VARCHAR"/>
-        <result property="result" column="result" jdbcType="VARCHAR"/>
+        <result property="optionId" column="option_id" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="betTime" column="bet_time" jdbcType="TIMESTAMP"/>
         <result property="resultTime" column="result_time" jdbcType="TIMESTAMP"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
     </resultMap>
 
-    <!-- 通过ID查询单条数据 -->
+    <!--查询单个-->
     <select id="queryById" resultMap="TbEventMap">
         select
-            id,content,result,create_time,update_time,result_time,status
+id, name, content, option_id, create_time, update_time, bet_time, result_time, status
         from tb_event
         where id = #{id}
     </select>
 
-    <!--新增数据-->
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbEventMap">
+        select
+id, name, content, option_id, create_time, update_time, bet_time, result_time, status
+        from tb_event
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="optionId != null and optionId != ''">
+                and option_id = #{optionId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="betTime != null">
+                and bet_time = #{betTime}
+            </if>
+            <if test="resultTime != null">
+                and result_time = #{resultTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from tb_event
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="optionId != null and optionId != ''">
+                and option_id = #{optionId}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="betTime != null">
+                and bet_time = #{betTime}
+            </if>
+            <if test="resultTime != null">
+                and result_time = #{resultTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event(id,content,result,create_time,update_time,result_time,status)
-        values (#{id},#{content},#{result},#{createTime},#{updateTime},#{resultTime},#{status})
+        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
+        values (#{name}#{content}#{optionId}#{createTime}#{updateTime}#{betTime}#{resultTime}#{status})
     </insert>
 
-    <!-- 批量新增数据 -->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into tb_event(id,content,result,create_time,update_time,result_time,status)
+        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.id},#{entity.content},#{entity.result},#{entity.createTime},#{entity.updateTime},#{entity.resultTime},#{entity.status})
+        (#{entity.name}#{entity.content}#{entity.optionId}#{entity.createTime}#{entity.updateTime}#{entity.betTime}#{entity.resultTime}#{entity.status})
         </foreach>
     </insert>
 
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_event(namecontentoption_idcreate_timeupdate_timebet_timeresult_timestatus)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}#{entity.content}#{entity.optionId}#{entity.createTime}#{entity.updateTime}#{entity.betTime}#{entity.resultTime}#{entity.status})
+        </foreach>
+        on duplicate key update
+name = values(name)content = values(content)option_id = values(option_id)create_time = values(create_time)update_time = values(update_time)bet_time = values(bet_time)result_time = values(result_time)status = values(status)
+    </insert>
 
-    <!-- 更新数据 -->
+    <!--通过主键修改数据-->
     <update id="update">
         update tb_event
         <set>
-            <if test="id != null and id != ''">
-                id = #{id},
+            <if test="name != null and name != ''">
+                name = #{name},
             </if>
             <if test="content != null and content != ''">
                 content = #{content},
             </if>
-            <if test="result != null and result != ''">
-                result = #{result},
+            <if test="optionId != null and optionId != ''">
+                option_id = #{optionId},
             </if>
-            <if test="createTime != null and createTime != ''">
+            <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-            <if test="updateTime != null and updateTime != ''">
+            <if test="updateTime != null">
                 update_time = #{updateTime},
             </if>
-            <if test="resultTime != null and resultTime != ''">
+            <if test="betTime != null">
+                bet_time = #{betTime},
+            </if>
+            <if test="resultTime != null">
                 result_time = #{resultTime},
             </if>
-            <if test="status != null and status != ''">
+            <if test="status != null">
                 status = #{status},
             </if>
         </set>
@@ -69,4 +154,6 @@
     <delete id="deleteById">
         delete from tb_event where id = #{id}
     </delete>
+
 </mapper>
+

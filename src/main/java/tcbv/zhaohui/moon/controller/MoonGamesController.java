@@ -93,23 +93,12 @@ public class MoonGamesController {
         return Rsp.okData(rollDiceGameService.preTurnsResult(gameType));
     }
 
-    @PostMapping("/addNewGame")
-    @ApiOperation(value = "添加时事竞猜")
-    public Rsp addNewGame(@RequestBody @Valid AddNewGameDTO dto) {
-        return Rsp.okData(true);
-    }
-
-
-    @PostMapping("/newGamePrizeDraw")
-    @ApiOperation(value = "时事竞猜开奖")
-    public Rsp newGamePrizeDraw(@RequestBody @Valid NewGamePrizeDrawDTO dto) {
-        return Rsp.okData(true);
-    }
     @PostMapping("/gamePrizeDraw")
     @ApiOperation(value = "确认游戏是否开奖")
     public Rsp verifyGamePrizeDraw(@RequestBody @Valid VerifyGamePrizeDrawDTO dto) {
         return Rsp.okData(rollDiceGameService.verifyGamePrizeDraw(dto));
     }
+
     @PostMapping("/userMarketing")
     @ApiOperation(value = "用户推广码生成")
     public Rsp userMarketing(@RequestBody @Valid UserMarketingDTO dto) {
