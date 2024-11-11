@@ -81,9 +81,10 @@ public abstract class AllocReward {
             for (TbRewardRecord rewardRecord : rewardRecordList) {
                 rewardRecord.setTxHash(txHash);
             }
-            rewardRecordDao.insertBatch(rewardRecordList);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("上链异常：", e);
+        } finally {
+            rewardRecordDao.insertBatch(rewardRecordList);
         }
     }
 }
