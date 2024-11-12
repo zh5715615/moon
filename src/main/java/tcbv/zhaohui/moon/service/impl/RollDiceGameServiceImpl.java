@@ -75,7 +75,6 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         String userId = dto.getUserId();
         Integer gameType = dto.getGameType();
         Integer dtoTurns = dto.getTurns();
-        Integer paramType = dto.getParamType(); // 投注类型
 
         //判断是否还能下注
         PlayResidueTimesVO queueAndMemSize = getQueueAndMemSize(gameType);
@@ -100,15 +99,15 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
                 .id(UUID.randomUUID().toString())
                 .userId(userId)
                 .gameType(gameType);
-        if (paramType.equals(MoonConstant.DICE_ROLLER_GAME)) {
-            build.singleAndDouble(paramType);
-        } else if (paramType.equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
-            build.raseAndFall(paramType);
+        if (gameType.equals(MoonConstant.DICE_ROLLER_GAME)) {
+            build.singleAndDouble(Integer.parseInt(dto.getParamType()));
+        } else if (gameType.equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
+            build.raseAndFall(Integer.parseInt(dto.getParamType()));
         }
 
         if (dto.getEventId() != null) {
             build.eventId(dto.getTxHash())
-                 .eventResult(paramType.toString());
+                 .eventResult(dto.getParamType());
         }
         TbTxRecord txRecord = build.txHash(dto.getTxHash())
              .turns(dtoTurns)

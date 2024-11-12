@@ -18,8 +18,8 @@ public class AddGameOrderForDTO implements Serializable {
     @NotNull(message = "游戏类型不能为空")
     private Integer gameType;
     @ApiModelProperty("参数类型 1单/涨 | 2双/跌 ")
-    @NotNull(message = "参数类型不能为空")
-    private Integer paramType;
+    @NotBlank(message = "参数类型不能为空")
+    private String paramType;
     @ApiModelProperty("用户地址")
     @NotBlank(message = "用户地址不能为空")
     private String address;
