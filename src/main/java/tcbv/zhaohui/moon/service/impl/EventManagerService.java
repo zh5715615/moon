@@ -1,18 +1,26 @@
 package tcbv.zhaohui.moon.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tcbv.zhaohui.moon.dao.TbEventDao;
-import tcbv.zhaohui.moon.dao.TbEventOptionDao;
+import tcbv.zhaohui.moon.config.MoonConstant;
+import tcbv.zhaohui.moon.dao.*;
 import tcbv.zhaohui.moon.entity.TbEvent;
 import tcbv.zhaohui.moon.entity.TbEventOption;
+import tcbv.zhaohui.moon.scheduled.GuessEventBetScheduled;
+import tcbv.zhaohui.moon.scheduled.GuessEventDrawScheduled;
+import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.IEventManagerService;
+import tcbv.zhaohui.moon.service.IEventTaskManager;
+import tcbv.zhaohui.moon.service.IMoonBaseService;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -25,10 +33,36 @@ public class EventManagerService implements IEventManagerService {
     @Resource
     private TbEventOptionDao eventOptionDao;
 
+    @Autowired
+    private IEventTaskManager eventTaskManager;
+
+    @Resource
+    private TbGameResultDao gameResultDao;
+
+    @Autowired
+    private IMoonBaseService moonBaseService;
+
+    @Resource
+    private TbTxRecordDao txRecordDao;
+
+    @Resource
+    TbRewardRecordDao rewardRecordDao;
+
+    @Resource
+    private TbUserDao userDao;
+
+    public static final String BET = "-bet";
+
+    public static final String DRAW = "-draw";
+
     @Override
     @Transactional
     public TbEvent addEvent(TbEvent event, List<TbEventOption> eventOptionList) {
         event.setCreateTime(new Date());
+        event.setStatus(MoonConstant.EVENT_WAITING);
+        String eventTaskName = event.getName() + BET;
+        LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventTaskName, event.getId()), localDateTime);
         eventDao.insert(event);
         eventOptionDao.insertBatch(eventOptionList);
         return event;
@@ -36,15 +70,26 @@ public class EventManagerService implements IEventManagerService {
 
     @Override
     public boolean delEvent(String id) {
+        TbEvent event = eventDao.queryById(id);
+        Date now = new Date();
+        if (event.getBetTime().after(now)) {
+            eventTaskManager.cancelTask(event.getName());
+        } else {
+            throw new RuntimeException("已经开始投注，不能删除");
+        }
         return eventDao.deleteById(id) > 0;
     }
 
     @Override
     public void publicResult(String eventId, String optionId) {
+        TimerMaps.stopGuessEvent();
         TbEvent event = new TbEvent();
         event.setId(eventId);
         event.setOptionId(optionId);
         event.setResultTime(new Date());
+        String eventTaskName = event.getName() + DRAW;
+        LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusSeconds(10);
+        eventTaskManager.addTask(eventTaskName, new GuessEventDrawScheduled(moonBaseService, userDao, txRecordDao, rewardRecordDao, eventTaskManager, gameResultDao, eventTaskName, eventId, optionId), localDateTime);
         eventDao.update(event);
     }
 

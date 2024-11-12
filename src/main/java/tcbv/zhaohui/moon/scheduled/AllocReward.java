@@ -24,6 +24,68 @@ import java.util.UUID;
 public abstract class AllocReward {
     protected abstract Integer getGameType();
 
+
+    protected void saveRewardRecord(List<TbTxRecord> winnerList, List<TbTxRecord> loserList,
+                                  double loserAmount, double poolTotalAmount, TbUserDao userDao,
+                                  TbRewardRecordDao rewardRecordDao, IMoonBaseService moonBaseService) {
+        log.info("list is {}", GsonUtil.toJson(winnerList));
+        if (CollectionUtils.isEmpty(winnerList)) {
+            log.info("loserList is {}", GsonUtil.toJson(loserList));
+            if (!CollectionUtils.isEmpty(loserList)) {
+                List<TbRewardRecord> loserRecordList = new ArrayList<>();
+                for (TbTxRecord txRecord : loserList) {
+                    TbRewardRecord loserRecord = new TbRewardRecord();
+                    loserRecord.setId(UUID.randomUUID().toString());
+                    loserRecord.setTurns(txRecord.getTurns());
+                    loserRecord.setUserId(txRecord.getUserId());
+                    loserRecord.setRewardAmount(txRecord.getAmount().negate());
+                    loserRecord.setGameType(txRecord.getGameType() + "");
+                    loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+                    loserRecordList.add(loserRecord);
+                }
+                rewardRecordDao.insertBatch(loserRecordList);
+            }
+            return;
+        }
+
+        List<BigInteger> totalAmountList = new ArrayList<>();
+        List<String> userAddressList = new ArrayList<>();
+        BigDecimal totalAmount = winnerList.stream().map(TbTxRecord::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<TbRewardRecord> rewardRecordList = new ArrayList<>();
+        for (TbTxRecord tbTxRecord : winnerList) {
+            double rate = tbTxRecord.getAmount().doubleValue() / totalAmount.doubleValue();
+            log.info("loserAmount is {}, rate is {}", loserAmount, rate);
+            BigDecimal reward = BigDecimal.valueOf(loserAmount * rate);
+            BigDecimal totalReward = BigDecimal.valueOf(poolTotalAmount * rate);
+            log.info("reward is {}", reward.doubleValue());
+            log.info("tbTxRecord is {}", GsonUtil.toJson(tbTxRecord));
+            TbUser user = userDao.queryById(tbTxRecord.getUserId());
+            log.info("user is {}", user == null ? null : GsonUtil.toJson(user));
+            totalAmountList.add(totalReward.toBigInteger().multiply(BigInteger.TEN.pow(6)));
+            userAddressList.add(user.getAddress());
+
+            TbRewardRecord rewardRecord = new TbRewardRecord();
+            rewardRecord.setId(UUID.randomUUID().toString());
+            rewardRecord.setTurns(tbTxRecord.getTurns());
+            rewardRecord.setUserId(tbTxRecord.getUserId());
+            rewardRecord.setRewardAmount(EthMathUtil.bigIntegerToBigDecimal(reward.toBigInteger(), 0));
+            rewardRecord.setGameType(tbTxRecord.getGameType() + "");
+            rewardRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+            rewardRecordList.add(rewardRecord);
+        }
+        try {
+            String txHash = moonBaseService.allocReward(userAddressList, totalAmountList);
+            log.info("中奖发放奖励hash值为{}", txHash);
+            for (TbRewardRecord rewardRecord : rewardRecordList) {
+                rewardRecord.setTxHash(txHash);
+            }
+        } catch (Exception e) {
+            log.error("上链异常：", e);
+        } finally {
+            rewardRecordDao.insertBatch(rewardRecordList);
+        }
+    }
+
     protected void allocReward(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao,
                                TbRewardRecordDao rewardRecordDao, int turns, int winner) {
         int loser;
@@ -51,64 +113,10 @@ public abstract class AllocReward {
         }
 
         double loserAmount = txRecordDao.betNumber(getGameType(), turns, loser);
-//        double winnerAmount = txRecordDao.betNumber(getGameType(), turns, winner);
-//        double poolTotalAmount = loserAmount + winnerAmount;
-        List<TbTxRecord> list = txRecordDao.winnerList(getGameType(), turns, winner);
-        log.info("list is {}", GsonUtil.toJson(list));
-        if (CollectionUtils.isEmpty(list)) {
-            List<TbTxRecord> loserList = txRecordDao.loserList(getGameType(), turns, loser);
-            log.info("loserList is {}", GsonUtil.toJson(loserList));
-            if (!CollectionUtils.isEmpty(loserList)) {
-                List<TbRewardRecord> loserRecordList = new ArrayList<>();
-                for (TbTxRecord txRecord : loserList) {
-                    TbRewardRecord loserRecord = new TbRewardRecord();
-                    loserRecord.setId(UUID.randomUUID().toString());
-                    loserRecord.setTurns(txRecord.getTurns());
-                    loserRecord.setUserId(txRecord.getUserId());
-                    loserRecord.setRewardAmount(txRecord.getAmount().negate());
-                    loserRecord.setGameType(txRecord.getGameType() + "");
-                    loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
-                    loserRecordList.add(loserRecord);
-                }
-                rewardRecordDao.insertBatch(loserRecordList);
-            }
-            return;
-        }
-
-        List<BigInteger> rewardAmountList = new ArrayList<>();
-        List<String> userAddressList = new ArrayList<>();
-        BigDecimal totalAmount = list.stream().map(TbTxRecord::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        List<TbRewardRecord> rewardRecordList = new ArrayList<>();
-        for (TbTxRecord tbTxRecord : list) {
-            double rate = tbTxRecord.getAmount().doubleValue() / totalAmount.doubleValue();
-            log.info("loserAmount is {}, rate is {}", loserAmount, rate);
-            BigDecimal reward = BigDecimal.valueOf(loserAmount * rate);
-            log.info("reward is {}", reward.doubleValue());
-            log.info("tbTxRecord is {}", GsonUtil.toJson(tbTxRecord));
-            TbUser user = userDao.queryById(tbTxRecord.getUserId());
-            log.info("user is {}", user == null ? null : GsonUtil.toJson(user));
-            rewardAmountList.add(reward.toBigInteger());
-            userAddressList.add(user.getAddress());
-
-            TbRewardRecord rewardRecord = new TbRewardRecord();
-            rewardRecord.setId(UUID.randomUUID().toString());
-            rewardRecord.setTurns(tbTxRecord.getTurns());
-            rewardRecord.setUserId(tbTxRecord.getUserId());
-            rewardRecord.setRewardAmount(EthMathUtil.bigIntegerToBigDecimal(reward.toBigInteger(), 0));
-            rewardRecord.setGameType(tbTxRecord.getGameType() + "");
-            rewardRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
-            rewardRecordList.add(rewardRecord);
-        }
-        try {
-            String txHash = moonBaseService.allocReward(userAddressList, rewardAmountList);
-            log.info("中奖发放奖励hash值为{}", txHash);
-            for (TbRewardRecord rewardRecord : rewardRecordList) {
-                rewardRecord.setTxHash(txHash);
-            }
-        } catch (Exception e) {
-            log.error("上链异常：", e);
-        } finally {
-            rewardRecordDao.insertBatch(rewardRecordList);
-        }
+        double winnerAmount = txRecordDao.betNumber(getGameType(), turns, winner);
+        double poolTotalAmount = loserAmount + winnerAmount;
+        List<TbTxRecord> winnerList = txRecordDao.winnerList(getGameType(), turns, winner);
+        List<TbTxRecord> loserList = txRecordDao.loserList(getGameType(), turns, loser);
+        saveRewardRecord(winnerList, loserList, loserAmount, poolTotalAmount, userDao, rewardRecordDao, moonBaseService);
     }
 }

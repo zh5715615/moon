@@ -12,26 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2024/11/2 15:12
  */
 public class TimerMaps {
-//
-//    public static final String GAMEONE = "gameOne";
-//
-//    public static final String GAMETWO = "gameTwo";
-//
-//    private static final Map<String, LocalDateTime> timerMap = new ConcurrentHashMap<>();
-//
-//    public static void setRemainingTime(String key, LocalDateTime time) {
-//        timerMap.put(key, time);
-//    }
-//
-//    public static LocalDateTime getRemainingTime(String key) {
-//        return timerMap.get(key);
-//    }
-
     private static final Map<Integer, Boolean> gameStatus = new HashMap<>();
 
     static {
         gameStatus.put(MoonConstant.DICE_ROLLER_GAME, false);
         gameStatus.put(MoonConstant.GUESS_BNB_PRICE_GAME, false);
+        gameStatus.put(MoonConstant.GUESS_EVENT_GAME, false);
     }
 
     public static void startDiceRoller() {
@@ -56,5 +42,17 @@ public class TimerMaps {
 
     public static boolean getGuessBnbPriceStatus() {
         return gameStatus.get(MoonConstant.GUESS_BNB_PRICE_GAME);
+    }
+
+    public static void startGuessEvent() {
+        gameStatus.put(MoonConstant.GUESS_EVENT_GAME, true);
+    }
+
+    public static void stopGuessEvent() {
+        gameStatus.put(MoonConstant.GUESS_EVENT_GAME, false);
+    }
+
+    public static boolean getGuessEventStatus() {
+        return gameStatus.get(MoonConstant.GUESS_EVENT_GAME);
     }
 }

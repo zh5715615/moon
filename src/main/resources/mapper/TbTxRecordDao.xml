@@ -88,6 +88,34 @@
                 and rase_and_fall = #{winner}
             </if>
     </select>
+    <select id="betEventErrorNumber" resultType="java.lang.Double">
+        select IFNULL(sum(amount), 0) as total_bet
+        from tb_tx_record
+        where game_type = #{gameType}
+          and turns = #{turns}
+          and event_result &lt;&gt; #{optionId}
+    </select>
+    <select id="betEventCorrectNumber" resultType="java.lang.Double">
+        select IFNULL(sum(amount), 0) as total_bet
+        from tb_tx_record
+        where game_type = #{gameType}
+          and turns = #{turns}
+          and event_result = #{optionId}
+    </select>
+    <select id="winnerEventList" resultMap="TbTxRecordMap">
+        select <include refid="SQL_PARAM"/>
+        from tb_tx_record
+        where turns = #{turns}
+            and game_type = #{gameType}
+            and event_result = #{optionId}
+    </select>
+    <select id="loserEventList" resultType="tcbv.zhaohui.moon.entity.TbTxRecord">
+        select <include refid="SQL_PARAM"/>
+        from tb_tx_record
+        where turns = #{turns}
+            and game_type = #{gameType}
+            and event_result &lt;&gt; #{optionId}
+    </select>
 
     <!--新增数据-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

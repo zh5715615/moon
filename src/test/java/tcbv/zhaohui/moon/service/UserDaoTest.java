@@ -63,6 +63,12 @@ public class UserDaoTest {
         System.out.println(GsonUtil.toJson(user));
     }
 
+    @Test
+    public void testQueryByAddress() {
+        TbUser user = userDao.queryByAddress("0xabe7c6e5c5af6b4a052891842815c84690a93a3d");
+        System.out.println(GsonUtil.toJson(user));
+    }
+
     private Integer getGameType() {
         return MoonConstant.DICE_ROLLER_GAME;
     }
