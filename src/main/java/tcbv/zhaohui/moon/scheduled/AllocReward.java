@@ -28,23 +28,24 @@ public abstract class AllocReward {
     protected void saveRewardRecord(List<TbTxRecord> winnerList, List<TbTxRecord> loserList,
                                   double loserAmount, double poolTotalAmount, TbUserDao userDao,
                                   TbRewardRecordDao rewardRecordDao, IMoonBaseService moonBaseService) {
-        log.info("list is {}", GsonUtil.toJson(winnerList));
-        if (CollectionUtils.isEmpty(winnerList)) {
-            log.info("loserList is {}", GsonUtil.toJson(loserList));
-            if (!CollectionUtils.isEmpty(loserList)) {
-                List<TbRewardRecord> loserRecordList = new ArrayList<>();
-                for (TbTxRecord txRecord : loserList) {
-                    TbRewardRecord loserRecord = new TbRewardRecord();
-                    loserRecord.setId(UUID.randomUUID().toString());
-                    loserRecord.setTurns(txRecord.getTurns());
-                    loserRecord.setUserId(txRecord.getUserId());
-                    loserRecord.setRewardAmount(txRecord.getAmount().negate());
-                    loserRecord.setGameType(txRecord.getGameType() + "");
-                    loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
-                    loserRecordList.add(loserRecord);
-                }
-                rewardRecordDao.insertBatch(loserRecordList);
+        log.info("loser List is {}", GsonUtil.toJson(loserList));
+        if (!CollectionUtils.isEmpty(loserList)) {
+            List<TbRewardRecord> loserRecordList = new ArrayList<>();
+            for (TbTxRecord txRecord : loserList) {
+                TbRewardRecord loserRecord = new TbRewardRecord();
+                loserRecord.setId(UUID.randomUUID().toString());
+                loserRecord.setTurns(txRecord.getTurns());
+                loserRecord.setUserId(txRecord.getUserId());
+                loserRecord.setRewardAmount(txRecord.getAmount().negate());
+                loserRecord.setGameType(txRecord.getGameType() + "");
+                loserRecord.setCreateTime(CustomizeTimeUtil.formatTimestamp(System.currentTimeMillis()));
+                loserRecordList.add(loserRecord);
             }
+            rewardRecordDao.insertBatch(loserRecordList);
+        }
+
+        log.info("winner list is {}", GsonUtil.toJson(winnerList));
+        if (CollectionUtils.isEmpty(winnerList)) {
             return;
         }
 
