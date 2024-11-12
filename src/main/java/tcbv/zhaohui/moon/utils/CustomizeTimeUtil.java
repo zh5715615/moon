@@ -2,9 +2,12 @@ package tcbv.zhaohui.moon.utils;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 public class CustomizeTimeUtil {
 
@@ -54,4 +57,31 @@ public class CustomizeTimeUtil {
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         return zonedDateTime.toInstant().toEpochMilli();
     }
+
+    /**
+     * 将 yyyy-MM-dd HH:mm:ss 格式的日期字符串转换为 MM/dd HH:mm 格式的日期字符串。
+     *
+     * @param inputDateStr 输入的日期字符串，格式为 yyyy-MM-dd HH:mm:ss
+     * @return 转换后的日期字符串，格式为 MM/dd HH:mm
+     */
+    public static String convertDateFormat(String inputDateStr) {
+        try {
+            // 定义输入日期格式
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            // 定义输出日期格式
+            SimpleDateFormat outputFormat = new SimpleDateFormat("MM/dd HH:mm");
+
+            // 将字符串解析为 Date 对象
+            Date date = inputFormat.parse(inputDateStr);
+
+            // 将 Date 对象格式化为新的字符串
+
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            // 处理解析异常
+            e.printStackTrace();
+            return "Invalid date format";
+        }
+    }
+
 }

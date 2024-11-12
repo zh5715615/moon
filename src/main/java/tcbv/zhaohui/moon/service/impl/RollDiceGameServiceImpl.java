@@ -15,6 +15,7 @@ import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.scheduled.TimerMaps;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
+import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
 import tcbv.zhaohui.moon.vo.UserRewardListVO;
@@ -158,6 +159,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
 
         if (byUserDraw != null && !byUserDraw.isEmpty()) {
             for (UserRewardListVO userRewardListVO : byUserDraw) {
+                String newTime = userRewardListVO.getCreateTime();
+                userRewardListVO.setCreateTime(CustomizeTimeUtil.convertDateFormat(newTime));
                 if (Objects.equals(dto.getGameType(), MoonConstant.DICE_ROLLER_GAME)) {
                     userRewardListVO.setResult(userRewardListVO.getSingleAndDoubleB());
                     if (Objects.equals(userRewardListVO.getSingleAndDoubleC(), userRewardListVO.getSingleAndDoubleB())) {
@@ -173,9 +176,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
                         userRewardListVO.setIsWinning(false);
                     }
                 }
-            if(!userRewardListVO.getIsWinning()){
-                userRewardListVO.setRewardAmount(new BigDecimal(0));
-            }
+                if(!userRewardListVO.getIsWinning()){
+                    userRewardListVO.setRewardAmount(new BigDecimal(0));
+                }
             }
         }
         PageResultVo result = new PageResultVo();
