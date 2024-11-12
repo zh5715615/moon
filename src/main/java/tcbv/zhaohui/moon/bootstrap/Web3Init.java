@@ -32,6 +32,6 @@ public class Web3Init implements ServletContextListener {
         log.info("================= web3服务初始化 =================");
         ethereumService.init();
         moonBaseService.init(web3Config.getMoonBaseAddress());
-        usdtLikeInterfaceService.init(web3Config.getUsdtLikeInterfaceAddress());
+        usdtLikeInterfaceService.init(web3Config.getMoonTokenAddress());
     }
 }

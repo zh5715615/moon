@@ -40,6 +40,6 @@ public class Web3Config {
     @Value("${web3.contract.moon-base.address}")
     private String moonBaseAddress;
 
-    @Value("${web3.contract.usdt-like-interface.address}")
-    private String usdtLikeInterfaceAddress;
+    @Value("${web3.contract.moon-token.address}")
+    private String moonTokenAddress;
 }

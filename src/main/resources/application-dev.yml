@@ -94,8 +94,8 @@ web3:
   contract:
     moon-base:
       address: "0x6D8731A214704F2839e00c7FB9801772be674A4a"
-    usdt-like-interface:
-      address: "0x55d398326f99059ff775485246999027b3197955"
+    moon-token:
+      address: "0xC109Ba491e301E879c99A22B71ADe4A04292703c"
 
 blockchain:
   proxy:
