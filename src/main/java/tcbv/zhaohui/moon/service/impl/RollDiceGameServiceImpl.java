@@ -55,6 +55,8 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
             status = TimerMaps.getDicRollerStatus();
         } else if (gameType.equals(MoonConstant.GUESS_BNB_PRICE_GAME)) {
             status = TimerMaps.getGuessBnbPriceStatus();
+        } else if (gameType.equals(MoonConstant.GUESS_EVENT_GAME)) {
+            status = TimerMaps.getGuessEventStatus();
         } else {
             throw new RuntimeException("暂时没有这个游戏类型");
         }
