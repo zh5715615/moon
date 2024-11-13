@@ -67,7 +67,7 @@ public class EventManagerController {
     @ApiOperation(value = "事件列表")
     public Rsp<PageResultVo<TbEvent>> eventList(@RequestBody @Valid PageDto dto) {
         PageResultVo<TbEvent> vo = new PageResultVo<>();
-        PageRequest pageRequest = PageRequest.of(dto.getPageNum(), dto.getPageSize(), Sort.by(Sort.Direction.ASC, "betTime"));
+        PageRequest pageRequest = PageRequest.of(dto.getPageNum(), dto.getPageSize());
         Page<TbEvent> page = eventManagerService.queryByPage(new TbEvent(), pageRequest);
         vo.setTotal(page.getTotalElements());
         vo.setPageNum(page.getNumber());

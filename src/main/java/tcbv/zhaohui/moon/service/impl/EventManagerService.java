@@ -94,7 +94,7 @@ public class EventManagerService implements IEventManagerService {
     public Page<TbEvent> queryByPage(TbEvent tbEvent, PageRequest pageRequest) {
         long total = this.eventDao.count(tbEvent);
         int offset = pageRequest.getPageNumber() == 1 ? 0 : (pageRequest.getPageNumber() - 1) * pageRequest.getPageSize();
-        Pageable pageable = PageRequest.of(offset, pageRequest.getPageSize());
+        Pageable pageable = PageRequest.of(offset, pageRequest.getPageSize(), Sort.by(Sort.Direction.DESC, "create_time"));
         return new PageImpl<>(this.eventDao.queryAllByLimit(tbEvent, pageable), pageRequest, total);
     }
 

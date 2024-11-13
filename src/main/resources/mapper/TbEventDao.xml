@@ -56,6 +56,12 @@ id, name, content, option_id, create_time, update_time, bet_time, result_time, s
                 and status = #{entity.status}
             </if>
         </where>
+        <if test="pageable.sort != null">
+            ORDER BY
+            <foreach collection="pageable.sort" item="order" separator=",">
+                ${order.property} ${order.direction}
+            </foreach>
+        </if>
         limit #{pageable.offset}, #{pageable.pageSize}
     </select>
 

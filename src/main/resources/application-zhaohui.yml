@@ -114,3 +114,5 @@ pagehelper:
 
 logging:
   config: classpath:logback-spring-dev.xml
+  level:
+    tcbv.zhaohui.moon.dao: debug
