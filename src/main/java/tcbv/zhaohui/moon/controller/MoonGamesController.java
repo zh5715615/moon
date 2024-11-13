@@ -142,7 +142,7 @@ public class MoonGamesController {
     }
 
     @GetMapping("/guessEventBetNumber")
-    @ApiOperation(value = "猜BNB涨跌投注统计")
+    @ApiOperation(value = "猜事件投注统计")
     @ApiImplicitParams({
             @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
             @ApiImplicitParam(name="betType", value="投注结果 1涨 | 2跌", required = true)
