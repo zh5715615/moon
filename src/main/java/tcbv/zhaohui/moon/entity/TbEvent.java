@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * (TbEvent)实体类
@@ -50,5 +51,7 @@ public class TbEvent implements Serializable {
      * 计算状态;1有效 | 2注销 | 3已结算
      */
     private Integer status;
+
+    private List<TbEventOption> optionList;
 }
 

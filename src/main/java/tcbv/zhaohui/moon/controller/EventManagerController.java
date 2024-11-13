@@ -69,6 +69,12 @@ public class EventManagerController {
         PageResultVo<TbEvent> vo = new PageResultVo<>();
         PageRequest pageRequest = PageRequest.of(dto.getPageNum(), dto.getPageSize());
         Page<TbEvent> page = eventManagerService.queryByPage(new TbEvent(), pageRequest);
+        if (page.getTotalElements() > 0) {
+            for (TbEvent event : page.getContent()) {
+                List<TbEventOption> optionList = this.eventManagerService.queryOptionById(event.getId());
+                event.setOptionList(optionList);
+            }
+        }
         vo.setTotal(page.getTotalElements());
         vo.setPageNum(page.getNumber());
         vo.setPageSize(page.getSize());
