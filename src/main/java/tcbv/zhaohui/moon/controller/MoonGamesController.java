@@ -141,6 +141,17 @@ public class MoonGamesController {
         return Rsp.okData(rollDiceGameService.betNumber(MoonConstant.GUESS_BNB_PRICE_GAME, turns, betType));
     }
 
+    @GetMapping("/guessEventBetNumber")
+    @ApiOperation(value = "猜BNB涨跌投注统计")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
+            @ApiImplicitParam(name="betType", value="投注结果 1涨 | 2跌", required = true)
+    })
+    public Rsp<Double> guessEventBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns,
+                                         @RequestParam("betType") @NotNull(message = "下注类型不能为空") String betType) {
+        return Rsp.okData(rollDiceGameService.betNumber(MoonConstant.GUESS_EVENT_GAME, turns, betType));
+    }
+
     @GetMapping("/diceRollerPoints")
     @ApiOperation(value = "获取摇骰子点数")
     public Rsp<Integer> guessBnbBetNumber(@RequestParam("turns") @NotNull(message = "轮次不能为空") Integer turns) {

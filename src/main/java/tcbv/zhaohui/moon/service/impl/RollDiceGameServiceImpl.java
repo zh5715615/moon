@@ -225,4 +225,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
     public Double betNumber(int gameType, int turns, Integer betType) {
         return tbTxRecordDao.betNumber(gameType, turns, betType);
     }
+
+    @Override
+    public Double betNumber(int gameType, int turns, String betType) {
+        return tbTxRecordDao.betNumberEvent(gameType, turns, betType);
+    }
 }

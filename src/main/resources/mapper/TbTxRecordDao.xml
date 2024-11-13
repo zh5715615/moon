@@ -64,6 +64,18 @@
             and rase_and_fall = #{betType}
         </if>
     </select>
+
+
+    <select id="betNumberEvent" resultType="java.lang.Double">
+        select IFNULL(sum(amount), 0) as total_bet
+        from tb_tx_record
+            left join tb_event on tb_event.id = tb_tx_record.event_id
+            left join tb_event_option on tb_event_option.event_id = tb_event.id and tb_event_option.event_id = tb_tx_record.event_result
+        where game_type = #{gameType}
+          and turns = #{turns}
+          and tb_tx_record.event_result = #{betType}
+    </select>
+
     <select id="winnerList" resultMap="TbTxRecordMap">
         select <include refid="SQL_PARAM"/>
         from tb_tx_record
