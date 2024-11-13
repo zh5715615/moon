@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.scheduled;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.beans.CandleGraphBean;
@@ -21,7 +23,8 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Component
+@Configuration
+@ConditionalOnProperty(name = "moon.scheduled", havingValue = "true")
 @Slf4j
 public class GuessRiseFallSchedule extends AllocReward {
 

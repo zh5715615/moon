@@ -103,6 +103,9 @@ blockchain:
     hostname: 127.0.0.1
     port: 1081
 
+moon:
+  scheduled: true
+
 pagehelper:
   helperDialect: mysql
   reasonable: true

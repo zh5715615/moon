@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -22,7 +24,8 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Configuration
+@ConditionalOnProperty(name = "moon.scheduled", havingValue = "true")
 @Slf4j
 public class DiceRollerSchedule extends AllocReward {
 

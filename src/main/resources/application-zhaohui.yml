@@ -1,8 +1,11 @@
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   application:
     name: moon
   datasource:
-    url: jdbc:mysql://1.13.162.44:18082/moon-zhaohui?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
+    url: jdbc:mysql://1.13.162.44:18082/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
     username: root
     password: Zh5715615~
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -90,15 +93,18 @@ web3:
     limit: "3000000"
   contract:
     moon-base:
-      address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
-    usdt-like-interface:
-      address: "0x55d398326f99059ff775485246999027b3197955"
+      address: "0x6D8731A214704F2839e00c7FB9801772be674A4a"
+    moon-token:
+      address: "0xC109Ba491e301E879c99A22B71ADe4A04292703c"
 
 blockchain:
   proxy:
     enable: true
     hostname: 127.0.0.1
-    port: 1080
+    port: 1081
+
+moon:
+  scheduled: false
 
 pagehelper:
   helperDialect: mysql
