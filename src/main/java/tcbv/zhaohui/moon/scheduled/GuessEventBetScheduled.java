@@ -2,7 +2,9 @@ package tcbv.zhaohui.moon.scheduled;
 
 import lombok.extern.slf4j.Slf4j;
 import tcbv.zhaohui.moon.config.MoonConstant;
+import tcbv.zhaohui.moon.dao.TbEventDao;
 import tcbv.zhaohui.moon.dao.TbGameResultDao;
+import tcbv.zhaohui.moon.entity.TbEvent;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.service.IEventTaskManager;
 
@@ -17,11 +19,14 @@ public class GuessEventBetScheduled extends AllocReward implements Runnable {
 
     private TbGameResultDao gameResultDao;
 
+    private TbEventDao eventDao;
+
     private IEventTaskManager eventTaskManager;
 
-    public GuessEventBetScheduled(IEventTaskManager eventTaskManager, TbGameResultDao gameResultDao, String eventName, String eventId) {
+    public GuessEventBetScheduled(IEventTaskManager eventTaskManager, TbGameResultDao gameResultDao, TbEventDao eventDao, String eventName, String eventId) {
         this.eventTaskManager = eventTaskManager;
         this.gameResultDao = gameResultDao;
+        this.eventDao = eventDao;
         this.eventName = eventName;
         this.eventId = eventId;
     }
@@ -40,6 +45,10 @@ public class GuessEventBetScheduled extends AllocReward implements Runnable {
         gameResult.setGameType(getGameType());
         gameResult.setTurns(gameTurns);
         gameResult.setEventId(eventId);
+        TbEvent event = new TbEvent();
+        event.setId(eventId);
+        event.setStatus(MoonConstant.EVENT_BETING);
+        eventDao.update(event);
         gameResultDao.insert(gameResult);
         eventTaskManager.cancelTask(eventName);
     }

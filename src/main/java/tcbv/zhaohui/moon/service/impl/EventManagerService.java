@@ -60,7 +60,7 @@ public class EventManagerService implements IEventManagerService {
         event.setStatus(MoonConstant.EVENT_WAITING);
         String eventTaskName = event.getName() + BET;
         LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventTaskName, event.getId()), localDateTime);
+        eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventDao, eventTaskName, event.getId()), localDateTime);
         eventDao.insert(event);
         eventOptionDao.insertBatch(eventOptionList);
         return event;
@@ -85,9 +85,8 @@ public class EventManagerService implements IEventManagerService {
         event.setId(eventId);
         event.setOptionId(optionId);
         event.setResultTime(new Date());
-        event.setStatus(MoonConstant.EVENT_BETING);
         String eventTaskName = event.getName() + DRAW;
-        LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusSeconds(10);
+        LocalDateTime localDateTime = event.getResultTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusSeconds(10);
         eventTaskManager.addTask(eventTaskName, new GuessEventDrawScheduled(moonBaseService, userDao, txRecordDao, rewardRecordDao, eventDao, eventTaskManager, gameResultDao, eventTaskName, eventId, optionId), localDateTime);
         eventDao.update(event);
     }
@@ -115,7 +114,7 @@ public class EventManagerService implements IEventManagerService {
                 event.getBetTime().after(new Date())) {
                 String eventTaskName = event.getName() + BET;
                 LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventTaskName, event.getId()), localDateTime);
+                eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventDao, eventTaskName, event.getId()), localDateTime);
             }
         }
     }

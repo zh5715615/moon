@@ -55,7 +55,7 @@ public class GuessEventDrawScheduled extends AllocReward implements Runnable {
 
     @Override
     public void run() {
-        log.info("摇骰子开奖时间，不能下注.");
+        log.info("猜事件开奖时间，不能下注.");
         Integer gameTurns = gameResultDao.maxTurns(getGameType());
         if (gameTurns == null) {
             return;
