@@ -7,18 +7,31 @@
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="token" column="token" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="promoCode" column="Promo_Code" jdbcType="INTEGER"/>
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- 通过ID查询单条数据 -->
     <select id="queryByAddress" resultMap="TbUserMap">
         select
-            id,address,create_time,token
+            id,address,create_time,token,Promo_Code,parent_id
         from tb_user
         where address = #{address}
     </select>
+    <select id="maxPromoCode" resultType="java.lang.Integer">
+        select
+           max(Promo_Code)
+        from tb_user
+    </select>
+    <select id="promoCodeFindUserInfo" resultMap="TbUserMap">
+        select
+            id,address,create_time,token,Promo_Code,parent_id
+        from tb_user
+        where Promo_Code = #{promoCode}
+    </select>
     <select id="queryById" resultMap="TbUserMap">
         select
-            id,address,create_time,token
+            id,address,create_time,token,Promo_Code,parent_id
         from tb_user
         where id = #{userId}
     </select>
@@ -26,15 +39,16 @@
 
     <!--新增数据-->
     <insert id="insert">
-        insert into tb_user(id,address,token,create_time)
-        values (#{id},#{address},#{token},now())
+        insert into tb_user(id,address,token,create_time,Promo_Code)
+        values (#{id},#{address},#{token},now(),#{promoCode})
     </insert>
 
 
     <!-- 更新数据 -->
     <update id="update">
         update tb_user
-        set token = #{token}
+        set token     = #{token},
+            parent_Id = #{parentId}
         where id = #{id}
     </update>
 
