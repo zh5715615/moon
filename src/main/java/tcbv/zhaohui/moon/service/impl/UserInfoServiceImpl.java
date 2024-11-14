@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.service.impl;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import tcbv.zhaohui.moon.dto.ConfirmPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.FindPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.WalletLoginDto;
 import tcbv.zhaohui.moon.entity.TbUser;
+import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
 import tcbv.zhaohui.moon.service.UserInfoService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.utils.Web3CryptoUtil;
@@ -19,6 +21,7 @@ import tcbv.zhaohui.moon.vo.LoginVo;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.UUID;
 
 /**
@@ -32,6 +35,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Resource
     private TbUserDao tbUserDao;
+
+    @Autowired
+    private IUSDTLikeInterfaceService iusdtLikeInterfaceService;
 
     /**
      * @param loginDto 钱包登录
@@ -69,7 +75,14 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     public TbUser findPromoCode(FindPromoCodeDTO dto) {
-        return tbUserDao.queryById(dto.getUserId());
+        TbUser tbUser = tbUserDao.queryById(dto.getUserId());
+        if (tbUser.getPromoCode() == null) {
+            Integer code = tbUserDao.maxPromoCode();
+            code++;
+            tbUser.setPromoCode(code);
+            tbUserDao.update(tbUser);
+        }
+        return tbUser;
     }
 
     @Override
@@ -94,19 +107,22 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         tbUser.setParentId(parentInfo.getId());
         //推广奖励，推广成功后，直推奖励新用户余额的5%, 间推奖励新用户余额的2%，比如A推荐了B，A拿到B余额的5%；B推给C，B拿C余额的5%, A拿C余额的2%；C推给D，那么只有B(2%)和C(5%)可以拿到奖励，A没有.
-        //todo 新用户金额发放
-        //newUser
-        //rewardsMoney
-        //todo 上级奖励发放
-        //parentUser
-        BigDecimal parentMoney = rewardsMoney.multiply(new BigDecimal(0.05));
-        //todo 上上级奖励发放
-        String parentsId = parentInfo.getParentId();
-        if (StringUtils.isNotBlank(parentsId)) {
-            TbUser parentsUser = tbUserDao.queryById(parentsId);
-            BigDecimal parentsMoney = rewardsMoney.multiply(new BigDecimal(0.02));
+        try {
+            BigDecimal userBalance = iusdtLikeInterfaceService.queryErc20Balance(tbUser.getAddress());
+            BigDecimal parentReward = userBalance.multiply(new BigDecimal("0.05"));
+            String parentTxHash = iusdtLikeInterfaceService.transfer(parentInfo.getAddress(), parentReward);
+            log.info("parentTxHash is {}", parentTxHash);
+            String grandParentId = parentInfo.getParentId();
+            if (StringUtils.isNotBlank(grandParentId)) {
+                TbUser grandParentInfo = tbUserDao.queryById(grandParentId);
+                BigDecimal grandParentReward = userBalance.multiply(new BigDecimal("0.02"));
+                String grandParentTxHash = iusdtLikeInterfaceService.transfer(grandParentInfo.getAddress(), grandParentReward);
+                log.info("grandParentTxHash is {}", grandParentTxHash);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        //修改上级id
         tbUserDao.update(tbUser);
         return true;
     }

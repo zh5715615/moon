@@ -47,8 +47,17 @@
     <!-- 更新数据 -->
     <update id="update">
         update tb_user
-        set token     = #{token},
-            parent_Id = #{parentId}
+        <set>
+            <if test="token != null and token != ''">
+                token = #{token},
+            </if>
+            <if test="parentId != null and parentId != ''">
+                parent_Id = #{parentId},
+            </if>
+            <if test="promoCode != null and promoCode != ''">
+                Promo_Code = #{promoCode},
+            </if>
+        </set>
         where id = #{id}
     </update>
 

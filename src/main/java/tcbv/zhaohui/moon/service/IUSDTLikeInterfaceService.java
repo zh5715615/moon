@@ -1,5 +1,7 @@
 package tcbv.zhaohui.moon.service;
 
+import java.math.BigDecimal;
+
 public interface IUSDTLikeInterfaceService {
     /**
      * 初始化
@@ -11,7 +13,7 @@ public interface IUSDTLikeInterfaceService {
      * @param userAddress 账户地址
      * @return 余额
      */
-    double queryErc20Balance(String userAddress) throws Exception;
+    BigDecimal queryErc20Balance(String userAddress) throws Exception;
 
     /**
      * 批准代币支付金额
@@ -19,7 +21,7 @@ public interface IUSDTLikeInterfaceService {
      * @param amount 批准金额
      * @return hash地址
      */
-    String approve(String spender, double amount) throws Exception;
+    String approve(String spender, BigDecimal amount) throws Exception;
 
     /**
      * 代币转账
@@ -27,7 +29,7 @@ public interface IUSDTLikeInterfaceService {
      * @param amount 金额
      * @return hash地址
      */
-    String transfer(String toAddress, double amount) throws Exception;
+    String transfer(String toAddress, BigDecimal amount) throws Exception;
 
     /**
      * 代转账
@@ -36,13 +38,13 @@ public interface IUSDTLikeInterfaceService {
      * @param amount 金额
      * @return hash地址
      */
-    String transferFrom(String fromAddress, String toAddress, double amount) throws Exception;
+    String transferFrom(String fromAddress, String toAddress, BigDecimal amount) throws Exception;
 
     /**
      * 获取总发行量
      * @return
      */
-    double totalSupply() throws Exception;
+    BigDecimal totalSupply() throws Exception;
 
     /**
      * 获取授权额度
@@ -50,5 +52,5 @@ public interface IUSDTLikeInterfaceService {
      * @param spender 被批准人
      * @return 额度
      */
-    double allowance(String owner, String spender) throws Exception;
+    BigDecimal allowance(String owner, String spender) throws Exception;
 }

@@ -9,6 +9,8 @@ import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
+import java.math.BigDecimal;
+
 @Service
 public class USDTLikeInterfaceService extends EthereumService implements IUSDTLikeInterfaceService {
 
@@ -24,32 +26,32 @@ public class USDTLikeInterfaceService extends EthereumService implements IUSDTLi
     }
 
     @Override
-    public double queryErc20Balance(String userAddress) throws Exception {
-        return EthMathUtil.bigIntegerToDouble(usdtLikeInterface.balanceOf(userAddress).send(), DECIMALS);
+    public BigDecimal queryErc20Balance(String userAddress) throws Exception {
+        return EthMathUtil.bigIntegerToBigDecimal(usdtLikeInterface.balanceOf(userAddress).send(), DECIMALS);
     }
 
     @Override
-    public String approve(String spender, double amount) throws Exception {
-        return usdtLikeInterface.approve(spender, EthMathUtil.doubleToBigInteger(amount, DECIMALS)).send().getTransactionHash();
+    public String approve(String spender, BigDecimal amount) throws Exception {
+        return usdtLikeInterface.approve(spender, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
     }
 
     @Override
-    public String transfer(String toAddress, double amount) throws Exception {
-        return usdtLikeInterface.transfer(toAddress, EthMathUtil.doubleToBigInteger(amount, DECIMALS)).send().getTransactionHash();
+    public String transfer(String toAddress, BigDecimal amount) throws Exception {
+        return usdtLikeInterface.transfer(toAddress, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
     }
 
     @Override
-    public String transferFrom(String fromAddress, String toAddress, double amount) throws Exception {
-        return usdtLikeInterface.transferFrom(fromAddress, toAddress, EthMathUtil.doubleToBigInteger(amount, DECIMALS)).send().getTransactionHash();
+    public String transferFrom(String fromAddress, String toAddress, BigDecimal amount) throws Exception {
+        return usdtLikeInterface.transferFrom(fromAddress, toAddress, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
     }
 
     @Override
-    public double totalSupply() throws Exception {
-        return EthMathUtil.bigIntegerToDouble(usdtLikeInterface.totalSupply().send(), DECIMALS);
+    public BigDecimal totalSupply() throws Exception {
+        return EthMathUtil.bigIntegerToBigDecimal(usdtLikeInterface.totalSupply().send(), DECIMALS);
     }
 
     @Override
-    public double allowance(String owner, String spender) throws Exception {
-        return EthMathUtil.bigIntegerToDouble(usdtLikeInterface.allowance(owner, spender).send(), DECIMALS);
+    public BigDecimal allowance(String owner, String spender) throws Exception {
+        return EthMathUtil.bigIntegerToBigDecimal(usdtLikeInterface.allowance(owner, spender).send(), DECIMALS);
     }
 }
