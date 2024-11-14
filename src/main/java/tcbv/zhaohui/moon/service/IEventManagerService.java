@@ -26,4 +26,6 @@ public interface IEventManagerService {
     TbEvent queryById(String id);
 
     List<TbEventOption> queryOptionById(String id);
+
+    void init();
 }

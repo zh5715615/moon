@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EventManagerService implements IEventManagerService {
@@ -84,9 +85,10 @@ public class EventManagerService implements IEventManagerService {
         event.setId(eventId);
         event.setOptionId(optionId);
         event.setResultTime(new Date());
+        event.setStatus(MoonConstant.EVENT_BETING);
         String eventTaskName = event.getName() + DRAW;
         LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusSeconds(10);
-        eventTaskManager.addTask(eventTaskName, new GuessEventDrawScheduled(moonBaseService, userDao, txRecordDao, rewardRecordDao, eventTaskManager, gameResultDao, eventTaskName, eventId, optionId), localDateTime);
+        eventTaskManager.addTask(eventTaskName, new GuessEventDrawScheduled(moonBaseService, userDao, txRecordDao, rewardRecordDao, eventDao, eventTaskManager, gameResultDao, eventTaskName, eventId, optionId), localDateTime);
         eventDao.update(event);
     }
 
@@ -105,5 +107,29 @@ public class EventManagerService implements IEventManagerService {
     @Override
     public List<TbEventOption> queryOptionById(String eventId) {
         return eventOptionDao.queryByEventId(eventId);
+    }
+
+    private void startScheduled(List<TbEvent> eventList) {
+        for (TbEvent event : eventList) {
+            if(Objects.equals(event.getStatus(), MoonConstant.EVENT_WAITING) &&
+                event.getBetTime().after(new Date())) {
+                String eventTaskName = event.getName() + BET;
+                LocalDateTime localDateTime = event.getBetTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                eventTaskManager.addTask(eventTaskName, new GuessEventBetScheduled(eventTaskManager, gameResultDao, eventTaskName, event.getId()), localDateTime);
+            }
+        }
+    }
+
+    @Override
+    public void init() {
+        Page<TbEvent> tbEventPage = queryByPage(new TbEvent(), PageRequest.of(0, 100));
+        if (tbEventPage.getTotalElements() > 0) {
+            startScheduled(tbEventPage.toList());
+            int pageTotal = tbEventPage.getTotalPages();
+            for (int i = 1; i < pageTotal; i++) {
+                tbEventPage = queryByPage(new TbEvent(), PageRequest.of(i, 100));
+                startScheduled(tbEventPage.toList());
+            }
+        }
     }
 }

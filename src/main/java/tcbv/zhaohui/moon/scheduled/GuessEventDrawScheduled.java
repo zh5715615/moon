@@ -3,10 +3,8 @@ package tcbv.zhaohui.moon.scheduled;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import tcbv.zhaohui.moon.config.MoonConstant;
-import tcbv.zhaohui.moon.dao.TbGameResultDao;
-import tcbv.zhaohui.moon.dao.TbRewardRecordDao;
-import tcbv.zhaohui.moon.dao.TbTxRecordDao;
-import tcbv.zhaohui.moon.dao.TbUserDao;
+import tcbv.zhaohui.moon.dao.*;
+import tcbv.zhaohui.moon.entity.TbEvent;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
 import tcbv.zhaohui.moon.service.IEventTaskManager;
@@ -39,12 +37,15 @@ public class GuessEventDrawScheduled extends AllocReward implements Runnable {
 
     private TbRewardRecordDao rewardRecordDao;
 
-    public GuessEventDrawScheduled(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao, TbRewardRecordDao rewardRecordDao,
+    private TbEventDao eventDao;
+
+    public GuessEventDrawScheduled(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao, TbRewardRecordDao rewardRecordDao, TbEventDao eventDao,
                                    IEventTaskManager eventTaskManager, TbGameResultDao gameResultDao, String eventName, String eventId, String optionId) {
         this.moonBaseService = moonBaseService;
         this.userDao = userDao;
         this.txRecordDao = txRecordDao;
         this.rewardRecordDao = rewardRecordDao;
+        this.eventDao = eventDao;
         this.eventTaskManager = eventTaskManager;
         this.gameResultDao = gameResultDao;
         this.eventName = eventName;
@@ -68,6 +69,11 @@ public class GuessEventDrawScheduled extends AllocReward implements Runnable {
         gameResultDao.update(gameResult);
 
         allocReward(moonBaseService, userDao, txRecordDao, rewardRecordDao, gameTurns, optionId);
+
+        TbEvent event = new TbEvent();
+        event.setId(eventId);
+        event.setStatus(MoonConstant.EVENT_DRAW_LOTTO);
+        eventDao.update(event);
     }
 
     private void allocReward(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao,

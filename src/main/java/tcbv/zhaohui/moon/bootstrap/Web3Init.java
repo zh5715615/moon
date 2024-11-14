@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.service.IEthereumService;
+import tcbv.zhaohui.moon.service.IEventManagerService;
 import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
 
@@ -27,11 +28,15 @@ public class Web3Init implements ServletContextListener {
     @Autowired
     private Web3Config web3Config;
 
+    @Autowired
+    private IEventManagerService eventManagerService;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         log.info("================= web3服务初始化 =================");
         ethereumService.init();
         moonBaseService.init(web3Config.getMoonBaseAddress());
         usdtLikeInterfaceService.init(web3Config.getMoonTokenAddress());
+        eventManagerService.init();
     }
 }
