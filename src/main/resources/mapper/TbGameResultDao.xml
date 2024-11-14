@@ -22,13 +22,13 @@
     </select>
     <select id="findGameTypeNumber"  resultType="java.lang.Integer">
         select
-            max(turns)
+            IFNULL(max(turns), 0)
         from tb_game_result
         where game_type = #{gameType}
     </select>
     <select id="findGameTypeAndTurnsNumber"  resultType="java.lang.Integer">
         select
-            max(turns)
+            IFNULL(max(turns), 0)
         from tb_game_result
         where game_type = #{gameType} and turns=#{turns}
     </select>
@@ -89,6 +89,6 @@
         where DRAWN_TIME = #{drawnTime} and game_type=#{gameType}
     </select>
     <select id="maxTurns" resultType="java.lang.Integer">
-        select max(turns) from tb_game_result where game_type = #{gameType}
+        select IFNULL(max(turns), 0) from tb_game_result where game_type = #{gameType}
     </select>
 </mapper>
