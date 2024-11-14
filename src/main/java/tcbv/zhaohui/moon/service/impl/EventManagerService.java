@@ -122,11 +122,11 @@ public class EventManagerService implements IEventManagerService {
 
     @Override
     public void init() {
-        Page<TbEvent> tbEventPage = queryByPage(new TbEvent(), PageRequest.of(0, 100));
+        Page<TbEvent> tbEventPage = queryByPage(new TbEvent(), PageRequest.of(1, 100));
         if (tbEventPage.getTotalElements() > 0) {
             startScheduled(tbEventPage.toList());
             int pageTotal = tbEventPage.getTotalPages();
-            for (int i = 1; i < pageTotal; i++) {
+            for (int i = 2; i < pageTotal; i++) {
                 tbEventPage = queryByPage(new TbEvent(), PageRequest.of(i, 100));
                 startScheduled(tbEventPage.toList());
             }
