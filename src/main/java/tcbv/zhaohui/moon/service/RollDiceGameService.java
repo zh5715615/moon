@@ -81,4 +81,6 @@ public interface RollDiceGameService {
      * @return 统计数量
      */
     Double betNumber(int gameType, int turns, Integer betType);
+
+    Double betNumber(int gameType, int turns, String betType);
 }

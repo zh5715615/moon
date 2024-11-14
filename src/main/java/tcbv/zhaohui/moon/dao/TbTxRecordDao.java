@@ -84,4 +84,6 @@ public interface TbTxRecordDao {
     List<TbTxRecord> winnerEventList(@Param("gameType") int gameType, @Param("turns") int turns, @Param("optionId")String optionId);
 
     List<TbTxRecord> loserEventList(@Param("gameType") int gameType, @Param("turns") int turns, @Param("optionId")String optionId);
+
+    Double betNumberEvent(@Param("gameType") int gameType, @Param("turns") int turns, @Param("betType") String betType);
 }
