@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.dao;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.web3j.abi.datatypes.Int;
 import tcbv.zhaohui.moon.entity.TbUser;
 
 /**
@@ -19,6 +20,17 @@ public interface TbUserDao {
      * @return 实例对象
      */
     TbUser queryByAddress(@Param("address") String address);
+    /**
+     * 查询最大的推广码code
+     */
+    Integer maxPromoCode();
+
+    /**
+     *
+     * @param promoCode 根据推广码查询数据
+     * @return
+     */
+    TbUser promoCodeFindUserInfo(@Param("promoCode") Integer promoCode);
     /**
      * 新增数据
      *

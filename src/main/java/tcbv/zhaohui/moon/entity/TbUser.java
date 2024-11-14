@@ -26,4 +26,12 @@ public class TbUser implements Serializable {
      * 密钥
      */
     private String token;
+    /**
+     * 推广码
+     */
+    private Integer promoCode;
+    /**
+     * 上级id
+     */
+    private String parentId;
 }

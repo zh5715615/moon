@@ -34,6 +34,10 @@ public class EthMathUtil {
      */
     public static BigInteger doubleToBigInteger(double d, int decimals) {
         BigDecimal bigDecimal = BigDecimal.valueOf(d);
+        return decimalToBigInteger(bigDecimal, decimals);
+    }
+
+    public static BigInteger decimalToBigInteger(BigDecimal bigDecimal, int decimals) {
         return bigDecimal.multiply(BigDecimal.TEN.pow(decimals)).toBigInteger();
     }
 
