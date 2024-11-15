@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    environment {
+        BRANCH_NAME = '$BRANCH'
+    }
+    stages {
+        stage('拉取Git代码') {
+            steps {
+                echo "\n------------- 拉取Git代码 start --------------\n"
+                checkout([$class: 'GitSCM', branches: [[name: "${env.BRANCH_NAME}"]], extensions: [], userRemoteConfigs: [[credentialsId: 'feb928eb-66c7-4bd1-bc14-01625f8964db', url: 'https://github.com/zh5715615/moon.git']]])
+                echo "\n------------- 拉取Git代码 end --------------\n"
+            }
+        }
+        stage('mvn打包构建') {
+            steps {
+                sh "mvn clean package -Dmaven.test.skip=true"
+            }
+        }
+        stage('部署启动') {
+            steps {
+                script {
+                    sh "scp ${WORKSPACE}/target/*.jar root@47.92.224.70:/root/prj/moon/svc"
+                    sh "ssh root@47.92.224.70 \"cd /root/prj/moon/svc && sh run.sh\""
+                }
+            }
+        }
+    }
+}

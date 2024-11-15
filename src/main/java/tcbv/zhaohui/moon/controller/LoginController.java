@@ -29,7 +29,7 @@ public class LoginController {
     @Resource
     private UserInfoService userInfoService;
 
-    @PostMapping("walletLogin")
+    @PostMapping("/walletLogin")
     @ApiOperation("钱包登录")
     public Rsp<LoginVo> walletLogin(@RequestBody WalletLoginDto loginDto) {
         return Rsp.okData(userInfoService.walletLogin(loginDto));
