@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.dto.ConfirmPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.FindPromoCodeDTO;
@@ -38,7 +35,10 @@ public class LoginController {
     @PostMapping("/findPromoCode")
     @ApiOperation("查询推广码")
     public Rsp<TbUser> findPromoCode(@RequestBody FindPromoCodeDTO dto) {
-        return Rsp.okData(userInfoService.findPromoCode(dto));
+        TbUser user = userInfoService.findPromoCode(dto);
+        TbUser parentUser = userInfoService.findPromoCode(new FindPromoCodeDTO(user.getParentId()));
+        user.setParentAddress(parentUser.getAddress());
+        return Rsp.okData(user);
     }
 
     @PostMapping("/confirmPromoCode")

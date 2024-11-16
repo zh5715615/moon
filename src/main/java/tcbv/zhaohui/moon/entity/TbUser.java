@@ -34,4 +34,8 @@ public class TbUser implements Serializable {
      * 上级id
      */
     private String parentId;
+    /**
+     * 父帐号地址
+     */
+    private String parentAddress;
 }

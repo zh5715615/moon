@@ -1,7 +1,9 @@
 package tcbv.zhaohui.moon.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
@@ -11,6 +13,8 @@ import java.io.Serializable;
  * @date 2024/11/14 10:09
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FindPromoCodeDTO implements Serializable {
 
     @ApiModelProperty("用户id")
