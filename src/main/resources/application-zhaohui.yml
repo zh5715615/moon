@@ -5,7 +5,7 @@ spring:
   application:
     name: moon
   datasource:
-    url: jdbc:mysql://103.140.127.234:15706/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
+    url: jdbc:mysql://192.168.1.38:3306/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
     username: root
     password: Zh5715615~
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -76,6 +76,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public TbUser findPromoCode(FindPromoCodeDTO dto) {
         TbUser tbUser = tbUserDao.queryById(dto.getUserId());
+        if (tbUser == null) {
+            throw new RuntimeException("用户" + dto.getUserId() + "不存在");
+        }
         if (tbUser.getPromoCode() == null) {
             Integer code = tbUserDao.maxPromoCode();
             code++;

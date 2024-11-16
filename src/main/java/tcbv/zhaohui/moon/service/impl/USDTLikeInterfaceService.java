@@ -16,7 +16,7 @@ public class USDTLikeInterfaceService extends EthereumService implements IUSDTLi
 
     private USDTLikeInterface usdtLikeInterface;
 
-    public static final int DECIMALS = 18;
+    public static final int DECIMALS = 6;
 
     @Override
     public void init(String contractAddress) {
