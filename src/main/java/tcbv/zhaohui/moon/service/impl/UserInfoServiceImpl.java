@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.dto.ConfirmPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.FindPromoCodeDTO;
@@ -35,6 +36,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Resource
     private TbUserDao tbUserDao;
+
+    @Autowired
+    private Web3Config web3Config;
 
     @Autowired
     private IUSDTLikeInterfaceService iusdtLikeInterfaceService;
@@ -66,7 +70,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             tbUser.setPromoCode(++code);
             tbUserDao.insert(tbUser);
         }
-        return new LoginVo(loginDto.getAddress(), tbUser.getToken(), tbUser.getId());
+        return new LoginVo(loginDto.getAddress(), tbUser.getId(), tbUser.getToken());
     }
 
     /**
@@ -115,13 +119,21 @@ public class UserInfoServiceImpl implements UserInfoService {
             if (userBalance.equals(BigDecimal.ZERO)) {
                 throw new RuntimeException("你的账号余额为0，请先充值moon才能使用推广码");
             }
+            BigDecimal myBalance = iusdtLikeInterfaceService.queryErc20Balance(web3Config.getUserAddress());
             BigDecimal parentReward = userBalance.multiply(new BigDecimal("0.05"));
+            if (myBalance.compareTo(parentReward) < 0) {
+                throw new RuntimeException("运营账户余额不足以支付直推奖励");
+            }
             String parentTxHash = iusdtLikeInterfaceService.transfer(parentInfo.getAddress(), parentReward);
             log.info("parentTxHash is {}", parentTxHash);
             String grandParentId = parentInfo.getParentId();
             if (StringUtils.isNotBlank(grandParentId)) {
                 TbUser grandParentInfo = tbUserDao.queryById(grandParentId);
+                myBalance = iusdtLikeInterfaceService.queryErc20Balance(web3Config.getUserAddress());
                 BigDecimal grandParentReward = userBalance.multiply(new BigDecimal("0.02"));
+                if (myBalance.compareTo(grandParentReward) < 0) {
+                    throw new RuntimeException("运营账户余额不足以支付间推奖励");
+                }
                 String grandParentTxHash = iusdtLikeInterfaceService.transfer(grandParentInfo.getAddress(), grandParentReward);
                 log.info("grandParentTxHash is {}", grandParentTxHash);
             }
