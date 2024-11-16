@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.dto.ConfirmPromoCodeDTO;
@@ -36,6 +37,9 @@ public class LoginController {
     @ApiOperation("查询推广码")
     public Rsp<TbUser> findPromoCode(@RequestBody FindPromoCodeDTO dto) {
         TbUser user = userInfoService.findPromoCode(dto);
+        if (StringUtils.isBlank(user.getParentId())) {
+            return Rsp.okData(user);
+        }
         TbUser parentUser = userInfoService.findPromoCode(new FindPromoCodeDTO(user.getParentId()));
         user.setParentAddress(parentUser.getAddress());
         return Rsp.okData(user);
