@@ -109,6 +109,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         //推广奖励，推广成功后，直推奖励新用户余额的5%, 间推奖励新用户余额的2%，比如A推荐了B，A拿到B余额的5%；B推给C，B拿C余额的5%, A拿C余额的2%；C推给D，那么只有B(2%)和C(5%)可以拿到奖励，A没有.
         try {
             BigDecimal userBalance = iusdtLikeInterfaceService.queryErc20Balance(tbUser.getAddress());
+            if (userBalance.equals(BigDecimal.ZERO)) {
+                throw new RuntimeException("你的账号余额为0，请先充值moon才能使用推广码");
+            }
             BigDecimal parentReward = userBalance.multiply(new BigDecimal("0.05"));
             String parentTxHash = iusdtLikeInterfaceService.transfer(parentInfo.getAddress(), parentReward);
             log.info("parentTxHash is {}", parentTxHash);
