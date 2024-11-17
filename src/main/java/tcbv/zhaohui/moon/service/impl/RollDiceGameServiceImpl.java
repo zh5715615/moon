@@ -108,7 +108,7 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
         }
 
         if (dto.getEventId() != null) {
-            build.eventId(dto.getTxHash())
+            build.eventId(dto.getEventId())
                  .eventResult(dto.getParamType());
         }
         TbTxRecord txRecord = build.txHash(dto.getTxHash())
