@@ -109,7 +109,7 @@ public class MoonGamesController {
     @ApiOperation(value = "是否重复投注")
     @ApiImplicitParams({
             @ApiImplicitParam(name="userId", value="用户id", required = true),
-            @ApiImplicitParam(name="gameType", value="游戏类型: 1摇色子 | 2猜BNB涨跌", required = true),
+            @ApiImplicitParam(name="gameType", value="游戏类型: 1摇色子 | 2猜BNB涨跌 | 3猜事件", required = true),
             @ApiImplicitParam(name="turns", value="游戏轮次", required = true),
     })
     public Rsp<Boolean> isBetOn(@RequestParam("userId") @NotBlank(message = "用户id不能为空") String userId,

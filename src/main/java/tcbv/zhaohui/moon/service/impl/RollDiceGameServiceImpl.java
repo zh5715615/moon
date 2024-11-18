@@ -177,9 +177,9 @@ public class RollDiceGameServiceImpl implements RollDiceGameService {
                         userRewardListVO.setIsWinning(false);
                     }
                 }
-                if(!userRewardListVO.getIsWinning()){
-                    userRewardListVO.setRewardAmount(new BigDecimal(0));
-                }
+//                if(!userRewardListVO.getIsWinning()){
+//                    userRewardListVO.setRewardAmount(new BigDecimal(0));
+//                }
             }
         }
         PageResultVo result = new PageResultVo();
