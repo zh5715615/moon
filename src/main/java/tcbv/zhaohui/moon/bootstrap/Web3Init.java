@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.service.IEthereumService;
-import tcbv.zhaohui.moon.service.IEventManagerService;
-import tcbv.zhaohui.moon.service.IMoonBaseService;
-import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
+import tcbv.zhaohui.moon.service.*;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -23,6 +20,9 @@ public class Web3Init implements ServletContextListener {
     private IMoonBaseService moonBaseService;
 
     @Autowired
+    private IMoonNFTService moonNFTService;
+
+    @Autowired
     private IUSDTLikeInterfaceService usdtLikeInterfaceService;
 
     @Autowired
@@ -36,6 +36,7 @@ public class Web3Init implements ServletContextListener {
         log.info("================= web3服务初始化 =================");
         ethereumService.init();
         moonBaseService.init(web3Config.getMoonBaseAddress());
+        moonNFTService.init(web3Config.getMoonNFTAddress());
         usdtLikeInterfaceService.init(web3Config.getMoonTokenAddress());
         eventManagerService.init();
     }

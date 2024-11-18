@@ -22,6 +22,19 @@ public class Web3Config {
     @Value("${web3.account.address}")
     private String userAddress; //用户地址
 
+    @Value("${web3.week-account.private-key}")
+    private String weekPoolPrivKey; //用户私钥
+
+    @Value("${web3.week-account.address}")
+    private String weekPoolAddress; //用户地址
+
+    @Value("${web3.month-account.private-key}")
+    private String monthPoolPrivKey; //用户私钥
+
+    @Value("${web3.month-account.address}")
+    private String monthPoolAddress; //用户地址
+
+
     @Value("${web3.gas-fee.price}")
     private String gasPrice;  //交易gas费
 
@@ -39,6 +52,9 @@ public class Web3Config {
 
     @Value("${web3.contract.moon-base.address}")
     private String moonBaseAddress;
+
+    @Value("${web3.contract.moon-nft.address}")
+    private String moonNFTAddress;
 
     @Value("${web3.contract.moon-token.address}")
     private String moonTokenAddress;

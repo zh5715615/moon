@@ -49,6 +49,10 @@ public class EthereumService implements IEthereumService {
 
     protected Credentials credentials;
 
+    protected Credentials weekCredentials;
+
+    protected Credentials moonCredentials;
+
     protected ContractGasProvider contractGasProvider;
 
     @Autowired
@@ -70,6 +74,8 @@ public class EthereumService implements IEthereumService {
         }
         web3j = Web3j.build(httpService);
         credentials = Credentials.create(web3Config.getUserPrivKey());
+        weekCredentials = Credentials.create(web3Config.getWeekPoolPrivKey());
+        moonCredentials = Credentials.create(web3Config.getMonthPoolPrivKey());
         contractGasProvider = new ContractGasProvider() {
             @Override
             public BigInteger getGasPrice(String method) {

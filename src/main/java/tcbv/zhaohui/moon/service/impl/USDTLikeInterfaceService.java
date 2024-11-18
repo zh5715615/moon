@@ -16,6 +16,10 @@ public class USDTLikeInterfaceService extends EthereumService implements IUSDTLi
 
     private USDTLikeInterface usdtLikeInterface;
 
+    private USDTLikeInterface weekToken20;
+
+    private USDTLikeInterface monthToken20;
+
     public static final int DECIMALS = 6;
 
     @Override
@@ -23,6 +27,12 @@ public class USDTLikeInterfaceService extends EthereumService implements IUSDTLi
         super.init();
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         usdtLikeInterface = USDTLikeInterface.load(contractAddress, web3j, transactionManager, contractGasProvider);
+
+        TransactionManager weekTransactionManager = new RawTransactionManager(web3j, weekCredentials, web3Config.getChainId());
+        weekToken20 = USDTLikeInterface.load(contractAddress, web3j, weekTransactionManager, contractGasProvider);
+
+        TransactionManager monthTransactionManager = new RawTransactionManager(web3j, moonCredentials, web3Config.getChainId());
+        monthToken20 = USDTLikeInterface.load(contractAddress, web3j, monthTransactionManager, contractGasProvider);
     }
 
     @Override
@@ -38,6 +48,16 @@ public class USDTLikeInterfaceService extends EthereumService implements IUSDTLi
     @Override
     public String transfer(String toAddress, BigDecimal amount) throws Exception {
         return usdtLikeInterface.transfer(toAddress, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
+    }
+
+    @Override
+    public String transferWeek(String toAddress, BigDecimal amount) throws Exception {
+        return weekToken20.transfer(toAddress, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
+    }
+
+    @Override
+    public String transferMooth(String toAddress, BigDecimal amount) throws Exception {
+        return monthToken20.transfer(toAddress, EthMathUtil.decimalToBigInteger(amount, DECIMALS)).send().getTransactionHash();
     }
 
     @Override

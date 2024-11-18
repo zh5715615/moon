@@ -32,6 +32,22 @@ public interface IUSDTLikeInterfaceService {
     String transfer(String toAddress, BigDecimal amount) throws Exception;
 
     /**
+     * 周代币转账
+     * @param toAddress to地址
+     * @param amount 金额
+     * @return hash地址
+     */
+    String transferWeek(String toAddress, BigDecimal amount) throws Exception;
+
+    /**
+     * 月代币转账
+     * @param toAddress to地址
+     * @param amount 金额
+     * @return hash地址
+     */
+    String transferMooth(String toAddress, BigDecimal amount) throws Exception;
+
+    /**
      * 代转账
      * @param fromAddress 支付地址
      * @param toAddress to地址
