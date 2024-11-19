@@ -69,7 +69,7 @@ public class NFTRewardPoolSchedule {
         nftRewardService.insertBatch(nftRewardList);
     }
 
-    @Scheduled(cron = "0 0 21 L * ?")
+    @Scheduled(cron = "0 0 21 ? * 31")
     public void executeMonthlyTask() throws Exception {
         log.info("执行月奖励任务");
         BigDecimal balance = usdtLikeInterfaceService.queryErc20Balance(web3Config.getMonthPoolAddress());
