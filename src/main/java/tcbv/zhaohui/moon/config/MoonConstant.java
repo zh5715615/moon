@@ -23,4 +23,12 @@ public class MoonConstant {
     public static final Integer EVENT_BETING = 2; //投注中
 
     public static final Integer EVENT_DRAW_LOTTO = 3; //开奖
+
+    public static final Integer NFT_WEEK_CYCLE = 1; //每周
+
+    public static final Integer NFT_MONTH_CYCLE = 2; //每月
+
+    public static final Integer NFT_WEEK_COUNT = 30; //周排名数量
+
+    public static final Integer NFT_MONTH_COUNT = 50; //月排名数量
 }

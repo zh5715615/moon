@@ -6,12 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
+import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.entity.TbNftReward;
 import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
+import tcbv.zhaohui.moon.service.TbNftRewardService;
 import tcbv.zhaohui.moon.service.impl.MoonNFTService;
+import tcbv.zhaohui.moon.vo.NFTRankVo;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
 @ConditionalOnProperty(name = "moon.scheduled", havingValue = "true")
@@ -27,57 +32,41 @@ public class NFTRewardPoolSchedule {
     @Autowired
     private Web3Config web3Config;
 
-    public Map<String, Integer> owners() {
-        long total = 0;
-        try {
-            total = moonNFTService.totalSupply();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        Map<String, Integer> ownersMap = new HashMap<>();
-        for (int i = 1; i <= total; i++) {
-            String userAddress;
-            try {
-                userAddress = moonNFTService.ownerOf(i);
-            } catch (Exception e) {
-                continue;
-            }
-            if (ownersMap.containsKey(userAddress)) {
-                ownersMap.put(userAddress, ownersMap.get(userAddress) + 1);
-            } else {
-                ownersMap.put(userAddress, 1);
-            }
-        }
-        return ownersMap;
-    }
-
-    public static TreeMultimap<Integer, String> reverseAndSortUsingTreeMultimap(Map<String, Integer> inputMap) {
-        // 创建一个新的 TreeMultimap，并指定键的排序方式为从大到小
-        TreeMultimap<Integer, String> multimap = TreeMultimap.create(Collections.reverseOrder(), Comparator.naturalOrder());
-
-        // 遍历输入的 Map，将键值对反转并存入 TreeMultimap 中
-        for (Map.Entry<String, Integer> entry : inputMap.entrySet()) {
-            multimap.put(entry.getValue(), entry.getKey());
-        }
-
-        return multimap;
-    }
+    @Autowired
+    private TbNftRewardService nftRewardService;
 
     @Scheduled(cron = "0 0 21 ? * SUN")
     public void executeWeeklyTask() throws Exception {
         log.info("执行周奖励任务");
         BigDecimal balance = usdtLikeInterfaceService.queryErc20Balance(web3Config.getWeekPoolAddress());
         long total = moonNFTService.totalSupply();
-        Map<String, Integer> ownersMap = owners();
+        Map<String, Integer> ownersMap = moonNFTService.owners();
+
+        List<TbNftReward> nftRewardList = new ArrayList<>();
+        nftRewardService.deleteByCycle(MoonConstant.NFT_WEEK_CYCLE);
+
+        AtomicInteger i = new AtomicInteger();
         ownersMap.forEach((userAddress, count) -> {
             try {
                 double percent = (count * 100000000.0 / total) / 100000000;
                 BigDecimal reward = balance.multiply(BigDecimal.valueOf(percent));
-                usdtLikeInterfaceService.transferWeek(userAddress, reward);
+                String txHash = usdtLikeInterfaceService.transferWeek(userAddress, reward);
+                TbNftReward nftReward = new TbNftReward();
+                nftReward.setUserAddress(userAddress);
+                nftReward.setNftAmount(count);
+                nftReward.setRewardAmount(reward.doubleValue());
+                nftReward.setCycle(MoonConstant.NFT_WEEK_CYCLE);
+                nftReward.setTxHash(txHash);
+                nftReward.setCreateTime(new Date());
+                if (i.get() < MoonConstant.NFT_WEEK_COUNT) {
+                    nftRewardList.add(nftReward);
+                }
+                i.getAndIncrement();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });
+        nftRewardService.insertBatch(nftRewardList);
     }
 
     @Scheduled(cron = "0 0 21 L * ?")
@@ -91,33 +80,47 @@ public class NFTRewardPoolSchedule {
         BigDecimal no11_25 = balance.multiply(BigDecimal.valueOf(0.25)).divide(BigDecimal.valueOf(15.0));
         BigDecimal no26_50 = balance.multiply(BigDecimal.valueOf(0.3)).divide(BigDecimal.valueOf(25.0));
 
-        TreeMultimap<Integer, String> ownersMap = reverseAndSortUsingTreeMultimap(owners());
-        int i = 0;
+        TreeMultimap<Integer, String> ownersMap = moonNFTService.nftRank();
+        int i = 1;
+        List<TbNftReward> nftRewardList = new ArrayList<>();
+        nftRewardService.deleteByCycle(MoonConstant.NFT_MONTH_CYCLE);
         for (Map.Entry<Integer, String> entry : ownersMap.entries()) {
+            int count = entry.getKey();
             String userAddress = entry.getValue();
             BigDecimal reward = BigDecimal.ZERO;
-            if (i == 0) {
+            if (i == 1) {
                 reward = no1;
-            }
-            if (i == 2) {
+            } else if (i == 2) {
                 reward = no2;
-            }
-            if (i == 3) {
+            } else if (i == 3) {
                 reward = no3;
-            }
-            if (i >= 4 && i <= 10) {
+            } else if (i >= 4 && i <= 10) {
                 reward = no4_10;
-            }
-            if (i >= 11 && i <= 25) {
+            } else if (i >= 11 && i <= 25) {
                 reward = no11_25;
-            }
-            if (i >= 26 && i <= 50) {
+            } else if (i >= 26 && i <= 50) {
                 reward = no26_50;
+            } else {
+                break;
             }
             i++;
             if (reward.compareTo(BigDecimal.ZERO) > 0) {
-                usdtLikeInterfaceService.transferMooth(userAddress, reward);
+                String txHash = usdtLikeInterfaceService.transferMooth(userAddress, reward);
+                TbNftReward nftReward = new TbNftReward();
+                nftReward.setUserAddress(userAddress);
+                nftReward.setNftAmount(count);
+                nftReward.setRewardAmount(reward.doubleValue());
+                nftReward.setCycle(MoonConstant.NFT_MONTH_CYCLE);
+                nftReward.setTxHash(txHash);
+                nftReward.setCreateTime(new Date());
+                nftRewardList.add(nftReward);
             }
         }
+        nftRewardService.insertBatch(nftRewardList);
     }
+    @Scheduled(cron = "0 0 * * * ?")
+    public void realtimeRank() {
+        moonNFTService.realtimeRank();
+    }
+
 }
