@@ -73,7 +73,6 @@ public class NFTRewardPoolSchedule {
 
     @Scheduled(cron = "0 0 21 28-31 * ?")
     public void executeMonthlyTask() throws Exception {
-        log.info("执行月奖励任务");
         LocalDateTime localDateTime = LocalDateTime.now();
         int month = localDateTime.getMonthValue();
         int day = localDateTime.getDayOfMonth();
@@ -99,6 +98,7 @@ public class NFTRewardPoolSchedule {
             }
         }
 
+        log.info("执行月奖励任务");
         BigDecimal balance = usdtLikeInterfaceService.queryErc20Balance(web3Config.getMonthPoolAddress());
         BigDecimal no1 = balance.multiply(BigDecimal.valueOf(0.125));
         BigDecimal no2 = balance.multiply(BigDecimal.valueOf(0.075));

@@ -1,6 +1,7 @@
 package tcbv.zhaohui.moon.controller;
 
 import com.google.common.collect.TreeMultimap;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import tcbv.zhaohui.moon.config.MoonConstant;
 import tcbv.zhaohui.moon.entity.TbNftReward;
@@ -25,7 +26,7 @@ import java.util.*;
  * @since 2024-11-19 20:14:47
  */
 @RestController
-@RequestMapping("/tbNftReward")
+@RequestMapping("/nftRank")
 public class TbNftRewardController {
     /**
      * 服务对象
@@ -54,6 +55,7 @@ public class TbNftRewardController {
      * @return 查询结果
      */
     @PostMapping("/weekRank")
+    @ApiOperation(value = "周排名")
     public ResponseEntity<List<NFTRankVo>> weekRank() {
         PageRequest pageRequest = PageRequest.of(0, MoonConstant.NFT_WEEK_COUNT, Sort.by(Sort.Direction.DESC, "nft_amount"));
         Page<TbNftReward> page = this.tbNftRewardService.queryByPage(new TbNftReward(MoonConstant.NFT_WEEK_CYCLE), pageRequest);
@@ -65,6 +67,7 @@ public class TbNftRewardController {
     }
 
     @PostMapping("/monthRank")
+    @ApiOperation(value = "月排名")
     public ResponseEntity<List<NFTRankVo>> monthRank() {
         PageRequest pageRequest = PageRequest.of(0, MoonConstant.NFT_MONTH_COUNT, Sort.by(Sort.Direction.DESC, "nft_amount"));
         Page<TbNftReward> page = this.tbNftRewardService.queryByPage(new TbNftReward(MoonConstant.NFT_MONTH_CYCLE), pageRequest);
@@ -72,6 +75,7 @@ public class TbNftRewardController {
     }
 
     @PostMapping("/realtimeRank")
+    @ApiOperation(value = "实时排名")
     public ResponseEntity<List<NFTRankVo>> realtimeRank() {
         return ResponseEntity.ok(TimerMaps.getNftRankVoList());
     }
