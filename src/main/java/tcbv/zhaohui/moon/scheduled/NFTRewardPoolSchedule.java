@@ -15,6 +15,8 @@ import tcbv.zhaohui.moon.service.impl.MoonNFTService;
 import tcbv.zhaohui.moon.vo.NFTRankVo;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -72,6 +74,31 @@ public class NFTRewardPoolSchedule {
     @Scheduled(cron = "0 0 21 28-31 * ?")
     public void executeMonthlyTask() throws Exception {
         log.info("执行月奖励任务");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        int month = localDateTime.getMonthValue();
+        int day = localDateTime.getDayOfMonth();
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+            if (day != 31) {
+                return;
+            }
+        }
+        if (month == 4 || month == 6 || month == 9 || month == 11) {
+            if (day != 30) {
+                return;
+            }
+        }
+        int year = localDateTime.getYear();
+        boolean isLeapYear = Year.isLeap(year);
+        if (isLeapYear) {
+            if (day != 29) {
+                return;
+            }
+        } else {
+            if (day != 28) {
+                return;
+            }
+        }
+
         BigDecimal balance = usdtLikeInterfaceService.queryErc20Balance(web3Config.getMonthPoolAddress());
         BigDecimal no1 = balance.multiply(BigDecimal.valueOf(0.125));
         BigDecimal no2 = balance.multiply(BigDecimal.valueOf(0.075));
