@@ -54,7 +54,7 @@ public class TbNftRewardController {
      * 查询周排名
      * @return 查询结果
      */
-    @PostMapping("/weekRank")
+    @GetMapping("/weekRank")
     @ApiOperation(value = "周排名")
     public ResponseEntity<List<NFTRankVo>> weekRank() {
         PageRequest pageRequest = PageRequest.of(0, MoonConstant.NFT_WEEK_COUNT, Sort.by(Sort.Direction.DESC, "nft_amount"));
@@ -66,7 +66,7 @@ public class TbNftRewardController {
         return ResponseEntity.ok(getNFTRankList(page.getContent()));
     }
 
-    @PostMapping("/monthRank")
+    @GetMapping("/monthRank")
     @ApiOperation(value = "月排名")
     public ResponseEntity<List<NFTRankVo>> monthRank() {
         PageRequest pageRequest = PageRequest.of(0, MoonConstant.NFT_MONTH_COUNT, Sort.by(Sort.Direction.DESC, "nft_amount"));
@@ -74,7 +74,7 @@ public class TbNftRewardController {
         return ResponseEntity.ok(getNFTRankList(page.getContent()));
     }
 
-    @PostMapping("/realtimeRank")
+    @GetMapping("/realtimeRank")
     @ApiOperation(value = "实时排名")
     public ResponseEntity<List<NFTRankVo>> realtimeRank() {
         return ResponseEntity.ok(TimerMaps.getNftRankVoList());
