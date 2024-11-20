@@ -26,16 +26,13 @@ import java.util.*;
  * @since 2024-11-19 20:14:47
  */
 @RestController
-@RequestMapping("/nftRank")
+@RequestMapping("/game/nftRank")
 public class TbNftRewardController {
     /**
      * 服务对象
      */
     @Autowired
     private TbNftRewardService tbNftRewardService;
-
-    @Autowired
-    private MoonNFTService moonNFTService;
 
 
     private List<NFTRankVo> getNFTRankList(List<TbNftReward> nftRewardList) {
