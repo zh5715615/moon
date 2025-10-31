@@ -10,8 +10,10 @@ import tcbv.zhaohui.moon.dao.TbGameResultDao;
 import tcbv.zhaohui.moon.dto.*;
 import tcbv.zhaohui.moon.entity.TbGameResult;
 import tcbv.zhaohui.moon.entity.TbTxRecord;
+import tcbv.zhaohui.moon.entity.TbUser;
 import tcbv.zhaohui.moon.service.RollDiceGameService;
 import tcbv.zhaohui.moon.service.impl.MoonBaseService;
+import tcbv.zhaohui.moon.service.UserInfoService;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PageResultVo;
 import tcbv.zhaohui.moon.vo.PlayResidueTimesVO;
@@ -36,6 +38,9 @@ public class MoonGamesController {
 
     @Autowired
     private MoonBaseService moonBaseService;
+
+    @Resource
+    private UserInfoService userInfoService;
 
     @Resource
     private TbGameResultDao gameResultDao;
@@ -89,7 +94,7 @@ public class MoonGamesController {
     @ApiImplicitParams({
             @ApiImplicitParam(name="gameType", value="游戏类型: 1投骰子 | 2猜BNB涨跌 | 3猜事件", required = true)
     })
-    public Rsp<TbGameResult> preTurnsResult(@RequestParam("gameType") @NotBlank(message = "游戏类型不能为空") Integer gameType) {
+    public Rsp<TbGameResult> preTurnsResult(@RequestParam("gameType") @NotNull(message = "游戏类型不能为空") Integer gameType) {
         return Rsp.okData(rollDiceGameService.preTurnsResult(gameType));
     }
 
@@ -101,8 +106,9 @@ public class MoonGamesController {
 
     @PostMapping("/userMarketing")
     @ApiOperation(value = "用户推广码生成")
-    public Rsp userMarketing(@RequestBody @Valid UserMarketingDTO dto) {
-        return Rsp.okData(true);
+    public Rsp<Integer> userMarketing(@RequestBody @Valid UserMarketingDTO dto) {
+        TbUser user = userInfoService.findPromoCode(new FindPromoCodeDTO(dto.getUserId()));
+        return Rsp.okData(user.getPromoCode());
     }
 
     @GetMapping("/isBetOn")

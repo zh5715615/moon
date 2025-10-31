@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tcbv.zhaohui.moon.beans.CandleGraphBean;
 import java.time.Instant;
@@ -9,12 +11,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 
 
 @Slf4j
 public class BnbPriceUtilTest {
     @Test
+    @Disabled("依赖外部行情服务，默认关闭")
     public void testBnbUsdtKline() {
         long currentTime = System.currentTimeMillis();
         long previousTime = currentTime - 60 * 60 * 1000;
@@ -29,11 +33,14 @@ public class BnbPriceUtilTest {
         // 测试函数
         LocalDateTime localDateTime = LocalDateTime.of(2024, 11, 9, 22, 1); // 当前时间
         Pair<Long, Long> timeRange = CustomizeTimeUtil.getFiveMinuteRange(localDateTime, 10);
-        log.info("Start Timestamp: {}, DateTime is {}", timeRange.getLeft(), CustomizeTimeUtil.formatTimestamp(timeRange.getLeft()));
-        log.info("End Timestamp: {}, DateTime is {}", timeRange.getRight(), CustomizeTimeUtil.formatTimestamp(timeRange.getRight()));
+        long duration = timeRange.getRight() - timeRange.getLeft();
+        Assertions.assertEquals(TimeUnit.MINUTES.toMillis(10), duration);
+        Assertions.assertTrue(timeRange.getLeft() <= CustomizeTimeUtil.localDateTime2Long(localDateTime));
+        Assertions.assertTrue(timeRange.getRight() > timeRange.getLeft());
     }
 
     @Test
+    @Disabled("依赖外部行情服务，默认关闭")
     public void testBnbPrice() {
         LocalDateTime localDateTime = LocalDateTime.of(2024, 11, 9, 22, 20); // 当前时间
         Pair<Long, Long> pair = CustomizeTimeUtil.getFiveMinuteRange(localDateTime, 5);
@@ -51,7 +58,8 @@ public class BnbPriceUtilTest {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
+                    Assertions.fail("线程被中断", e);
                 }
                 continue;
             }

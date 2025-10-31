@@ -1,28 +1,24 @@
 package tcbv.zhaohui.moon.service.impl;
 
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.TbUserDao;
 import tcbv.zhaohui.moon.dto.ConfirmPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.FindPromoCodeDTO;
 import tcbv.zhaohui.moon.dto.WalletLoginDto;
 import tcbv.zhaohui.moon.entity.TbUser;
+import tcbv.zhaohui.moon.exception.BusinessException;
 import tcbv.zhaohui.moon.service.IUSDTLikeInterfaceService;
 import tcbv.zhaohui.moon.service.UserInfoService;
-import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.utils.Web3CryptoUtil;
 import tcbv.zhaohui.moon.vo.LoginVo;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.UUID;
 
 /**
@@ -32,7 +28,8 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
-    private final BigDecimal rewardsMoney = new BigDecimal(100);
+    private static final BigDecimal DIRECT_REWARD_RATE = new BigDecimal("0.05");
+    private static final BigDecimal INDIRECT_REWARD_RATE = new BigDecimal("0.02");
 
     @Resource
     private TbUserDao tbUserDao;
@@ -53,7 +50,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
                 loginDto.getAddress());
         if (!result) {
-            throw new RuntimeException("登录签名校验失败");
+            throw new BusinessException("登录签名校验失败");
         }
         String token = UUID.randomUUID().toString();
         TbUser tbUser = tbUserDao.queryByAddress(loginDto.getAddress());
@@ -81,7 +78,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public TbUser findPromoCode(FindPromoCodeDTO dto) {
         TbUser tbUser = tbUserDao.queryById(dto.getUserId());
         if (tbUser == null) {
-            throw new RuntimeException("用户" + dto.getUserId() + "不存在");
+            throw new BusinessException("用户" + dto.getUserId() + "不存在");
         }
         if (tbUser.getPromoCode() == null) {
             Integer code = tbUserDao.maxPromoCode();
@@ -97,32 +94,32 @@ public class UserInfoServiceImpl implements UserInfoService {
     public Boolean confirmPromoCode(ConfirmPromoCodeDTO dto) {
         TbUser tbUser = tbUserDao.queryById(dto.getUserId());
         if (tbUser == null) {
-            throw new RuntimeException("查询不到当前用户信息");
+            throw new BusinessException("查询不到当前用户信息");
         }
         if(StringUtils.isNotBlank(tbUser.getParentId())){
-            throw new RuntimeException("当前用户已被推广");
+            throw new BusinessException("当前用户已被推广");
         }
         Integer promoCode = dto.getPromoCode();
 
         TbUser parentInfo = tbUserDao.promoCodeFindUserInfo(promoCode);
         if (parentInfo == null) {
-            throw new RuntimeException("查询不到上级用户信息");
+            throw new BusinessException("查询不到上级用户信息");
         }
         if(parentInfo.getId().equals(tbUser.getId())){
-            throw new RuntimeException("自己不允许推广自己");
+            throw new BusinessException("自己不允许推广自己");
         }
 
         tbUser.setParentId(parentInfo.getId());
         //推广奖励，推广成功后，直推奖励新用户余额的5%, 间推奖励新用户余额的2%，比如A推荐了B，A拿到B余额的5%；B推给C，B拿C余额的5%, A拿C余额的2%；C推给D，那么只有B(2%)和C(5%)可以拿到奖励，A没有.
         try {
             BigDecimal userBalance = iusdtLikeInterfaceService.queryErc20Balance(tbUser.getAddress());
-            if (userBalance.equals(BigDecimal.ZERO)) {
-                throw new RuntimeException("你的账号余额为0，请先充值moon才能使用推广码");
+            if (userBalance.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new BusinessException("你的账号余额为0，请先充值moon才能使用推广码");
             }
             BigDecimal myBalance = iusdtLikeInterfaceService.queryErc20Balance(web3Config.getUserAddress());
-            BigDecimal parentReward = userBalance.multiply(new BigDecimal("0.05"));
+            BigDecimal parentReward = userBalance.multiply(DIRECT_REWARD_RATE).setScale(6, BigDecimal.ROUND_HALF_UP);
             if (myBalance.compareTo(parentReward) < 0) {
-                throw new RuntimeException("运营账户余额不足以支付直推奖励");
+                throw new BusinessException("运营账户余额不足以支付直推奖励");
             }
             String parentTxHash = iusdtLikeInterfaceService.transfer(parentInfo.getAddress(), parentReward);
             log.info("parentTxHash is {}", parentTxHash);
@@ -130,16 +127,17 @@ public class UserInfoServiceImpl implements UserInfoService {
             if (StringUtils.isNotBlank(grandParentId)) {
                 TbUser grandParentInfo = tbUserDao.queryById(grandParentId);
                 myBalance = iusdtLikeInterfaceService.queryErc20Balance(web3Config.getUserAddress());
-                BigDecimal grandParentReward = userBalance.multiply(new BigDecimal("0.02"));
+                BigDecimal grandParentReward = userBalance.multiply(INDIRECT_REWARD_RATE).setScale(6, BigDecimal.ROUND_HALF_UP);
                 if (myBalance.compareTo(grandParentReward) < 0) {
-                    throw new RuntimeException("运营账户余额不足以支付间推奖励");
+                    throw new BusinessException("运营账户余额不足以支付间推奖励");
                 }
                 String grandParentTxHash = iusdtLikeInterfaceService.transfer(grandParentInfo.getAddress(), grandParentReward);
                 log.info("grandParentTxHash is {}", grandParentTxHash);
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("confirm promo code failed", e);
+            throw new BusinessException("推广奖励发放失败", e);
         }
         tbUserDao.update(tbUser);
         return true;
