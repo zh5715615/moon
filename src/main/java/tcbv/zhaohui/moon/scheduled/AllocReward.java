@@ -64,7 +64,7 @@ public abstract class AllocReward {
         }
         List<TbRewardRecord> rewardRecordList = new ArrayList<>();
         for (TbTxRecord tbTxRecord : winnerList) {
-            BigDecimal betAmount = Objects.requireNonNullElse(tbTxRecord.getAmount(), BigDecimal.ZERO);
+            BigDecimal betAmount = tbTxRecord.getAmount() == null ? BigDecimal.ZERO : tbTxRecord.getAmount();
             if (betAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 continue;
             }

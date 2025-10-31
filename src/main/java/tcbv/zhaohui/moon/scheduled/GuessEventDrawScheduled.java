@@ -11,6 +11,7 @@ import tcbv.zhaohui.moon.service.IEventTaskManager;
 import tcbv.zhaohui.moon.service.IMoonBaseService;
 import tcbv.zhaohui.moon.utils.CustomizeTimeUtil;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.UUID;
@@ -78,9 +79,9 @@ public class GuessEventDrawScheduled extends AllocReward implements Runnable {
 
     private void allocReward(IMoonBaseService moonBaseService, TbUserDao userDao, TbTxRecordDao txRecordDao,
                              TbRewardRecordDao rewardRecordDao, int turns, String optionId) {
-        double loserAmount = txRecordDao.betEventErrorNumber(getGameType(), turns, optionId);
-        double winnerAmount = txRecordDao.betEventCorrectNumber(getGameType(), turns, optionId);
-        double poolTotalAmount = loserAmount + winnerAmount;
+        BigDecimal loserAmount = BigDecimal.valueOf(txRecordDao.betEventErrorNumber(getGameType(), turns, optionId));
+        BigDecimal winnerAmount = BigDecimal.valueOf(txRecordDao.betEventCorrectNumber(getGameType(), turns, optionId));
+        BigDecimal poolTotalAmount = loserAmount.add(winnerAmount);
         List<TbTxRecord> winnerList = txRecordDao.winnerEventList(getGameType(), turns, optionId);
         List<TbTxRecord> loserList = txRecordDao.loserEventList(getGameType(), turns, optionId);
         saveRewardRecord(winnerList, loserList, loserAmount, poolTotalAmount, userDao, rewardRecordDao, moonBaseService);
