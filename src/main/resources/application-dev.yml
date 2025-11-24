@@ -76,7 +76,7 @@ mybatis:
   mapper-locations: classpath:/mapper/*Dao.xml
   typeAliasesPackage: tcbv.zhaohui.moon.entity
 server:
-  port: 8082
+  port: 8081
 
 
 web3:
