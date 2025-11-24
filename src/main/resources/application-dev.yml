@@ -1,12 +1,9 @@
 spring:
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
   application:
     name: moon
   datasource:
-    url: jdbc:mysql://47.92.224.70:15306/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
-    username: kunpeng
+    url: jdbc:mysql://1.13.162.44:18082/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
+    username: root
     password: Zh5715615~
     driver-class-name: com.mysql.cj.jdbc.Driver
     #链接池配置
@@ -79,19 +76,13 @@ mybatis:
   mapper-locations: classpath:/mapper/*Dao.xml
   typeAliasesPackage: tcbv.zhaohui.moon.entity
 server:
-  port: 8082
+  port: 8081
 
 
 web3:
   account:
-    private-key: "cfbc5ea1fe1630e352e3280e16654ac39fbc376171b6619e0ea68e6d495fa667"
-    address: "0x27da6A0AC383dbf52eaEA3E382Be7103F7AF6e15"
-  week-account:
-    private-key: "20cf3cd15e5656253ee59b8940f24117e7c4a98b00b9e101f230ae8ebd70b468"
-    address: "0x698fCa1caF416e63225c29C403427fd8d1f601e4"
-  month-account:
-    private-key: "d6bf4cf7e6806f5e8ed4146a654c80acd6a00d5e559a3692de2adfd2ccc1bbf1"
-    address: "0x675f4634789e6d87053441B944F331c652925f69"
+    private-key: "f31a17f739851f1917e30b47e090436f6733c1c56f0d18002ebd0b7ea5c4a923"
+    address: "0xa24bDb249e80574A96D8B02b148E81B9be684675"
   url: "https://go.getblock.io/aaefaf5b1ccb4b64901988b3899efff9"
   chain-id: 97
   gas-fee:
@@ -99,20 +90,15 @@ web3:
     limit: "3000000"
   contract:
     moon-base:
-      address: "0x6D8731A214704F2839e00c7FB9801772be674A4a"
-    moon-nft:
-      address: "0x894a6e7960140AA221706f5C397e616237094b5C"
-    moon-token:
-      address: "0xC109Ba491e301E879c99A22B71ADe4A04292703c"
+      address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
+    usdt-like-interface:
+      address: "0x55d398326f99059ff775485246999027b3197955"
 
 blockchain:
   proxy:
     enable: true
     hostname: 127.0.0.1
     port: 1081
-
-moon:
-  scheduled: true
 
 pagehelper:
   helperDialect: mysql
