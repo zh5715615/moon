@@ -34,21 +34,11 @@ public class Web3Config {
     @Value("${web3.month-account.address}")
     private String monthPoolAddress; //用户地址
 
-
     @Value("${web3.gas-fee.price}")
     private String gasPrice;  //交易gas费
 
     @Value("${web3.gas-fee.limit}")
     private String gasLimit; //交易gas上限
-
-    @Value("${blockchain.proxy.enable:false}")
-    private boolean proxy;
-
-    @Value("${blockchain.proxy.hostname:127.0.0.1}")
-    private String hostname;
-
-    @Value("${blockchain.proxy.port:1081}")
-    private int port;
 
     @Value("${web3.contract.moon-base.address}")
     private String moonBaseAddress;

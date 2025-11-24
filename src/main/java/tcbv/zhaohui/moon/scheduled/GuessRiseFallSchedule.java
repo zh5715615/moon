@@ -74,8 +74,7 @@ public class GuessRiseFallSchedule extends AllocReward {
         log.info("End Timestamp: {}, DateTime is {}", endTime, CustomizeTimeUtil.formatTimestamp(endTime));
 
         while (true) {
-            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime,
-                    web3Config.isProxy(), web3Config.getHostname(), web3Config.getPort());
+            CandleGraphBean candleGraphBean = BnbPriceUtil.bnbUsdtKline(startTime, endTime,false, null, 0);
             LocalDateTime currentTime = LocalDateTime.now();
             long currentTimestamp = CustomizeTimeUtil.localDateTime2Long(currentTime);
             if (currentTimestamp < candleGraphBean.getEndTime()) {

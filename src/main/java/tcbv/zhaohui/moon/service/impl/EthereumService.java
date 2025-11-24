@@ -60,18 +60,7 @@ public class EthereumService implements IEthereumService {
 
     @Override
     public void init() {
-        HttpService httpService;
-        if (web3Config.isProxy()) {
-            OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
-                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(web3Config.getHostname(), web3Config.getPort())));
-            // 可选：添加日志拦截器
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClientBuilder.addInterceptor(loggingInterceptor);
-            httpService = new HttpService(web3Config.getEthUrl(), httpClientBuilder.build());
-        } else {
-            httpService = new HttpService(web3Config.getEthUrl());
-        }
+        HttpService httpService = new HttpService(web3Config.getEthUrl());
         web3j = Web3j.build(httpService);
         credentials = Credentials.create(web3Config.getUserPrivKey());
         weekCredentials = Credentials.create(web3Config.getWeekPoolPrivKey());
