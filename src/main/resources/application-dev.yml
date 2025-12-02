@@ -102,3 +102,14 @@ pagehelper:
 
 logging:
   config: classpath:logback-spring-dev.xml
+
+star-wars:
+  oss:
+    access-key: t8lJh36BE4eJIaUZJYpc
+    secret-key: vy5tuYaDMTAdFmkAfkNs03WbPywK2jxXgdBE4NHP
+    domain: 43.155.129.126:9000
+    endpoint: http://43.155.129.126:9000
+    bucket-name: star-wars
+    region: us-east-1
+    is-https: N
+    access-policy: 0
