@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/v1/moon/login")
 @Slf4j
+@Api(tags = "登录/登出接口")
 public class LoginController {
     @Resource
     private UserInfoService userInfoService;
