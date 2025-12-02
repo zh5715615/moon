@@ -2,8 +2,8 @@ spring:
   application:
     name: moon
   datasource:
-    url: jdbc:mysql://1.13.162.44:18082/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
-    username: root
+    url: jdbc:mysql://47.92.224.70:15306/moon?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=falsie&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&allowPublicKeyRetrieval=true&pinGlobalTxToPhysicalConnection=true&useSSL=false
+    username: kunpeng
     password: Zh5715615~
     driver-class-name: com.mysql.cj.jdbc.Driver
     #链接池配置
@@ -93,12 +93,6 @@ web3:
       address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
     usdt-like-interface:
       address: "0x55d398326f99059ff775485246999027b3197955"
-
-blockchain:
-  proxy:
-    enable: true
-    hostname: 127.0.0.1
-    port: 1081
 
 pagehelper:
   helperDialect: mysql

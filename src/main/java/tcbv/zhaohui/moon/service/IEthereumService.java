@@ -47,15 +47,6 @@ public interface IEthereumService {
     long getAccountNonce(String address) throws IOException;
 
     /**
-     * 订阅事件
-     * @param startHeight 开始高度
-     * @param contractAddress 合约地址
-     * @param event 事件
-     * @param callback 回调
-     */
-    void subscribeEvent(long startHeight, String contractAddress, Event event, ISubscribeCallback callback);
-
-    /**
      * 发送eth
      * @param toAddress 目标地址
      * @param amount 金额

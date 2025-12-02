@@ -1,8 +1,6 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.EthTransactionBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
@@ -29,15 +27,11 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.service.IEthereumService;
-import tcbv.zhaohui.moon.service.ISubscribeCallback;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,8 +57,6 @@ public class EthereumService implements IEthereumService {
         HttpService httpService = new HttpService(web3Config.getEthUrl());
         web3j = Web3j.build(httpService);
         credentials = Credentials.create(web3Config.getUserPrivKey());
-        weekCredentials = Credentials.create(web3Config.getWeekPoolPrivKey());
-        moonCredentials = Credentials.create(web3Config.getMonthPoolPrivKey());
         contractGasProvider = new ContractGasProvider() {
             @Override
             public BigInteger getGasPrice(String method) {
@@ -220,30 +212,6 @@ public class EthereumService implements IEthereumService {
             indexedValues.add(value);
         }
         return new EventValues(indexedValues, nonIndexedValues);
-    }
-
-    @Override
-    public void subscribeEvent(long startHeight, String contractAddress, Event event, ISubscribeCallback callback) {
-        BigInteger blockNumber = BigInteger.valueOf(startHeight);
-        EthFilter ethFilter = new EthFilter(DefaultBlockParameter.valueOf(blockNumber), DefaultBlockParameterName.LATEST, contractAddress);
-        ethFilter.addSingleTopic(EventEncoder.encode(event));
-        web3j.ethLogFlowable(ethFilter).subscribe(txLog -> {
-            List<String> topics = txLog.getTopics();
-            if (topics == null || topics.size() == 0) {
-                log.warn("Topics is empty");
-                return;
-            }
-            if (topics.get(0).equals(EventEncoder.encode(event))) {
-                EventValues eventValues = staticExtractEventParameters(event, txLog);
-                if (eventValues == null) {
-                    log.warn("eventValues is null");
-                    return;
-                }
-                callback.handle(eventValues);
-            } else {
-                log.warn("Event not match");
-            }
-        });
     }
 
     @Override
