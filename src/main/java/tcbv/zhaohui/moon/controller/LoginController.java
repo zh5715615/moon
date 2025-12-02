@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/v1/moon/login")
 @Slf4j
-@Api(tags = "登录/登出接口")
+@Api(tags = "登录相关接口")
 public class LoginController {
     @Resource
     private UserInfoService userInfoService;
