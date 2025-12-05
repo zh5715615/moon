@@ -113,3 +113,5 @@ star-wars:
     region: us-east-1
     is-https: N
     access-policy: 0
+  secret:
+    aes-key: abcd9876ABWE!@#$

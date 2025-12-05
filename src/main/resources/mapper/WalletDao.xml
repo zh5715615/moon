@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.WalletDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.WalletEntity" id="WalletMap">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="encryptPwd" column="encrypt_pwd" jdbcType="VARCHAR"/>
+            <result property="keystorePath" column="keystore_path" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="WalletMap">
+            select id, address, encrypt_pwd, keystore_path, create_time
+            from tb_wallet
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="WalletMap">
+            select  id, address, encrypt_pwd, keystore_path, create_time
+            from tb_wallet
+            <where>
+                <if test="entity.id != null">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.address != null and entity.address != ''">
+                    and address = #{entity.address}
+                </if>
+                <if test="entity.encryptPwd != null and entity.encryptPwd != ''">
+                    and encrypt_pwd = #{entity.encryptPwd}
+                </if>
+                <if test="entity.keystorePath != null and entity.keystorePath != ''">
+                    and keystore_path = #{entity.keystorePath}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_wallet
+            <where>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="address != null and address != ''">
+                    and address = #{address}
+                </if>
+                <if test="encryptPwd != null and encryptPwd != ''">
+                    and encrypt_pwd = #{encryptPwd}
+                </if>
+                <if test="keystorePath != null and keystorePath != ''">
+                    and keystore_path = #{keystorePath}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_wallet(address, encrypt_pwd, keystore_path, create_time)
+            values (#{address}, #{encryptPwd}, #{keystorePath}, #{createTime})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_wallet(address, encrypt_pwd, keystore_path, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.address}, #{entity.encryptPwd}, #{entity.keystorePath}, #{entity.createTime})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_wallet(id, address, encrypt_pwd, keystore_path, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.address}, #{entity.encryptPwd}, #{entity.keystorePath}, #{entity.createTime})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                address = values(address),
+                encrypt_pwd = values(encrypt_pwd),
+                keystore_path = values(keystore_path),
+                create_time = values(create_time)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_wallet
+            <set>
+                <if test="address != null and address != ''">
+                    address = #{address},
+                </if>
+                <if test="encryptPwd != null and encryptPwd != ''">
+                    encrypt_pwd = #{encryptPwd},
+                </if>
+                <if test="keystorePath != null and keystorePath != ''">
+                    keystore_path = #{keystorePath},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_wallet where id = #{id}
+        </delete>
+
+    </mapper>

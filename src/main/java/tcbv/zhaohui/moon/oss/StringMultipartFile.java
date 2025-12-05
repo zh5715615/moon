@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.oss;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,7 @@ public class StringMultipartFile implements MultipartFile {
         this.contentType = contentType;
     }
 
+    @NotNull
     @Override
     public String getName() {
         return "file"; // 表单字段名，可自定义
@@ -47,18 +49,20 @@ public class StringMultipartFile implements MultipartFile {
         return content.length;
     }
 
+    @NotNull
     @Override
-    public byte[] getBytes() throws IOException {
+    public byte[] getBytes() {
         return content;
     }
 
+    @NotNull
     @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(content);
     }
 
     @Override
-    public void transferTo(File dest) throws IOException, IllegalStateException {
+    public void transferTo(@NotNull File dest) throws IOException, IllegalStateException {
         try (FileOutputStream fos = new FileOutputStream(dest)) {
             fos.write(content);
         }

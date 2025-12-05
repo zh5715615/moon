@@ -28,8 +28,6 @@ public class SysOss {
 
     private String service;
 
-
-
     private String bizType;
 
     private String bizId;

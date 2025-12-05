@@ -18,18 +18,24 @@ import java.util.Map;
 public enum AccessPolicyType {
 
     PRIVATE("0"),
+
     PUBLIC_READ("1"),
-    PublicReadWrite("2"),
-    AuthenticatedRead("3"),
-    LogDeliveryWrite("4"),
-    BucketOwnerRead("5"),
-    BucketOwnerFullControl("6"),
-    AwsExecRead("7");
+
+    PUBLIC_READ_WRITE("2"),
+
+    AUTHENTICATED_READ("3"),
+
+    LOG_DELIVERY_WRITE("4"),
+
+    BUCKET_OWNER_READ("5"),
+
+    BUCKET_OWNER_FULL_CONTROL("6"),
+
+    AWS_EXEC_READ("7");
 
     private final String accessPolicy;
 
     private static final Map<String, AccessPolicyType> MAP = new HashMap<>();
-
 
     public static AccessPolicyType getByType(String accessPolicy) {
         return MAP.get(accessPolicy);
@@ -41,9 +47,7 @@ public enum AccessPolicyType {
         }
     }
 
-
     public PolicyType getPolicyType() {
-        // TODO
         if (this == PRIVATE) {
             return PolicyType.READ_WRITE;
         }
@@ -55,14 +59,13 @@ public enum AccessPolicyType {
     }
 
     public CannedAccessControlList getAcl() {
-        // TODO
         if (this == PRIVATE) {
             return CannedAccessControlList.Private;
         }
         if (this == PUBLIC_READ) {
             return CannedAccessControlList.PublicRead;
         }
-        if (this == PublicReadWrite) {
+        if (this == PUBLIC_READ_WRITE) {
             return CannedAccessControlList.PublicReadWrite;
         }
 

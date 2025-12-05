@@ -15,11 +15,18 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "star-wars.oss")
 public class OssConfig {
     private String accessKey;
+
     private String secretKey;
+
     private String domain;
+
     private String bucketName;
+
     private String endpoint;
+
     private String region;
+
     private String isHttps;
+
     private String accessPolicy;
 }
