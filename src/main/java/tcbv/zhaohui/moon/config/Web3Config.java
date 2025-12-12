@@ -27,4 +27,7 @@ public class Web3Config {
 
     @Value("${web3.gas-fee.limit}")
     private String gasLimit; //交易gas上限
+
+    @Value("${web3.contract.card-nft.address}")
+    private String cardNftContractAddress; //合约地址
 }

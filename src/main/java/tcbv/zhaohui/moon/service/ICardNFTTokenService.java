@@ -1,6 +1,7 @@
 package tcbv.zhaohui.moon.service;
 
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
+import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
 
 /**
  * @author: zhaohui
@@ -35,7 +36,7 @@ public interface ICardNFTTokenService {
 
     String burn(String tokenId) throws Exception;
 
-    String mint(String to, NFTMetadataBean nftMetadataBean) throws Exception;
+    NFTTokenMintInfoBean mint(String to, NFTMetadataBean nftMetadataBean) throws Exception;
 
     String pauseInvoke() throws Exception;
 

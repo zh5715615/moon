@@ -89,10 +89,8 @@ web3:
     price: "100000000000"
     limit: "3000000"
   contract:
-    moon-base:
-      address: "0x8af30399c18532B556Fe4BBb2178CA6448aC8560"
-    usdt-like-interface:
-      address: "0x55d398326f99059ff775485246999027b3197955"
+    card-nft:
+      address: "0x6f9cfd50cbf498fa34c08a01f2d6f011795496a9"
 
 pagehelper:
   helperDialect: mysql
@@ -109,8 +107,6 @@ star-wars:
     secret-key: vy5tuYaDMTAdFmkAfkNs03WbPywK2jxXgdBE4NHP
     domain: 43.155.129.126:9000
     endpoint: http://43.155.129.126:9000
-    wallet-bucket-name: star-wars
-    nft-bucket-name: card-nft
     region: us-east-1
     is-https: N
     access-policy: 0

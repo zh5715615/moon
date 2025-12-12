@@ -25,13 +25,11 @@ public class OssService {
     @Resource
     private OssClient ossClient;
 
-
-    public void downloadFileByName(String fileName, OutputStream os) {
-        ossClient.download(fileName, os);
+    public void downloadFileByName(BucketType bucketType, String fileName, OutputStream os) {
+        ossClient.download(bucketType, fileName, os);
     }
 
-
-    public SysOss upload(String bucketName, String prefix, MultipartFile file) {
+    public SysOss upload(BucketType bucketType, String prefix, MultipartFile file) {
         // 限制上传文件的类型
         String fileName = file.getOriginalFilename();
         if (StringUtils.isEmpty(fileName)) {
@@ -41,12 +39,7 @@ public class OssService {
 
         UploadResult uploadResult = null;
         try {
-            if (bucketName.equals("star-wars")) {
-                uploadResult = ossClient.uploadWalletSuffix(file.getBytes(), prefix, suffix, CONTENT_TYPE_DEFAULT);
-            } else if (bucketName.equals("card-nft")) {
-                uploadResult = ossClient.uploadNftSuffix(file.getBytes(), prefix, suffix, CONTENT_TYPE_DEFAULT);
-            }
-
+            uploadResult = ossClient.upload(file.getBytes(), bucketType, prefix, fileName, CONTENT_TYPE_DEFAULT);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -58,19 +51,7 @@ public class OssService {
         oss.setOriginalName(fileName);
         oss.setService("obs");
         if (AccessPolicyType.PRIVATE == ossClient.getAccessPolicy()) {
-            oss.setUrl(ossClient.getPrivateUrl(oss.getFileName(), 120));
-        }
-        return oss;
-    }
-
-    public SysOss query(String id) {
-        if (id == null) {
-            return null;
-        }
-
-        SysOss oss = new SysOss();
-        if (AccessPolicyType.PRIVATE == ossClient.getAccessPolicy()) {
-            oss.setUrl(ossClient.getPrivateUrl(oss.getFileName(), 120));
+            oss.setUrl(ossClient.getPrivateUrl(bucketType, oss.getFileName(), 120));
         }
         return oss;
     }

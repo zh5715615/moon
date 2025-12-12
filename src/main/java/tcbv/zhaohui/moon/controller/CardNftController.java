@@ -1,22 +1,34 @@
 package tcbv.zhaohui.moon.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tcbv.zhaohui.moon.beans.NFTAttributesBean;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
+import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.SysOss;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collections;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_IMAGE_PREFIX;
 
 /**
  * @author: zhaohui
@@ -40,17 +52,45 @@ public class CardNftController {
     @Autowired
     private OssConfig ossConfig;
 
+    @Autowired
+    private Web3Config web3Config;
+
     @PostMapping("/mint")
     @ApiOperation("铸造NFT")
-    public Rsp mint(MultipartFile file) throws Exception {
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "form", dataType = "string", name = "name", value = "卡片名称", required = true),
+            @ApiImplicitParam(paramType = "form", dataType = "string", name = "description", value = "卡片描述", required = false),
+            @ApiImplicitParam(paramType = "form", dataType = "file", name = "file", value = "卡片图片", required = true),
+            @ApiImplicitParam(paramType = "form", dataType = "String", name = "attributesMapStr", value = "卡片属性", required = false)
+    })
+    public Rsp<NFTTokenMintInfoBean> mint(
+            @NotBlank(message = "卡片名称不能为空") @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @NotNull(message = "卡片图片不能为空") @RequestParam("file") MultipartFile file,
+            @RequestParam("attributesMap") String attributesMapStr
+    ) throws Exception {
         NFTMetadataBean nftMetadataBean = new NFTMetadataBean();
-        nftMetadataBean.setName("测试卡片");
-        String bucketName = "card-nft";
-        SysOss sysOss = ossService.upload(bucketName, "image", file);
+        nftMetadataBean.setName(name);
+        String bucketName = BucketType.PUBLIC_BUCKET.getBucketName();
+        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_IMAGE_PREFIX, file);
         String url = ossConfig.getEndpoint() + "/" + bucketName + "/" + sysOss.getFileName();
         nftMetadataBean.setImage(url);
-        nftMetadataBean.setAttributes(Collections.emptyList());
-        String txHash = cardNftService.mint("0xa24bDb249e80574A96D8B02b148E81B9be684675", nftMetadataBean);
-        return Rsp.ok(txHash);
+        List<NFTAttributesBean> attributes;
+        if (!StringUtils.isEmpty(attributesMapStr)) {
+            Map<String, String> attributesMap = GsonUtil.fromJson(attributesMapStr, Map.class);
+            if (!CollectionUtils.isEmpty(attributesMap)) {
+                attributes = attributesMap.entrySet().stream()
+                        .map(e -> new NFTAttributesBean(e.getKey(), e.getValue()))
+                        .collect(Collectors.toList());
+            } else {
+                attributes = Collections.emptyList();
+            }
+        } else {
+            attributes = Collections.emptyList();
+        }
+        nftMetadataBean.setAttributes(attributes);
+        nftMetadataBean.setDescription(description);
+        NFTTokenMintInfoBean nftTokenMintInfoBean = cardNftService.mint(web3Config.getUserAddress(), nftMetadataBean);
+        return Rsp.okData(nftTokenMintInfoBean);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.web3j.crypto.*;
 import tcbv.zhaohui.moon.entity.WalletEntity;
+import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.StringMultipartFile;
 import tcbv.zhaohui.moon.oss.SysOss;
@@ -24,6 +25,8 @@ import tcbv.zhaohui.moon.utils.Rsp;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
+
+import static tcbv.zhaohui.moon.beans.Constants.OSS_WALLET_PREFIX;
 
 /**
  * @author: zhaohui
@@ -105,7 +108,7 @@ public class AccountMgrController {
                     address.toLowerCase() + ".json",
                     "application/json"
             );
-            SysOss sysOss = ossService.upload("star-wars", "wallet", mockFile);
+            SysOss sysOss = ossService.upload(BucketType.PRIVATE_BUCKET, OSS_WALLET_PREFIX, mockFile);
 
             WalletEntity walletEntity = new WalletEntity();
             walletEntity.setAddress(address);

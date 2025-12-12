@@ -1,11 +1,9 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
+import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
 import tcbv.zhaohui.moon.contract.CardNFTToken;
-import tcbv.zhaohui.moon.oss.OssConfig;
-import tcbv.zhaohui.moon.oss.OssService;
-import tcbv.zhaohui.moon.oss.StringMultipartFile;
-import tcbv.zhaohui.moon.oss.SysOss;
+import tcbv.zhaohui.moon.oss.*;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
+import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_METADATA_PREFIX;
 
 /**
  * @author: zhaohui
@@ -125,18 +124,23 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     }
 
     @Override
-    public String mint(String to, NFTMetadataBean nftMetadataBean) throws Exception {
+    public NFTTokenMintInfoBean mint(String to, NFTMetadataBean nftMetadataBean) throws Exception {
         String metadata = GsonUtil.toJson(nftMetadataBean);
         StringMultipartFile multipartFile = new StringMultipartFile(
                 metadata,
                 nftMetadataBean.getName() + ".json",
                 "application/json"
         );
-        String bucketName = "card-nft";
-        SysOss sysOss = ossService.upload(bucketName, "metadata", multipartFile);
+        String bucketName = BucketType.PUBLIC_BUCKET.getBucketName();
+        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_METADATA_PREFIX, multipartFile);
         BigInteger tokenId = random20Digits();
         String url = ossConfig.getEndpoint() + "/" + bucketName + "/" + sysOss.getFileName();
-        return cardNFTToken.mint(to, tokenId, url).send().getTransactionHash();
+        String txHash = cardNFTToken.mint(to, tokenId, url).send().getTransactionHash();
+        return NFTTokenMintInfoBean.builder()
+                .nftAddress(cardNFTToken.getContractAddress())
+                .tokenId(tokenId.toString())
+                .txHash(txHash)
+                .build();
     }
 
     @Override
