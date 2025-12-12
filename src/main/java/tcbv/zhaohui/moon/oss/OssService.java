@@ -20,8 +20,6 @@ import java.util.UUID;
 @Service
 public class OssService {
 
-    private static final String CONTENT_TYPE_DEFAULT = "application/octet-stream";
-
     @Resource
     private OssClient ossClient;
 
@@ -29,7 +27,7 @@ public class OssService {
         ossClient.download(bucketType, fileName, os);
     }
 
-    public SysOss upload(BucketType bucketType, String prefix, MultipartFile file) {
+    public SysOss upload(BucketType bucketType, String prefix, MultipartFile file, String contentType) {
         // 限制上传文件的类型
         String fileName = file.getOriginalFilename();
         if (StringUtils.isEmpty(fileName)) {
@@ -39,7 +37,7 @@ public class OssService {
 
         UploadResult uploadResult = null;
         try {
-            uploadResult = ossClient.upload(file.getBytes(), bucketType, prefix, fileName, CONTENT_TYPE_DEFAULT);
+            uploadResult = ossClient.upload(file.getBytes(), bucketType, prefix, fileName, contentType);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

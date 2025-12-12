@@ -51,6 +51,12 @@ public class OssClient {
 
     public static final String CLOUD_SERVICE = "aliyun";
 
+    public static final String CONTENT_TYPE_DEFAULT = "application/octet-stream";
+
+    public static final String CONTENT_TYPE_IMAGE = "image/png";
+
+    public static final String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
+
     @Resource
     private OssConfig ossConfig;
 
@@ -173,6 +179,12 @@ public class OssClient {
 
     public UploadResult upload(InputStream inputStream, String path, String contentType, BucketType bucketType) {
         String bucketName = bucketType.getBucketName();
+        if (StringUtils.isBlank(contentType)) {
+            contentType = CONTENT_TYPE_DEFAULT;
+        }
+        if (StringUtils.isBlank(path)) {
+            throw new RuntimeException("上传文件路径不能为空");
+        }
         if (!(inputStream instanceof ByteArrayInputStream)) {
             inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
         }

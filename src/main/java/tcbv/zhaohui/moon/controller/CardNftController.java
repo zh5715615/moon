@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_IMAGE_PREFIX;
+import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_IMAGE;
 
 /**
  * @author: zhaohui
@@ -72,7 +73,7 @@ public class CardNftController {
         NFTMetadataBean nftMetadataBean = new NFTMetadataBean();
         nftMetadataBean.setName(name);
         String bucketName = BucketType.PUBLIC_BUCKET.getBucketName();
-        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_IMAGE_PREFIX, file);
+        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_IMAGE_PREFIX, file, CONTENT_TYPE_IMAGE);
         String url = ossConfig.getEndpoint() + "/" + bucketName + "/" + sysOss.getFileName();
         nftMetadataBean.setImage(url);
         List<NFTAttributesBean> attributes;

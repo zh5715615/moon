@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 import static tcbv.zhaohui.moon.beans.Constants.OSS_WALLET_PREFIX;
+import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_JSON;
 
 /**
  * @author: zhaohui
@@ -108,7 +109,7 @@ public class AccountMgrController {
                     address.toLowerCase() + ".json",
                     "application/json"
             );
-            SysOss sysOss = ossService.upload(BucketType.PRIVATE_BUCKET, OSS_WALLET_PREFIX, mockFile);
+            SysOss sysOss = ossService.upload(BucketType.PRIVATE_BUCKET, OSS_WALLET_PREFIX, mockFile, CONTENT_TYPE_JSON);
 
             WalletEntity walletEntity = new WalletEntity();
             walletEntity.setAddress(address);

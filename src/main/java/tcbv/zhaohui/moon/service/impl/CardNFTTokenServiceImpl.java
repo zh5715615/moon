@@ -20,6 +20,7 @@ import java.security.SecureRandom;
 
 import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_METADATA_PREFIX;
+import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_JSON;
 
 /**
  * @author: zhaohui
@@ -132,7 +133,7 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
                 "application/json"
         );
         String bucketName = BucketType.PUBLIC_BUCKET.getBucketName();
-        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_METADATA_PREFIX, multipartFile);
+        SysOss sysOss = ossService.upload(BucketType.PUBLIC_BUCKET, OSS_NFT_METADATA_PREFIX, multipartFile, CONTENT_TYPE_JSON);
         BigInteger tokenId = random20Digits();
         String url = ossConfig.getEndpoint() + "/" + bucketName + "/" + sysOss.getFileName();
         String txHash = cardNFTToken.mint(to, tokenId, url).send().getTransactionHash();
