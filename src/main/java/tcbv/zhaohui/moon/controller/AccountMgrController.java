@@ -105,7 +105,7 @@ public class AccountMgrController {
                     address.toLowerCase() + ".json",
                     "application/json"
             );
-            SysOss sysOss = ossService.upload("wallet", mockFile);
+            SysOss sysOss = ossService.upload("star-wars", "wallet", mockFile);
 
             WalletEntity walletEntity = new WalletEntity();
             walletEntity.setAddress(address);

@@ -109,7 +109,8 @@ star-wars:
     secret-key: vy5tuYaDMTAdFmkAfkNs03WbPywK2jxXgdBE4NHP
     domain: 43.155.129.126:9000
     endpoint: http://43.155.129.126:9000
-    bucket-name: star-wars
+    wallet-bucket-name: star-wars
+    nft-bucket-name: card-nft
     region: us-east-1
     is-https: N
     access-policy: 0

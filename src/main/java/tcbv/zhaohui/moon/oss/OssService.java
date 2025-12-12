@@ -31,7 +31,7 @@ public class OssService {
     }
 
 
-    public SysOss upload(String prefix, MultipartFile file) {
+    public SysOss upload(String bucketName, String prefix, MultipartFile file) {
         // 限制上传文件的类型
         String fileName = file.getOriginalFilename();
         if (StringUtils.isEmpty(fileName)) {
@@ -39,9 +39,14 @@ public class OssService {
         }
         String suffix = StringUtils.substring(fileName, fileName.lastIndexOf("."), fileName.length());
 
-        UploadResult uploadResult;
+        UploadResult uploadResult = null;
         try {
-            uploadResult = ossClient.uploadSuffix(file.getBytes(), prefix, suffix, CONTENT_TYPE_DEFAULT);
+            if (bucketName.equals("star-wars")) {
+                uploadResult = ossClient.uploadWalletSuffix(file.getBytes(), prefix, suffix, CONTENT_TYPE_DEFAULT);
+            } else if (bucketName.equals("card-nft")) {
+                uploadResult = ossClient.uploadNftSuffix(file.getBytes(), prefix, suffix, CONTENT_TYPE_DEFAULT);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

@@ -54,6 +54,12 @@ public class OssClient {
 
     private AmazonS3 client;
 
+    // === 新增：区分桶类型（私有/公有） ===
+    public enum BucketType {
+        WALLET,  // 原来的私有桶
+        NFT      // 新增的公有桶
+    }
+
     @PostConstruct
     public void init() {
         try {
@@ -77,16 +83,32 @@ public class OssClient {
             build.enablePathStyleAccess();
             this.client = build.build();
 
-            createBucket();
+            createBucket(ossConfig.getWalletBucketName(), getAccessPolicy());
+            createBucket(ossConfig.getNftBucketName(), getAccessPolicy());
         } catch (Exception e) {
 
             throw new RuntimeException("配置错误! 请检查系统配置:[" + e.getMessage() + "]");
         }
     }
 
+    private void createBucket(String bucketName, AccessPolicyType accessPolicy) {
+        try {
+            if (client.doesBucketExistV2(bucketName)) {
+                return;
+            }
+            CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+            createBucketRequest.setCannedAcl(accessPolicy.getAcl());
+            client.createBucket(createBucketRequest);
+            client.setBucketPolicy(bucketName, getPolicy(bucketName, accessPolicy.getPolicyType()));
+        } catch (Exception e) {
+            throw new RuntimeException("创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
+        }
+    }
+
+
     private void createBucket() {
         try {
-            String bucketName = ossConfig.getBucketName();
+            String bucketName = ossConfig.getWalletBucketName();
             if (client.doesBucketExistV2(bucketName)) {
                 return;
             }
@@ -106,7 +128,7 @@ public class OssClient {
 
 
     public void download(String key, OutputStream os) {
-        GetObjectRequest request = new GetObjectRequest(ossConfig.getBucketName(), key);
+        GetObjectRequest request = new GetObjectRequest(ossConfig.getWalletBucketName(), key);
 
         try (S3Object object = client.getObject(request);
              S3ObjectInputStream inputStream = object.getObjectContent();) {
@@ -159,23 +181,38 @@ public class OssClient {
         return builder.toString();
     }
 
-    public UploadResult upload(byte[] data, String path, String contentType) {
-        return upload(new ByteArrayInputStream(data), path, contentType);
+    public UploadResult uploadWallet(byte[] data, String path, String contentType) {
+        return upload(new ByteArrayInputStream(data), path, contentType, BucketType.WALLET);
     }
 
-    public UploadResult uploadSuffix(byte[] data, String prefix, String suffix, String contentType) {
-        return upload(data, getPath(prefix, suffix), contentType);
+    public UploadResult uploadWalletSuffix(byte[] data, String prefix, String suffix, String contentType) {
+        return uploadWallet(data, getPath(prefix, suffix), contentType);
     }
 
-    public UploadResult upload(InputStream inputStream, String path, String contentType) {
+    public UploadResult uploadNft(byte[] data, String path, String contentType) {
+        return upload(new ByteArrayInputStream(data), path, contentType, BucketType.NFT);
+    }
+
+    public UploadResult uploadNftSuffix(byte[] data, String prefix, String suffix, String contentType) {
+        return uploadNft(data, getPath(prefix, suffix), contentType);
+    }
+
+    public UploadResult upload(InputStream inputStream, String path, String contentType, BucketType bucketType) {
         if (!(inputStream instanceof ByteArrayInputStream)) {
             inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
         }
+        String bucketName;
         try {
+            if (bucketType == BucketType.NFT) {
+                bucketName = ossConfig.getNftBucketName();
+            } else {
+                bucketName = ossConfig.getWalletBucketName();
+            }
+
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(contentType);
             metadata.setContentLength(inputStream.available());
-            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfig.getBucketName(), path, inputStream, metadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, path, inputStream, metadata);
             // 设置上传对象的 Acl 为公共读
             putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
             client.putObject(putObjectRequest);
@@ -183,38 +220,41 @@ public class OssClient {
             throw new RuntimeException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
         }
 
-        // 创建凭证提供者
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(ossConfig.getAccessKey(), ossConfig.getSecretKey());
-        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
+        if (bucketType == BucketType.WALLET) {
+            // 创建凭证提供者
+            AwsBasicCredentials credentials = AwsBasicCredentials.create(ossConfig.getAccessKey(), ossConfig.getSecretKey());
+            StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
 
-        // 创建 S3 客户端 (用于 Presigner)
-        S3Presigner presigner = S3Presigner.builder()
-                .credentialsProvider(credentialsProvider)
-                .endpointOverride(URI.create(ossConfig.getEndpoint())) // 重写端点以兼容非 AWS 的 S3 服务
-                .region(Region.of(ossConfig.getRegion())) // 对于大多数 S3 兼容服务，使用 US_EAST_1 即可，除非特别指定
-                .serviceConfiguration(
-                        S3Configuration.builder()
-                                .pathStyleAccessEnabled(true) // 强制使用路径风格
-                                .build())
-                .build();
+            // 创建 S3 客户端 (用于 Presigner)
+            S3Presigner presigner = S3Presigner.builder()
+                    .credentialsProvider(credentialsProvider)
+                    .endpointOverride(URI.create(ossConfig.getEndpoint())) // 重写端点以兼容非 AWS 的 S3 服务
+                    .region(Region.of(ossConfig.getRegion())) // 对于大多数 S3 兼容服务，使用 US_EAST_1 即可，除非特别指定
+                    .serviceConfiguration(
+                            S3Configuration.builder()
+                                    .pathStyleAccessEnabled(true) // 强制使用路径风格
+                                    .build())
+                    .build();
 
-        // 构建预签名请求
-        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofSeconds(60))
-                .getObjectRequest(req -> req.bucket(ossConfig.getBucketName()).key(path))
-                .build();
+            // 构建预签名请求
+            GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofSeconds(60))
+                    .getObjectRequest(req -> req.bucket(ossConfig.getWalletBucketName()).key(path))
+                    .build();
 
-        // 生成预签名 URL
-        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
+            // 生成预签名 URL
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
 
-        // 获取可分享的 URL
-        String presignedUrl = presignedRequest.url().toString();
-        System.out.println("预签名 URL: " + presignedUrl);
+            // 获取可分享的 URL
+            String presignedUrl = presignedRequest.url().toString();
+            System.out.println("预签名 URL: " + presignedUrl);
 
-        // 可选：打印 HTTP 方法和过期时间
-        System.out.println("HTTP 方法: " + presignedRequest.httpRequest().method());
-        System.out.println("过期时间: " + presignedRequest.expiration());
-        return UploadResult.builder().url(getUrl() + "/" + path).filename(path).build();
+            // 可选：打印 HTTP 方法和过期时间
+            System.out.println("HTTP 方法: " + presignedRequest.httpRequest().method());
+            System.out.println("过期时间: " + presignedRequest.expiration());
+
+        }
+        return UploadResult.builder().url(getUrl(bucketName) + "/" + path).filename(path).build();
     }
 
 
@@ -230,7 +270,7 @@ public class OssClient {
         return path + suffix;
     }
 
-    private String getUrl() {
+    private String getUrl(String bucketName) {
         String domain = ossConfig.getDomain();
         String endpoint = ossConfig.getEndpoint();
         String header = IS_HTTPS.equalsIgnoreCase(ossConfig.getIsHttps()) ? "https://" : "http://";
@@ -239,18 +279,18 @@ public class OssClient {
             if (StringUtils.isNotBlank(domain)) {
                 return header + domain;
             }
-            return header + ossConfig.getBucketName() + "." + endpoint;
+            return header + bucketName + "." + endpoint;
         }
         // minio 单独处理
         if (StringUtils.isNotBlank(domain)) {
-            return header + domain + "/" + ossConfig.getBucketName();
+            return header + domain + "/" + bucketName;
         }
-        return header + endpoint + "/" + ossConfig.getBucketName();
+        return header + endpoint + "/" + bucketName;
     }
 
     public String getPrivateUrl(String objectKey, Integer second) {
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(ossConfig.getBucketName(), objectKey)
+                new GeneratePresignedUrlRequest(ossConfig.getWalletBucketName(), objectKey)
                         .withMethod(HttpMethod.GET)
                         .withExpiration(new Date(System.currentTimeMillis() + 1000L * second));
         URL url = client.generatePresignedUrl(generatePresignedUrlRequest);

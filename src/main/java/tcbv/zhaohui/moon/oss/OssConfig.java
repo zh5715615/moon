@@ -20,7 +20,9 @@ public class OssConfig {
 
     private String domain;
 
-    private String bucketName;
+    private String walletBucketName;
+
+    private String nftBucketName;
 
     private String endpoint;
 
