@@ -67,7 +67,7 @@ public class CardNftController {
             @NotBlank(message = "卡片名称不能为空") @RequestParam("name") String name,
             @RequestParam("description") String description,
             @NotNull(message = "卡片图片不能为空") @RequestParam("file") MultipartFile file,
-            @RequestParam("attributesMap") String attributesMapStr
+            @RequestParam("attributesMapStr") String attributesMapStr
     ) throws Exception {
         NFTMetadataBean nftMetadataBean = new NFTMetadataBean();
         nftMetadataBean.setName(name);
