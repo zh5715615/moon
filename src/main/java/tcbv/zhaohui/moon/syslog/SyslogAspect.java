@@ -17,12 +17,15 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import tcbv.zhaohui.moon.entity.SyslogEntity;
 import tcbv.zhaohui.moon.utils.GsonUtil;
+import tcbv.zhaohui.moon.utils.JwtUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 
 import javax.servlet.ServletRequest;
@@ -96,15 +99,32 @@ public class SyslogAspect {
         HttpServletRequest request = sra.getRequest();
 
         String userAgentInfo = request.getHeader("User-Agent");
+
+        String address = "";
+        String auth = request.getHeader("Authorization");
+        String token = null;
+
+        if (auth != null && auth.startsWith("Bearer ")) {
+            token = auth.substring("Bearer ".length()).trim();
+        }
+        if (token != null && !token.isEmpty()) {
+            try {
+                address = JwtUtil.requireUserId(token);
+            } catch (Exception e) {
+                log.error("token解析失败", e.getMessage());
+            }
+        }
         String requestPath = request.getRequestURI();
         String fromIp = getClientIp(request);
         String uri = request.getRequestURI();
         String method = request.getMethod();
 
         // TODO: 异步线程池
+        String finalAddress = address;
         CompletableFuture.runAsync(() -> {
             try {
                 SyslogEntity syslogEntity = buildLogInfo(joinPoint);
+                syslogEntity.setAddress(finalAddress);
                 syslogEntity.setAgent(userAgentInfo);
                 syslogEntity.setApiInterface(requestPath);
                 syslogEntity.setHttpStatus(httpStatus);
@@ -212,10 +232,10 @@ public class SyslogAspect {
             boolean isRequestBody = false;
 
             for (Annotation annotation : parameterAnnotations[i]) {
-                if (annotation.annotationType().equals(org.springframework.web.bind.annotation.PathVariable.class)) {
+                if (annotation.annotationType().equals(PathVariable.class)) {
                     isPathVariable = true;
                 }
-                if (annotation.annotationType().equals(org.springframework.web.bind.annotation.RequestBody.class)) {
+                if (annotation.annotationType().equals(RequestBody.class)) {
                     isRequestBody = true;
                 }
             }

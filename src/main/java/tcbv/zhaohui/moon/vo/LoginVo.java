@@ -15,7 +15,7 @@ public class LoginVo {
     private String address;
 
     @ApiModelProperty("用户id")
-    private String userId;
+    private long expired;
 
     @ApiModelProperty("token")
     private String token;

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.UserDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.UserEntity" id="UserMap">
+            <result property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="token" column="token" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
+            <result property="promoCode" column="promo_Code" jdbcType="INTEGER"/>
+        </resultMap>
+
+
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="UserMap">
+            select  id, address, token, create_time, parent_id, promo_Code
+            from tb_user
+            <where>
+                <if test="entity.id != null and entity.id != ''">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.address != null and entity.address != ''">
+                    and address = #{entity.address}
+                </if>
+                <if test="entity.token != null and entity.token != ''">
+                    and token = #{entity.token}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+                <if test="entity.parentId != null and entity.parentId != ''">
+                    and parent_id = #{entity.parentId}
+                </if>
+                <if test="entity.promoCode != null">
+                    and promo_Code = #{entity.promoCode}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_user
+            <where>
+                <if test="id != null and id != ''">
+                    and id = #{id}
+                </if>
+                <if test="address != null and address != ''">
+                    and address = #{address}
+                </if>
+                <if test="token != null and token != ''">
+                    and token = #{token}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+                <if test="parentId != null and parentId != ''">
+                    and parent_id = #{parentId}
+                </if>
+                <if test="promoCode != null">
+                    and promo_Code = #{promoCode}
+                </if>
+            </where>
+        </select>
+    <select id="queryByAddress" resultType="tcbv.zhaohui.moon.entity.UserEntity">
+        select  id, address, token, create_time, parent_id, promo_Code
+        from tb_user
+        where address = #{address}
+    </select>
+
+    <!--新增所有列-->
+        <insert id="insert">
+            insert into tb_user(id, address, token, create_time, parent_id, promo_Code)
+            values (#{id}, #{address}, #{token}, #{createTime}, #{parentId}, #{promoCode})
+        </insert>
+
+        <insert id="insertBatch">
+            insert into tb_user(id, address, token, create_time, parent_id, promo_Code)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.address}, #{entity.token}, #{entity.createTime}, #{entity.parentId}, #{entity.promoCode})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+            insert into tb_user(id, address, token, create_time, parent_id, promo_Code)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.address}, #{entity.token}, #{entity.createTime}, #{entity.parentId}, #{entity.promoCode})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                address = values(address),
+                token = values(token),
+                create_time = values(create_time),
+                parent_id = values(parent_id),
+                promo_Code = values(promo_Code)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_user
+            <set>
+                <if test="id != null and id != ''">
+                    id = #{id},
+                </if>
+                <if test="address != null and address != ''">
+                    address = #{address},
+                </if>
+                <if test="token != null and token != ''">
+                    token = #{token},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="parentId != null and parentId != ''">
+                    parent_id = #{parentId},
+                </if>
+                <if test="promoCode != null">
+                    promo_Code = #{promoCode},
+                </if>
+            </set>
+        </update>
+
+
+    </mapper>

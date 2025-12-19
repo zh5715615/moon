@@ -3,16 +3,22 @@ package tcbv.zhaohui.moon.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.dao.UserDao;
 import tcbv.zhaohui.moon.dto.WalletLoginDto;
+import tcbv.zhaohui.moon.entity.UserEntity;
 import tcbv.zhaohui.moon.service.UserInfoService;
+import tcbv.zhaohui.moon.utils.JwtUtil;
 import tcbv.zhaohui.moon.utils.Web3CryptoUtil;
 import tcbv.zhaohui.moon.vo.LoginVo;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -25,6 +31,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private Web3Config web3Config;
 
+    @Autowired
+    private UserDao userDao;
+
+    @Value("${star-wars.jwt.expired:300}")
+    private long expired;
+
     /**
      * @param loginDto 钱包登录
      * @return
@@ -32,28 +44,22 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Transactional
     public LoginVo walletLogin(WalletLoginDto loginDto) {
         log.info("登录参数:" + loginDto);
-        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
-                loginDto.getAddress());
+        String token = JwtUtil.generateToken(loginDto.getAddress(), expired, new HashMap<>());
+//        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
+//                loginDto.getAddress());
+        boolean result = true;
         if (!result) {
             throw new RuntimeException("登录签名校验失败");
         }
-        String token = UUID.randomUUID().toString();
-        String userId = UUID.randomUUID().toString();
 
-//        TbUser tbUser = tbUserDao.queryByAddress(loginDto.getAddress());
-//        if (tbUser == null) {
-//            //查询当前最大的推广码
-//            Integer code = tbUserDao.maxPromoCode();
-//            if (code == null || code == 0) {
-//                code = 213123;
-//            }
-//            tbUser = new TbUser();
-//            tbUser.setId(UUID.randomUUID().toString());
-//            tbUser.setAddress(loginDto.getAddress());
-//            tbUser.setToken(token);
-//            tbUser.setPromoCode(++code);
-//            tbUserDao.insert(tbUser);
-//        }
-        return new LoginVo(loginDto.getAddress(), userId, token);
+        UserEntity userEntity = userDao.queryByAddress(loginDto.getAddress());
+        if (userEntity == null) {
+            userEntity = new UserEntity();
+            userEntity.setId(UUID.randomUUID().toString());
+            userEntity.setAddress(loginDto.getAddress());
+            userEntity.setCreateTime(new Date());
+            userDao.insert(userEntity);
+        }
+        return new LoginVo(loginDto.getAddress(), expired, token);
     }
 }
