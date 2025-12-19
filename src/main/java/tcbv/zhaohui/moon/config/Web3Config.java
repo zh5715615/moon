@@ -28,6 +28,15 @@ public class Web3Config {
     @Value("${web3.gas-fee.limit}")
     private String gasLimit; //交易gas上限
 
+    @Value("${web3.contract.usdt.address}")
+    private String usdtContractAddress; //合约地址
+
+    @Value("${web3.contract.space-jedi.address}")
+    private String spaceJediContractAddress; //合约地址
+
     @Value("${web3.contract.card-nft.address}")
     private String cardNftContractAddress; //合约地址
+
+    @Value("${web3.contract.dapp-pool.address}")
+    private String dappPoolContractAddress; //合约地址
 }

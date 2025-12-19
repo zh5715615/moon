@@ -89,8 +89,14 @@ web3:
     price: "100000000000"
     limit: "3000000"
   contract:
+    usdt:
+      address: "0x5B32Cc7d18643073BDB15dAfafC5C35E736c91a5"
+    space-jedi:
+      address: "0x7ef3D2a397cd368A33d35c52Db42013f691aa7C7"
     card-nft:
-      address: "0x6f9cfd50cbf498fa34c08a01f2d6f011795496a9"
+      address: "0x43B2955aF88BCb97a60E749ac1A24377780674E0"
+    dapp-pool:
+      address: "0x3776F1B91698126933dEa23D47adB678c20a5A5e"
 
 pagehelper:
   helperDialect: mysql
