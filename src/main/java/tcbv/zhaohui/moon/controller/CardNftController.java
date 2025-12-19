@@ -20,6 +20,7 @@ import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.SysOss;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 
@@ -56,6 +57,7 @@ public class CardNftController {
     @Autowired
     private Web3Config web3Config;
 
+    @Syslog(module = "NFT")
     @PostMapping("/mint")
     @ApiOperation("铸造NFT")
     @ApiImplicitParams({

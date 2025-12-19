@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.SysLogDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.SyslogEntity" id="SysLogMap">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="ip" column="ip" jdbcType="VARCHAR"/>
+            <result property="agent" column="agent" jdbcType="VARCHAR"/>
+            <result property="operation" column="operation" jdbcType="VARCHAR"/>
+            <result property="apiInterface" column="api_interface" jdbcType="VARCHAR"/>
+            <result property="requestParam" column="request_param" jdbcType="VARCHAR"/>
+            <result property="responseParam" column="response_param" jdbcType="VARCHAR"/>
+            <result property="httpStatus" column="http_status" jdbcType="INTEGER"/>
+            <result property="errorCode" column="error_code" jdbcType="INTEGER"/>
+            <result property="errorMsg" column="error_msg" jdbcType="VARCHAR"/>
+            <result property="module" column="module" jdbcType="VARCHAR"/>
+            <result property="durationMs" column="duration_ms" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="SysLogMap">
+            select id, address, ip, agent, operation, api_interface, request_param, response_param, http_status, error_code, error_msg, module, duration_ms, create_time
+            from tb_sys_log
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="SysLogMap">
+            select  id, address, ip, agent, operation, api_interface, request_param, response_param, http_status, error_code, error_msg, module, duration_ms, create_time
+            from tb_sys_log
+            <where>
+                <if test="entity.id != null">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.address != null and entity.address != ''">
+                    and address = #{entity.address}
+                </if>
+                <if test="entity.ip != null and entity.ip != ''">
+                    and ip = #{entity.ip}
+                </if>
+                <if test="entity.agent != null and entity.agent != ''">
+                    and agent = #{entity.agent}
+                </if>
+                <if test="entity.operation != null and entity.operation != ''">
+                    and operation = #{entity.operation}
+                </if>
+                <if test="entity.apiInterface != null and entity.apiInterface != ''">
+                    and api_interface = #{entity.apiInterface}
+                </if>
+                <if test="entity.requestParam != null and entity.requestParam != ''">
+                    and request_param = #{entity.requestParam}
+                </if>
+                <if test="entity.responseParam != null and entity.responseParam != ''">
+                    and response_param = #{entity.responseParam}
+                </if>
+                <if test="entity.httpStatus != null">
+                    and http_status = #{entity.httpStatus}
+                </if>
+                <if test="entity.errorCode != null">
+                    and error_code = #{entity.errorCode}
+                </if>
+                <if test="entity.errorMsg != null and entity.errorMsg != ''">
+                    and error_msg = #{entity.errorMsg}
+                </if>
+                <if test="entity.module != null and entity.module != ''">
+                    and module = #{entity.module}
+                </if>
+                <if test="entity.durationMs != null">
+                    and duration_ms = #{entity.durationMs}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_sys_log
+            <where>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="address != null and address != ''">
+                    and address = #{address}
+                </if>
+                <if test="ip != null and ip != ''">
+                    and ip = #{ip}
+                </if>
+                <if test="agent != null and agent != ''">
+                    and agent = #{agent}
+                </if>
+                <if test="operation != null and operation != ''">
+                    and operation = #{operation}
+                </if>
+                <if test="apiInterface != null and apiInterface != ''">
+                    and api_interface = #{apiInterface}
+                </if>
+                <if test="requestParam != null and requestParam != ''">
+                    and request_param = #{requestParam}
+                </if>
+                <if test="responseParam != null and responseParam != ''">
+                    and response_param = #{responseParam}
+                </if>
+                <if test="httpStatus != null">
+                    and http_status = #{httpStatus}
+                </if>
+                <if test="errorCode != null">
+                    and error_code = #{errorCode}
+                </if>
+                <if test="errorMsg != null and errorMsg != ''">
+                    and error_msg = #{errorMsg}
+                </if>
+                <if test="module != null and module != ''">
+                    and module = #{module}
+                </if>
+                <if test="durationMs != null">
+                    and duration_ms = #{durationMs}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sys_log(address, ip, agent, operation, api_interface, request_param, response_param, http_status, error_code, error_msg, module, duration_ms, create_time)
+            values (#{address}, #{ip}, #{agent}, #{operation}, #{apiInterface}, #{requestParam}, #{responseParam}, #{httpStatus}, #{errorCode}, #{errorMsg}, #{module}, #{durationMs}, #{createTime})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sys_log(address, ip, agent, operation, api_interface, request_param, response_param, http_status, error_code, error_msg, module, duration_ms, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.address}, #{entity.ip}, #{entity.agent}, #{entity.operation}, #{entity.apiInterface}, #{entity.requestParam}, #{entity.responseParam}, #{entity.httpStatus}, #{entity.errorCode}, #{entity.errorMsg}, #{entity.module}, #{entity.durationMs}, #{entity.createTime})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sys_log(id, address, ip, agent, operation, api_interface, request_param, response_param, http_status, error_code, error_msg, module, duration_ms, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.address}, #{entity.ip}, #{entity.agent}, #{entity.operation}, #{entity.apiInterface}, #{entity.requestParam}, #{entity.responseParam}, #{entity.httpStatus}, #{entity.errorCode}, #{entity.errorMsg}, #{entity.module}, #{entity.durationMs}, #{entity.createTime})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                address = values(address),
+                ip = values(ip),
+                agent = values(agent),
+                operation = values(operation),
+                api_interface = values(api_interface),
+                request_param = values(request_param),
+                response_param = values(response_param),
+                http_status = values(http_status),
+                error_code = values(error_code),
+                error_msg = values(error_msg),
+                module = values(module),
+                duration_ms = values(duration_ms),
+                create_time = values(create_time)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_sys_log
+            <set>
+                <if test="address != null and address != ''">
+                    address = #{address},
+                </if>
+                <if test="ip != null and ip != ''">
+                    ip = #{ip},
+                </if>
+                <if test="agent != null and agent != ''">
+                    agent = #{agent},
+                </if>
+                <if test="operation != null and operation != ''">
+                    operation = #{operation},
+                </if>
+                <if test="apiInterface != null and apiInterface != ''">
+                    api_interface = #{apiInterface},
+                </if>
+                <if test="requestParam != null and requestParam != ''">
+                    request_param = #{requestParam},
+                </if>
+                <if test="responseParam != null and responseParam != ''">
+                    response_param = #{responseParam},
+                </if>
+                <if test="httpStatus != null">
+                    http_status = #{httpStatus},
+                </if>
+                <if test="errorCode != null">
+                    error_code = #{errorCode},
+                </if>
+                <if test="errorMsg != null and errorMsg != ''">
+                    error_msg = #{errorMsg},
+                </if>
+                <if test="module != null and module != ''">
+                    module = #{module},
+                </if>
+                <if test="durationMs != null">
+                    duration_ms = #{durationMs},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_sys_log where id = #{id}
+        </delete>
+
+    </mapper>

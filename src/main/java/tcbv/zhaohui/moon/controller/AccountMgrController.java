@@ -18,6 +18,7 @@ import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.StringMultipartFile;
 import tcbv.zhaohui.moon.oss.SysOss;
 import tcbv.zhaohui.moon.service.WalletService;
+import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.AesUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
@@ -61,6 +62,7 @@ public class AccountMgrController {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
+    @Syslog(module = "WALLET")
     @GetMapping("/generate")
     @ApiOperation("生成钱包地址")
     @ApiImplicitParams({
