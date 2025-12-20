@@ -1,7 +1,6 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,6 @@ import tcbv.zhaohui.moon.utils.JwtUtil;
 import tcbv.zhaohui.moon.utils.Web3CryptoUtil;
 import tcbv.zhaohui.moon.vo.LoginVo;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -34,7 +31,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private UserDao userDao;
 
-    @Value("${star-wars.jwt.expired:300}")
+    @Value("${star-wars.jwt.expired}")
     private long expired;
 
     /**
@@ -43,11 +40,13 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Transactional
     public LoginVo walletLogin(WalletLoginDto loginDto) {
-        log.info("登录参数:" + loginDto);
+        long now = System.currentTimeMillis() / 1000;
+        if (now > loginDto.getTimestamp() + 30 || now < loginDto.getTimestamp() - 30) {
+            throw new RuntimeException("登录超时");
+        }
         String token = JwtUtil.generateToken(loginDto.getAddress(), expired, new HashMap<>());
-//        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
-//                loginDto.getAddress());
-        boolean result = true;
+        boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
+                loginDto.getAddress());
         if (!result) {
             throw new RuntimeException("登录签名校验失败");
         }

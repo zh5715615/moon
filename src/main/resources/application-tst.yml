@@ -25,9 +25,9 @@ web3:
 
 star-wars:
   jwt:
-    expired: 300 # 5分钟
+    expired: 900 # 15分钟
   auth:
-    enable: false
+    enable: true
   oss:
     access-key: t8lJh36BE4eJIaUZJYpc
     secret-key: vy5tuYaDMTAdFmkAfkNs03WbPywK2jxXgdBE4NHP
