@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.contract.Token20Contract;
+import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.Token20Service;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
@@ -91,6 +92,7 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
     }
 
     @Override
+    @Web3TxGuard
     public void transfer(String toAddress, double value) {
         try {
             token20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send();
@@ -100,6 +102,7 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
     }
 
     @Override
+    @Web3TxGuard
     public void transferFrom(String fromAddress, String toAddress, double value) {
         try {
             token20Contract.transferFrom(fromAddress, toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send();
@@ -109,6 +112,7 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
     }
 
     @Override
+    @Web3TxGuard
     public void approve(String spender, double value) {
         try {
             token20Contract.approve(spender, EthMathUtil.doubleToBigInteger(value, decimals)).send();

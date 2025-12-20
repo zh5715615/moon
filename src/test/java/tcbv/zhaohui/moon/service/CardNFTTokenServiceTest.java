@@ -1,25 +1,23 @@
 package tcbv.zhaohui.moon.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.utils.EthMathUtil;
 
 import java.math.BigInteger;
 
 /**
  * @author: zhaohui
- * @Title: DappPoolServiceTest
+ * @Title: CardNFTTokenServiceTest
  * @Description:
- * @date: 2025/12/20 18:47
+ * @date: 2025/12/20 21:20
  */
 @SpringBootTest
-@Slf4j
-public class DappPoolServiceTest {
-
+public class CardNFTTokenServiceTest {
     public static final String TEST_ADDRESS = "0xa24bDb249e80574A96D8B02b148E81B9be684675";
 
     @Autowired
@@ -47,22 +45,10 @@ public class DappPoolServiceTest {
     }
 
     @Test
-    void extractSpaceJediOnlyTest() {
-        try {
-            String txHash = dappPoolService.extractSpaceJediOnlyTest(1.0);
-            log.info("txHash:{}", txHash);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    void submitOrder() {
-        try {
-            String txHash = dappPoolService.submitOrder(TEST_ADDRESS, new BigInteger("92380587157001473839", 10), 256.0);
-            log.info("txHash:{}", txHash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    void approveTest() throws Exception {
+        double price = 0x100 * 1.0;
+        BigInteger priceInWei = EthMathUtil.doubleToBigInteger(price, spaceJediService.getDecimals());
+        byte[] data = priceInWei.toByteArray();
+        cardNFTTokenService.approveWithData(web3Config.getDappPoolContractAddress(), "92380587157001473839", data);
     }
 }

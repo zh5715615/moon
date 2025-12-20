@@ -55,7 +55,7 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
 
     @Override
     public boolean exists(String tokenId) throws Exception {
-        return false;
+        return cardNFTToken._exists(new BigInteger(tokenId, 10)).send();
     }
 
     @Override
@@ -186,6 +186,6 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
 
     @Override
     public String approveWithData(String to, String tokenId, byte[] data) throws Exception {
-        return cardNFTToken.approveWithData(to, new BigInteger(tokenId), data).send().getTransactionHash();
+        return cardNFTToken.approveWithData(to, new BigInteger(tokenId, 10), data).send().getTransactionHash();
     }
 }

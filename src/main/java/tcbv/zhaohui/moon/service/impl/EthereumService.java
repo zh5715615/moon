@@ -1,6 +1,8 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.web3j.protocol.exceptions.TransactionException;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.EthTransactionBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
@@ -232,5 +234,24 @@ public class EthereumService implements IEthereumService {
             log.info("Transfer transactionHash:" + transactionHash);
             return transactionHash;
         }
+    }
+
+    @Override
+    public String parseTransactionException(TransactionException te) {
+        TransactionReceipt receipt = te.getTransactionReceipt().orElse(null);
+        if (receipt == null) {
+            return null;
+        }
+        String status = receipt.getStatus();
+        String revertReason = receipt.getRevertReason();
+        if (StringUtils.isBlank(revertReason)) {
+            return "Transaction error: status is " + status + ", Unkown error";
+        }
+        String[] split = revertReason.split(":");
+        String errorMsg = revertReason;
+        if (split.length >= 2) {
+            errorMsg = split[1];
+        }
+        return "Transaction error: status is " + status + ", Fail with error '" + errorMsg + "'";
     }
 }

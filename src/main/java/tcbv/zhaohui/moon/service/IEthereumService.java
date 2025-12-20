@@ -1,6 +1,7 @@
 package tcbv.zhaohui.moon.service;
 
 import org.web3j.abi.datatypes.Event;
+import org.web3j.protocol.exceptions.TransactionException;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
 
@@ -53,4 +54,11 @@ public interface IEthereumService {
      */
 
     String sendEth(String toAddress, double amount) throws IOException;
+
+    /**
+     * 解析异常
+     * @param te 异常
+     * @return 异常信息
+     */
+    String parseTransactionException(TransactionException te);
 }
