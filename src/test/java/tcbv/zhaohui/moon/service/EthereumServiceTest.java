@@ -22,47 +22,47 @@ public class EthereumServiceTest {
     private IEthereumService ethereumService;
 
     @BeforeEach
-    public void before() {
+    void before() {
         ethereumService.init();
     }
 
     @Test
-    public void testBestBlockNumber() {
+    void testBestBlockNumber() {
         long blockNumber = ethereumService.lastHeigh();
         log.info("Best blocknumber is {}", blockNumber);
         assertTrue(blockNumber != 0);
     }
 
     @Test
-    public void testBlockInfo() throws IOException {
+    void testBlockInfo() throws IOException {
         BlockInfoBean blockInfoBean = ethereumService.getBlockInfo(10661248);
         assertNotNull(blockInfoBean);
         log.info("BlockInfo is {}", GsonUtil.toJson(blockInfoBean));
     }
 
     @Test
-    public void testTransactionInfo() throws IOException {
+    void testTransactionInfo() throws IOException {
         TransactionBean transactionBean = ethereumService.getTransactionInfo("0x7aa31a00d5f793567e616f7fd4ae56afdaac162b0995493cd3ff1b676c94d386");
         assertNotNull(transactionBean);
         log.info("Transaction is {}", GsonUtil.toJson(transactionBean));
     }
 
     @Test
-    public void testGetBalance() {
+    void testGetBalance() {
         String accountAddress = "0x0D0707963952f2fBA59dD06f2b425ace40b492Fe";
         double balance = ethereumService.getEthBalance(accountAddress);
         log.info("Account {} balance is {}", accountAddress, balance);
     }
 
     @Test
-    public void testGetAccountNonce() throws IOException {
+    void testGetAccountNonce() throws IOException {
         String accountAddress = "0x0D0707963952f2fBA59dD06f2b425ace40b492Fe";
         long nonce = ethereumService.getAccountNonce(accountAddress);
         log.info("Account {} nonce is {}", accountAddress, nonce);
     }
 
     @Test
-    public void testSendEth() throws IOException {
+    void testSendEth() throws IOException {
         String to = "0xab429a6547EC5aC5754B0b63500e32e5A932D915";
         double amount = 1;
         String txHash = ethereumService.sendEth(to, amount);

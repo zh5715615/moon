@@ -183,4 +183,9 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     public String unpause() throws Exception {
         return null;
     }
+
+    @Override
+    public String approveWithData(String to, String tokenId, byte[] data) throws Exception {
+        return cardNFTToken.approveWithData(to, new BigInteger(tokenId), data).send().getTransactionHash();
+    }
 }

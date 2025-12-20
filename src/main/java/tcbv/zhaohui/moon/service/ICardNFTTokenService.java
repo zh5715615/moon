@@ -53,4 +53,6 @@ public interface ICardNFTTokenService {
     String transferFrom(String from, String to, String tokenId) throws Exception;
 
     String unpause() throws Exception;
+
+    String approveWithData(String to, String tokenId, byte[] data) throws Exception;
 }
