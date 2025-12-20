@@ -16,4 +16,6 @@ public interface DappPoolService {
     String submitOrder(String seller, BigInteger tokenId, Double price) throws Exception;
 
     String cancelOrder(String owner, BigInteger tokenId) throws Exception;
+
+    void parseTradeOrder(String txHash);
 }
