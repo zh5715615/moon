@@ -24,6 +24,8 @@ web3:
       address: "0x5E322341c1f9f0a16D780D474189bEBD53Af2073"
 
 star-wars:
+  login:
+    timestamp-check: false
   jwt:
     expired: 300 # 5分钟
   auth:

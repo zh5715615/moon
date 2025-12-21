@@ -3,16 +3,13 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.WalletLoginDto;
 import tcbv.zhaohui.moon.service.UserInfoService;
-import tcbv.zhaohui.moon.utils.JwtUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.LoginVo;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/moon/login")

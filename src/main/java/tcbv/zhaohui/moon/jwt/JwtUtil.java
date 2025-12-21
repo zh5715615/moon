@@ -1,4 +1,4 @@
-package tcbv.zhaohui.moon.utils;
+package tcbv.zhaohui.moon.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -47,5 +47,9 @@ public class JwtUtil {
             // 包含签名错误、格式错误、篡改等
             throw new RuntimeException("TOKEN_INVALID");
         }
+    }
+
+    public static Claims verifyAndGetClaims(String token) {
+        return verify(token).getPayload();
     }
 }

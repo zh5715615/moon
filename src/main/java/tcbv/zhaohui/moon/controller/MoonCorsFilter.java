@@ -3,7 +3,7 @@ package tcbv.zhaohui.moon.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import tcbv.zhaohui.moon.utils.JwtUtil;
+import tcbv.zhaohui.moon.jwt.JwtUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

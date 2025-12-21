@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
  * 用户表(User)实体类
  *
  * @author makejava
- * @since 2025-12-19 17:14:43
+ * @since 2025-12-21 09:16:03
  */
 @Data
 @NoArgsConstructor
@@ -27,6 +27,6 @@ public class UserEntity {
 
     private String parentId;
 
-    private Integer promoCode;
+    private String promoCode;
 }
 

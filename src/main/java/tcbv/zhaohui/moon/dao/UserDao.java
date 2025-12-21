@@ -16,7 +16,13 @@ import java.util.List;
  */
 @Mapper
 public interface UserDao {
-
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param id 主键
+     * @return 实例对象
+     */
+    UserEntity queryById(@Param("id") String id);
 
     /**
      * 查询指定行数据
@@ -65,6 +71,20 @@ public interface UserDao {
      * @param address 用户地址
      * @return 返回匹配地址的用户实体对象
      */
-    UserEntity queryByAddress(@Param("address")  String address);
+    UserEntity queryByAddress(@Param("address") String address);
+
+    /**
+     * 根据优惠码查询用户信息
+     * @param promoCode 优惠码
+     * @return 返回匹配优惠码的用户实体对象
+     */
+    UserEntity queryByPromoCode(@Param("promoCode") String promoCode);
+
+    /**
+     * 绑定推广人
+     * @param id 用户id
+     * @param pid 推广人id
+     */
+    void bindPromoter(@Param("id") String id, @Param("pid") String pid);
 }
 

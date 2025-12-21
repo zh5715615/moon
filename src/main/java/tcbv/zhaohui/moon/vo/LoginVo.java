@@ -19,4 +19,7 @@ public class LoginVo {
 
     @ApiModelProperty("token")
     private String token;
+
+    @ApiModelProperty("推广链接")
+    private String promoLink;
 }

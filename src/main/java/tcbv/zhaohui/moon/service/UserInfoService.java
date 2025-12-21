@@ -14,4 +14,11 @@ public interface UserInfoService {
      * @return
      */
     LoginVo walletLogin(WalletLoginDto loginDto);
+
+    /**
+     * 绑定推广人
+     * @param userId 用户id
+     * @param promoCode 推广码
+     */
+    String bindPromoter(String userId, String promoCode);
 }
