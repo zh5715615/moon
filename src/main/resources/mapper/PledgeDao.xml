@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.PledgeDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.PledgeEntity" id="PledgeMap">
+            <result property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="region" column="region" jdbcType="INTEGER"/>
+            <result property="amount" column="amount" jdbcType="NUMERIC"/>
+            <result property="withdrawAmount" column="withdraw_amount" jdbcType="NUMERIC"/>
+            <result property="expireTime" column="expire_time" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="withdrawTime" column="withdraw_time" jdbcType="TIMESTAMP"/>
+            <result property="pledgeHash" column="pledge_hash" jdbcType="VARCHAR"/>
+            <result property="withdrawHash" column="withdraw_hash" jdbcType="VARCHAR"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="PledgeMap">
+            select id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash
+            from tb_pledge
+            where id = #{id}
+        </select>
+
+
+        <select id="queryByPledgeHash" resultType="tcbv.zhaohui.moon.entity.PledgeEntity">
+            select id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash
+            from tb_pledge
+            where pledge_hash = #{pledgeHash}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="PledgeMap">
+            select  id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash
+            from tb_pledge
+            <where>
+                <if test="entity.id != null and entity.id != ''">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.userId != null and entity.userId != ''">
+                    and user_id = #{entity.userId}
+                </if>
+                <if test="entity.region != null">
+                    and region = #{entity.region}
+                </if>
+                <if test="entity.amount != null">
+                    and amount = #{entity.amount}
+                </if>
+                <if test="entity.withdrawAmount != null">
+                    and withdraw_amount = #{entity.withdrawAmount}
+                </if>
+                <if test="entity.expireTime != null">
+                    and expire_time = #{entity.expireTime}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+                <if test="entity.withdrawTime != null">
+                    and withdraw_time = #{entity.withdrawTime}
+                </if>
+                <if test="entity.pledgeHash != null and entity.pledgeHash != ''">
+                    and pledge_hash = #{entity.pledgeHash}
+                </if>
+                <if test="entity.withdrawHash != null and entity.withdrawHash != ''">
+                    and withdraw_hash = #{entity.withdrawHash}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_pledge
+            <where>
+                <if test="id != null and id != ''">
+                    and id = #{id}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and user_id = #{userId}
+                </if>
+                <if test="region != null">
+                    and region = #{region}
+                </if>
+                <if test="amount != null">
+                    and amount = #{amount}
+                </if>
+                <if test="withdrawAmount != null">
+                    and withdraw_amount = #{withdrawAmount}
+                </if>
+                <if test="expireTime != null">
+                    and expire_time = #{expireTime}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+                <if test="withdrawTime != null">
+                    and withdraw_time = #{withdrawTime}
+                </if>
+                <if test="pledgeHash != null and pledgeHash != ''">
+                    and pledge_hash = #{pledgeHash}
+                </if>
+                <if test="withdrawHash != null and withdrawHash != ''">
+                    and withdraw_hash = #{withdrawHash}
+                </if>
+            </where>
+        </select>
+
+    <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_pledge(id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash)
+            values (#{id}, #{userId}, #{region}, #{amount}, #{withdrawAmount}, #{expireTime}, #{createTime}, #{withdrawTime}, #{pledgeHash}, #{withdrawHash})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_pledge(id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.region}, #{entity.amount}, #{entity.withdrawAmount}, #{entity.expireTime}, #{entity.createTime}, #{entity.withdrawTime}, #{entity.pledgeHash}, #{entity.withdrawHash})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_pledge(id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.region}, #{entity.amount}, #{entity.withdrawAmount}, #{entity.expireTime}, #{entity.createTime}, #{entity.withdrawTime}, #{entity.pledgeHash}, #{entity.withdrawHash})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                user_id = values(user_id),
+                region = values(region),
+                amount = values(amount),
+                withdraw_amount = values(withdraw_amount),
+                expire_time = values(expire_time),
+                create_time = values(create_time),
+                withdraw_time = values(withdraw_time),
+                pledge_hash = values(pledge_hash),
+                withdraw_hash = values(withdraw_hash)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_pledge
+            <set>
+                <if test="userId != null and userId != ''">
+                    user_id = #{userId},
+                </if>
+                <if test="region != null">
+                    region = #{region},
+                </if>
+                <if test="amount != null">
+                    amount = #{amount},
+                </if>
+                <if test="withdrawAmount != null">
+                    withdraw_amount = #{withdrawAmount},
+                </if>
+                <if test="expireTime != null">
+                    expire_time = #{expireTime},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="withdrawTime != null">
+                    withdraw_time = #{withdrawTime},
+                </if>
+                <if test="pledgeHash != null and pledgeHash != ''">
+                    pledge_hash = #{pledgeHash},
+                </if>
+                <if test="withdrawHash != null and withdrawHash != ''">
+                    withdraw_hash = #{withdrawHash},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_pledge where id = #{id}
+        </delete>
+
+    </mapper>

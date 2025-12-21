@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/v1/moon/promote")
 @Slf4j
-@Api(tags = "登录相关接口")
+@Api(tags = "推广相关接口")
 public class PromoteController {
     @Resource
     private UserInfoService userInfoService;

@@ -108,6 +108,14 @@ public class AbiEventLogDecoder {
         return out;
     }
 
+    public static DecodedEvent decodeTxEvents(Web3j web3j, String txHash, String abiJson, Event event) throws Exception {
+        List<DecodedEvent> decodedEvents = decodeTxEvents(web3j, txHash, abiJson);
+        return decodedEvents.stream()
+                .filter(de -> de.getEventName().equals(event.getName()))
+                .findFirst()
+                .orElse(null);
+    }
+
     // ---------------- Core decode ----------------
 
     private static DecodedEvent decodeSingleLog(Log log, String txHash, AbiEvent ev) {

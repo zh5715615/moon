@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.utils;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (EnumUtils)枚举通用操作
@@ -112,5 +113,39 @@ public class EnumUtil {
             throw new RuntimeException(e);
         }
         return values;
+    }
+
+    private static String toGetterName(String name) {
+        // promo_Code / promo_code / promoCode -> getPromoCode
+        String[] parts = name.replaceAll("[^a-zA-Z0-9]+", "_").split("_");
+        StringBuilder sb = new StringBuilder("get");
+        for (String p : parts) {
+            if (p.isEmpty()) continue;
+            sb.append(Character.toUpperCase(p.charAt(0)));
+            if (p.length() > 1) sb.append(p.substring(1));
+        }
+        return sb.toString();
+    }
+
+    public static <T extends Enum<T>> T fromFieldValue(
+            Class<T> enumClass,
+            String fieldOrSectionName,
+            Object targetValue
+    ) {
+        try {
+            String methodName = toGetterName(fieldOrSectionName); // getXxx
+            Method m = enumClass.getMethod(methodName);
+
+            for (T e : enumClass.getEnumConstants()) {
+                Object v = m.invoke(e);
+                if (Objects.equals(v, targetValue)) {
+                    return e;
+                }
+            }
+            return null;
+        } catch (Exception ex) {
+            throw new RuntimeException("Enum parse failed: " + enumClass.getName()
+                    + ", field=" + fieldOrSectionName + ", target=" + targetValue, ex);
+        }
     }
 }

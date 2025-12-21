@@ -59,7 +59,7 @@ public interface Token20Service {
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    void transfer(String toAddress, double value);
+    String transfer(String toAddress, double value);
 
     /**
      * 代理转账
@@ -67,14 +67,14 @@ public interface Token20Service {
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    void transferFrom(String fromAddress, String toAddress, double value);
+    String transferFrom(String fromAddress, String toAddress, double value);
 
     /**
      * 授权审批
      * @param spender 被授权这地址
      * @param value 授权金额
      */
-    void approve(String spender, double value);
+    String approve(String spender, double value);
 
     /**
      * 获取合约地址

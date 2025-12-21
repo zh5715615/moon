@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.PledgePromotionDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.PledgePromotionEntity" id="PledgePromotionMap">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="pledgeId" column="pledge_id" jdbcType="VARCHAR"/>
+            <result property="promoterId" column="promoter_id" jdbcType="VARCHAR"/>
+            <result property="rewardAmount" column="reward_amount" jdbcType="NUMERIC"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="hash" column="hash" jdbcType="VARCHAR"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="PledgePromotionMap">
+            select id, pledge_id, promoter_id, reward_amount, create_time, hash
+            from tb_pledge_promotion
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="PledgePromotionMap">
+            select  id, pledge_id, promoter_id, reward_amount, create_time, hash
+            from tb_pledge_promotion
+            <where>
+                <if test="entity.id != null">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.pledgeId != null and entity.pledgeId != ''">
+                    and pledge_id = #{entity.pledgeId}
+                </if>
+                <if test="entity.promoterId != null and entity.promoterId != ''">
+                    and promoter_id = #{entity.promoterId}
+                </if>
+                <if test="entity.rewardAmount != null">
+                    and reward_amount = #{entity.rewardAmount}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+                <if test="entity.hash != null and entity.hash != ''">
+                    and hash = #{entity.hash}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_pledge_promotion
+            <where>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="pledgeId != null and pledgeId != ''">
+                    and pledge_id = #{pledgeId}
+                </if>
+                <if test="promoterId != null and promoterId != ''">
+                    and promoter_id = #{promoterId}
+                </if>
+                <if test="rewardAmount != null">
+                    and reward_amount = #{rewardAmount}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+                <if test="hash != null and hash != ''">
+                    and hash = #{hash}
+                </if>
+            </where>
+        </select>
+    <select id="queryByIdAndPromoter" resultType="tcbv.zhaohui.moon.entity.PledgePromotionEntity">
+        select
+            tb_pledge_promotion.id,
+            tb_pledge_promotion.pledge_id,
+            tb_pledge_promotion.promoter_id,
+            tb_pledge_promotion.reward_amount,
+            tb_pledge_promotion.create_time,
+            tb_pledge_promotion.hash
+        from tb_pledge_promotion left join tb_pledge on tb_pledge_promotion.pledge_id = tb_pledge.id
+        where tb_pledge_promotion.promoter_id = #{pid} and tb_pledge.user_id = #{userId}
+    </select>
+
+    <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_pledge_promotion(pledge_id, promoter_id, reward_amount, create_time, hash)
+            values (#{pledgeId}, #{promoterId}, #{rewardAmount}, #{createTime}, #{hash})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_pledge_promotion(pledge_id, promoter_id, reward_amount, create_time, hash)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.pledgeId}, #{entity.promoterId}, #{entity.rewardAmount}, #{entity.createTime}, #{entity.hash})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_pledge_promotion(id, pledge_id, promoter_id, reward_amount, create_time, hash)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.pledgeId}, #{entity.promoterId}, #{entity.rewardAmount}, #{entity.createTime}, #{entity.hash})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                pledge_id = values(pledge_id),
+                promoter_id = values(promoter_id),
+                reward_amount = values(reward_amount),
+                create_time = values(create_time),
+                hash = values(hash)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_pledge_promotion
+            <set>
+                <if test="pledgeId != null and pledgeId != ''">
+                    pledge_id = #{pledgeId},
+                </if>
+                <if test="promoterId != null and promoterId != ''">
+                    promoter_id = #{promoterId},
+                </if>
+                <if test="rewardAmount != null">
+                    reward_amount = #{rewardAmount},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="hash != null and hash != ''">
+                    hash = #{hash},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_pledge_promotion where id = #{id}
+        </delete>
+
+    </mapper>

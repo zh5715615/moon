@@ -93,9 +93,9 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
 
     @Override
     @Web3TxGuard
-    public void transfer(String toAddress, double value) {
+    public String transfer(String toAddress, double value) {
         try {
-            token20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send();
+            return token20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -103,9 +103,9 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
 
     @Override
     @Web3TxGuard
-    public void transferFrom(String fromAddress, String toAddress, double value) {
+    public String transferFrom(String fromAddress, String toAddress, double value) {
         try {
-            token20Contract.transferFrom(fromAddress, toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send();
+            return token20Contract.transferFrom(fromAddress, toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -113,9 +113,9 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
 
     @Override
     @Web3TxGuard
-    public void approve(String spender, double value) {
+    public String approve(String spender, double value) {
         try {
-            token20Contract.approve(spender, EthMathUtil.doubleToBigInteger(value, decimals)).send();
+            return token20Contract.approve(spender, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

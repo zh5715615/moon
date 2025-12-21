@@ -39,4 +39,11 @@ public class Web3Config {
 
     @Value("${web3.contract.dapp-pool.address}")
     private String dappPoolContractAddress; //合约地址
+
+    @Value("${spring.profiles.active}")
+    private String env;
+
+    public boolean isEnvProd() {
+        return "pro".equals(env);
+    }
 }
