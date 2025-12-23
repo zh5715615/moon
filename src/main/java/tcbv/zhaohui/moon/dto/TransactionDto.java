@@ -6,13 +6,13 @@ import lombok.Data;
 
 /**
  * @author: zhaohui
- * @Title: PledgeDto
+ * @Title: TransactionDto
  * @Description:
- * @date: 2025/12/21 11:01
+ * @date: 2025/12/23 10:36
  */
 @Data
-@ApiModel("质押信息")
-public class PledgeDto {
-    @ApiModelProperty("质押交易hash值")
-    private String hash;
+@ApiModel("上链交易信息")
+public class TransactionDto {
+    @ApiModelProperty("交易哈希")
+    protected String txHash;
 }

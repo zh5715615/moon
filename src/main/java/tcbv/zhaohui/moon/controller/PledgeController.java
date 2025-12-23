@@ -8,13 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
 import tcbv.zhaohui.moon.beans.events.PledgeRegion;
+import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.dto.PledgeDto;
+import tcbv.zhaohui.moon.dto.TransactionDto;
+import tcbv.zhaohui.moon.dto.WithdrawDto;
 import tcbv.zhaohui.moon.entity.PledgeEntity;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
 import tcbv.zhaohui.moon.service.DappPoolService;
 import tcbv.zhaohui.moon.service.PledgeService;
+import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.Rsp;
 
 import javax.validation.Valid;
@@ -41,11 +44,12 @@ public class PledgeController {
     @Autowired
     private Web3Config web3Config;
 
+    @Syslog(module = "PLEDGE")
     @PostMapping("/invoke")
     @ApiOperation("质押")
     @JwtAddressRequired
-    public Rsp invoke(@RequestBody @Valid PledgeDto dto) throws Exception {
-        PledgeEventBean pledgeEventBean = dappPoolService.parsedPledge(dto.getHash());
+    public Rsp invoke(@RequestBody @Valid TransactionDto dto) throws Exception {
+        PledgeEventBean pledgeEventBean = dappPoolService.parsedPledge(dto.getTxHash());
         PledgeRegion pledgeRegion = pledgeEventBean.getRegion();
         Date now = new Date();
         String userId = JwtContext.getUserId();
@@ -59,8 +63,29 @@ public class PledgeController {
         Date expireTime = DateUtils.addSeconds(now, expire);
         pledgeEntity.setExpireTime(expireTime);
         pledgeEntity.setCreateTime(now);
-        pledgeEntity.setPledgeHash(dto.getHash());
+        pledgeEntity.setPledgeHash(dto.getTxHash());
         pledgeService.insert(pledgeEntity);
+        return Rsp.ok();
+    }
+
+    @Syslog(module = "PLEDGE")
+    @PostMapping("/withdraw")
+    @ApiOperation("提取质押奖励")
+    @JwtAddressRequired
+    public Rsp withdraw(@RequestBody @Valid WithdrawDto dto) throws Exception {
+        WithdrawEventBean withdrawEventBean = dappPoolService.parsedWithdraw(dto.getTxHash());
+        PledgeRegion pledgeRegion = withdrawEventBean.getRegion();
+        String userId = JwtContext.getUserId();
+        String address = JwtContext.getAddress();
+
+        PledgeEntity pledgeEntity = new PledgeEntity();
+        pledgeEntity.setUserId(userId);
+        pledgeEntity.setAddress(address);
+        pledgeEntity.setRegion(pledgeRegion.getLevel());
+        pledgeEntity.setWithdrawAmount(withdrawEventBean.getWithrawAmount());
+        pledgeEntity.setId(dto.getPledgeId());
+        pledgeEntity.setWithdrawHash(dto.getTxHash());
+        pledgeService.withdraw(pledgeEntity);
         return Rsp.ok();
     }
 }

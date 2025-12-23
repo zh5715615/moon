@@ -8,6 +8,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
 import tcbv.zhaohui.moon.beans.events.PledgeRegion;
+import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.DappPoolService;
@@ -103,5 +104,22 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
         PledgeRegion pledgeRegion = EnumUtil.fromFieldValue(PledgeRegion.class, "level", level.intValue());
         pledgeEventBean.setRegion(pledgeRegion);
         return pledgeEventBean;
+    }
+
+    @Override
+    public WithdrawEventBean parsedWithdraw(String txHash) throws Exception {
+        AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.WITHDRAW_EVENT);
+        if (event == null) {
+            return null;
+        }
+        WithdrawEventBean withdrawEventBean = new WithdrawEventBean();
+        BigInteger withdrawAmountWei = (BigInteger) event.getArgs().get("amount");
+        Double withdrawAmount = EthMathUtil.bigIntegerToDouble(withdrawAmountWei, spaceJediService.getDecimals());
+        withdrawEventBean.setWithrawAmount(withdrawAmount);
+        withdrawEventBean.setUserAddress((String) event.getArgs().get("user"));
+        BigInteger level = (BigInteger) event.getArgs().get("level");
+        PledgeRegion pledgeRegion = EnumUtil.fromFieldValue(PledgeRegion.class, "level", level.intValue());
+        withdrawEventBean.setRegion(pledgeRegion);
+        return withdrawEventBean;
     }
 }

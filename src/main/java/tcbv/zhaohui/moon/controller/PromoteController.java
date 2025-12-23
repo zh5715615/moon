@@ -9,6 +9,7 @@ import tcbv.zhaohui.moon.dto.WalletLoginDto;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
 import tcbv.zhaohui.moon.service.UserInfoService;
+import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.LoginVo;
 
@@ -22,6 +23,7 @@ public class PromoteController {
     @Resource
     private UserInfoService userInfoService;
 
+    @Syslog(module = "PROMOTE")
     @PutMapping("/link/{promoCode}")
     @ApiOperation("点击推广链接")
     @JwtAddressRequired

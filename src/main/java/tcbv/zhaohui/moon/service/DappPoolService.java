@@ -1,6 +1,7 @@
 package tcbv.zhaohui.moon.service;
 
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
+import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 
 import java.math.BigInteger;
 
@@ -22,4 +23,6 @@ public interface DappPoolService {
     void parseTradeOrder(String txHash);
 
     PledgeEventBean parsedPledge(String txHash) throws Exception;
+
+    WithdrawEventBean parsedWithdraw(String txHash) throws Exception;
 }

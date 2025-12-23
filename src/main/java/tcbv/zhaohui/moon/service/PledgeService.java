@@ -51,4 +51,11 @@ public interface PledgeService {
      * @return 是否成功
      */
     boolean deleteById(String id);
+
+    /**
+     * 提取质押奖励
+     * @param pledgeEntity 质押信息
+     * @return 质押信息
+     */
+    PledgeEntity withdraw(PledgeEntity pledgeEntity);
 }

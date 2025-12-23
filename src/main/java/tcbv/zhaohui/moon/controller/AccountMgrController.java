@@ -62,7 +62,6 @@ public class AccountMgrController {
         return Base64.getEncoder().encodeToString(bytes);
     }
 
-    @Syslog(module = "WALLET")
     @GetMapping("/generate")
     @ApiOperation("生成钱包地址")
     @ApiImplicitParams({

@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.utils.EnumUtil;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -265,5 +267,24 @@ public class PledgeServiceImpl implements PledgeService {
     @Override
     public boolean deleteById(String id) {
         return this.pledgeDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public PledgeEntity withdraw(PledgeEntity pledgeEntity) {
+        String id = pledgeEntity.getId();
+        PledgeEntity queryEntity = pledgeDao.queryById(id);
+        if (!queryEntity.getUserId().equals(pledgeEntity.getUserId())) {
+            throw new RuntimeException("Pledge not belong to user");
+        }
+        if (pledgeEntity.getRegion() != queryEntity.getRegion()) {
+            throw new RuntimeException("Region not match");
+        }
+
+        Date now = new Date();
+        if (queryEntity.getExpireTime().after(now)) {
+            log.warn("skip withdraw: pledge not expired, expireTime={}, now={}", pledgeEntity.getExpireTime(), now);
+        }
+        pledgeEntity.setWithdrawTime(now);
+        return pledgeDao.update(pledgeEntity) > 0 ? pledgeEntity : null;
     }
 }
