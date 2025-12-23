@@ -10,6 +10,7 @@ import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthTransaction;
 import org.web3j.protocol.core.methods.response.Transaction;
+import tcbv.zhaohui.moon.contract.DappPool;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -27,6 +28,14 @@ public class AbiInputDecoder {
             throw new IllegalArgumentException("tx not found: " + txHash);
         }
         return decodeInput(opt.get().getInput(), abiJson);
+    }
+
+    public static LinkedHashMap<String, Object> decodeTxHash(Web3j web3j, String txHash, String abiJson, String func) throws Exception {
+        AbiInputDecoder.DecodedCall call = AbiInputDecoder.decodeTxHash(web3j, txHash, abiJson);
+        if (call.getFunctionName().equals(func)) {
+            return call.getArgs();
+        }
+        return new LinkedHashMap<>();
     }
 
     /** 用 input 解码：input = 0x + 4字节methodId + 参数data */

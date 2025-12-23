@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.service;
 
+import tcbv.zhaohui.moon.beans.events.NFTTradeOrderEventBean;
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
 import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 
@@ -20,7 +21,7 @@ public interface DappPoolService {
 
     String cancelOrder(String owner, BigInteger tokenId) throws Exception;
 
-    void parseTradeOrder(String txHash);
+    NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception;
 
     PledgeEventBean parsedPledge(String txHash) throws Exception;
 

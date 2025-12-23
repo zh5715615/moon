@@ -1,11 +1,10 @@
 package tcbv.zhaohui.moon.entity;
 
 import java.util.Date;
-import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tcbv.zhaohui.moon.beans.events.PledgeRegion;
 
 /**
  * 质押表(Pledge)实体类

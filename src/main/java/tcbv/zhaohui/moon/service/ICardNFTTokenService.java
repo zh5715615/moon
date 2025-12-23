@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.service;
 
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 
 /**
  * @author: zhaohui
@@ -55,4 +56,6 @@ public interface ICardNFTTokenService {
     String unpause() throws Exception;
 
     String approveWithData(String to, String tokenId, byte[] data) throws Exception;
+
+    NftApproveWithDataInputBean parseApproveWithData(String txHash) throws Exception;
 }

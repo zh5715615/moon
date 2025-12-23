@@ -1,6 +1,7 @@
 package tcbv.zhaohui.moon.beans.events;
 
 import lombok.Data;
+import tcbv.zhaohui.moon.enums.PledgeRegion;
 
 /**
  * @author: zhaohui

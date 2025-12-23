@@ -14,12 +14,22 @@ import org.springframework.web.multipart.MultipartFile;
 import tcbv.zhaohui.moon.beans.NFTAttributesBean;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.beans.events.NFTTradeOrderEventBean;
+import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.dto.TradeOrderDto;
+import tcbv.zhaohui.moon.dto.TransactionDto;
+import tcbv.zhaohui.moon.entity.NftOrderEntity;
+import tcbv.zhaohui.moon.enums.NftOrderStatusEnum;
+import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
+import tcbv.zhaohui.moon.jwt.JwtContext;
 import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.SysOss;
+import tcbv.zhaohui.moon.service.DappPoolService;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.service.NftOrderService;
 import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
@@ -42,14 +52,20 @@ import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_IMAGE;
 @RequestMapping("/api/v1/card/nft")
 @Validated
 @ResponseBody
-@Api(tags="钱包地址管理")
+@Api(tags="卡片NFT管理")
 @Slf4j
 public class CardNftController {
     @Autowired
     private ICardNFTTokenService cardNftService;
 
     @Autowired
+    private NftOrderService nftOrderService;
+
+    @Autowired
     private OssService ossService;
+
+    @Autowired
+    private DappPoolService dappPoolService;
 
     @Autowired
     private OssConfig ossConfig;
@@ -95,5 +111,46 @@ public class CardNftController {
         nftMetadataBean.setDescription(description);
         NFTTokenMintInfoBean nftTokenMintInfoBean = cardNftService.mint(web3Config.getUserAddress(), nftMetadataBean);
         return Rsp.okData(nftTokenMintInfoBean);
+    }
+
+    @PostMapping("/submitOrder")
+    @ApiOperation("挂单卡片")
+    @JwtAddressRequired
+    public Rsp<String> submitOrder(@RequestBody @Validated TransactionDto dto) throws Exception {
+        NftApproveWithDataInputBean approveWithDataInputBean = cardNftService.parseApproveWithData(dto.getTxHash());
+        String userId = JwtContext.getUserId();
+        String address = JwtContext.getAddress();
+        NftOrderEntity nftOrderEntity = new NftOrderEntity();
+        nftOrderEntity.setUserId(userId);
+        nftOrderEntity.setTokenId(approveWithDataInputBean.getTokenId());
+        nftOrderEntity.setPrice(approveWithDataInputBean.getPrice());
+        nftOrderEntity.setStatus(NftOrderStatusEnum.PENDING.getStatus());
+        nftOrderEntity.setAddress(address);
+        nftOrderService.insert(nftOrderEntity);
+        return Rsp.ok();
+    }
+
+    @PostMapping("/tradeOrder")
+    @ApiOperation("订单成交")
+    @JwtAddressRequired
+    public Rsp<String> tradeOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
+        NFTTradeOrderEventBean tradeOrderBean = dappPoolService.parseTradeOrder(dto.getTxHash());
+        String userId = JwtContext.getUserId();
+        NftOrderEntity nftOrderEntity = new NftOrderEntity();
+        nftOrderEntity.setId(dto.getNftOrderId());
+        nftOrderEntity.setBuyerId(userId);
+        nftOrderEntity.setTokenId(tradeOrderBean.getTokenId());
+        nftOrderEntity.setPrice(tradeOrderBean.getPrice());
+        nftOrderEntity.setTradeHash(dto.getTxHash());
+        nftOrderEntity.setStatus(NftOrderStatusEnum.TRADED.getStatus());
+        nftOrderService.tradeOrder(nftOrderEntity);
+        return Rsp.ok();
+    }
+
+    @PostMapping("/cancelOrder")
+    @ApiOperation("取消订单")
+    @JwtAddressRequired
+    public Rsp<String> cancelOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
+        return Rsp.ok();
     }
 }

@@ -67,7 +67,7 @@ public class DappPoolServiceTest {
     }
 
     @Test
-    void pareseTradeOrderTest() {
+    void pareseTradeOrderTest() throws Exception {
         dappPoolService.parseTradeOrder("0x6af5ccfa0e47bdf9894de3d06a75575eb6d0bcc18806ec2609bea622096344ab");
     }
 }

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
-import tcbv.zhaohui.moon.beans.events.PledgeRegion;
+import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dto.TransactionDto;

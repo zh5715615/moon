@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.NftOrderDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.NftOrderEntity" id="NftOrderMap">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="tokenId" column="token_id" jdbcType="VARCHAR"/>
+            <result property="price" column="price" jdbcType="NUMERIC"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="buyerId" column="buyer_id" jdbcType="VARCHAR"/>
+            <result property="tradeHash" column="trade_hash" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="tradeTime" column="trade_time" jdbcType="TIMESTAMP"/>
+            <result property="submitHash" column="submit_hash" jdbcType="VARCHAR"/>
+            <result property="cancelHash" column="cancel_hash" jdbcType="VARCHAR"/>
+            <result property="cancelTime" column="cancel_time" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="NftOrderMap">
+            select id, user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time
+            from tb_nft_order
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="NftOrderMap">
+            select  id, user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time
+            from tb_nft_order
+            <where>
+                <if test="entity.id != null">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.userId != null and entity.userId != ''">
+                    and user_id = #{entity.userId}
+                </if>
+                <if test="entity.tokenId != null and entity.tokenId != ''">
+                    and token_id = #{entity.tokenId}
+                </if>
+                <if test="entity.price != null">
+                    and price = #{entity.price}
+                </if>
+                <if test="entity.status != null">
+                    and status = #{entity.status}
+                </if>
+                <if test="entity.buyerId != null and entity.buyerId != ''">
+                    and buyer_id = #{entity.buyerId}
+                </if>
+                <if test="entity.tradeHash != null and entity.tradeHash != ''">
+                    and trade_hash = #{entity.tradeHash}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+                <if test="entity.tradeTime != null">
+                    and trade_time = #{entity.tradeTime}
+                </if>
+                <if test="entity.submitHash != null and entity.submitHash != ''">
+                    and submit_hash = #{entity.submitHash}
+                </if>
+                <if test="entity.cancelHash != null and entity.cancelHash != ''">
+                    and cancel_hash = #{entity.cancelHash}
+                </if>
+                <if test="entity.cancelTime != null">
+                    and cancel_time = #{entity.cancelTime}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_nft_order
+            <where>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and user_id = #{userId}
+                </if>
+                <if test="tokenId != null and tokenId != ''">
+                    and token_id = #{tokenId}
+                </if>
+                <if test="price != null">
+                    and price = #{price}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <if test="buyerId != null and buyerId != ''">
+                    and buyer_id = #{buyerId}
+                </if>
+                <if test="tradeHash != null and tradeHash != ''">
+                    and trade_hash = #{tradeHash}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+                <if test="tradeTime != null">
+                    and trade_time = #{tradeTime}
+                </if>
+                <if test="submitHash != null and submitHash != ''">
+                    and submit_hash = #{submitHash}
+                </if>
+                <if test="cancelHash != null and cancelHash != ''">
+                    and cancel_hash = #{cancelHash}
+                </if>
+                <if test="cancelTime != null">
+                    and cancel_time = #{cancelTime}
+                </if>
+            </where>
+        </select>
+    <select id="queryBySubmitHash" resultType="tcbv.zhaohui.moon.entity.NftOrderEntity">
+        select  id, user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time
+        from tb_nft_order
+        where submit_hash = #{submitHash}
+    </select>
+
+    <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_nft_order(user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time)
+            values (#{userId}, #{tokenId}, #{price}, #{status}, #{buyerId}, #{tradeHash}, #{createTime}, #{tradeTime}, #{submitHash}, #{cancelHash}, #{cancelTime})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_nft_order(user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.userId}, #{entity.tokenId}, #{entity.price}, #{entity.status}, #{entity.buyerId}, #{entity.tradeHash}, #{entity.createTime}, #{entity.tradeTime}, #{entity.submitHash}, #{entity.cancelHash}, #{entity.cancelTime})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_nft_order(id, user_id, token_id, price, status, buyer_id, trade_hash, create_time, trade_time, submit_hash, cancel_hash, cancel_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.tokenId}, #{entity.price}, #{entity.status}, #{entity.buyerId}, #{entity.tradeHash}, #{entity.createTime}, #{entity.tradeTime}, #{entity.submitHash}, #{entity.cancelHash}, #{entity.cancelTime})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                user_id = values(user_id),
+                token_id = values(token_id),
+                price = values(price),
+                status = values(status),
+                buyer_id = values(buyer_id),
+                trade_hash = values(trade_hash),
+                create_time = values(create_time),
+                trade_time = values(trade_time),
+                submit_hash = values(submit_hash),
+                cancel_hash = values(cancel_hash),
+                cancel_time = values(cancel_time)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_nft_order
+            <set>
+                <if test="userId != null and userId != ''">
+                    user_id = #{userId},
+                </if>
+                <if test="tokenId != null and tokenId != ''">
+                    token_id = #{tokenId},
+                </if>
+                <if test="price != null">
+                    price = #{price},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="buyerId != null and buyerId != ''">
+                    buyer_id = #{buyerId},
+                </if>
+                <if test="tradeHash != null and tradeHash != ''">
+                    trade_hash = #{tradeHash},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="tradeTime != null">
+                    trade_time = #{tradeTime},
+                </if>
+                <if test="submitHash != null and submitHash != ''">
+                    submit_hash = #{submitHash},
+                </if>
+                <if test="cancelHash != null and cancelHash != ''">
+                    cancel_hash = #{cancelHash},
+                </if>
+                <if test="cancelTime != null">
+                    cancel_time = #{cancelTime},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_nft_order where id = #{id}
+        </delete>
+
+    </mapper>

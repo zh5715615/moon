@@ -1,7 +1,9 @@
 package tcbv.zhaohui.moon.service.impl;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.contract.CardNFTToken;
 import tcbv.zhaohui.moon.oss.*;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.utils.AbiInputDecoder;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 
@@ -17,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.LinkedHashMap;
 
 import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_METADATA_PREFIX;
@@ -38,6 +43,10 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
 
     @Autowired
     private OssConfig ossConfig;
+
+    @Autowired
+    @Qualifier("spaceJediService")
+    private Token20Service spaceJediService;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -187,5 +196,23 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     @Override
     public String approveWithData(String to, String tokenId, byte[] data) throws Exception {
         return cardNFTToken.approveWithData(to, new BigInteger(tokenId, 10), data).send().getTransactionHash();
+    }
+
+    @Override
+    public NftApproveWithDataInputBean parseApproveWithData(String txHash) throws Exception {
+        NftApproveWithDataInputBean approveWithDataInputBean = new NftApproveWithDataInputBean();
+        LinkedHashMap<String, Object> args = AbiInputDecoder.decodeTxHash(web3j, txHash, CardNFTToken.ABI_JSON, CardNFTToken.FUNC_APPROVEWITHDATA);
+        if (args.containsKey("to")) {
+            approveWithDataInputBean.setToAddress(args.get("to").toString());
+        }
+        if (args.containsKey("tokenId")) {
+            approveWithDataInputBean.setTokenId(((BigInteger) args.get("tokenId")).toString(10));
+        }
+        if (args.containsKey("data")) {
+            byte[] bts = (byte[]) args.get("data");
+            BigInteger priceWei = new BigInteger(bts);
+            approveWithDataInputBean.setPrice(EthMathUtil.bigIntegerToDouble(priceWei, spaceJediService.getDecimals()));
+        }
+        return approveWithDataInputBean;
     }
 }

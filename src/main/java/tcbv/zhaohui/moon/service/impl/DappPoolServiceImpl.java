@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
-import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
-import tcbv.zhaohui.moon.beans.events.PledgeRegion;
-import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
+import tcbv.zhaohui.moon.beans.events.*;
 import tcbv.zhaohui.moon.contract.DappPool;
+import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.DappPoolService;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
@@ -17,7 +16,6 @@ import tcbv.zhaohui.moon.service.Token20Service;
 import tcbv.zhaohui.moon.utils.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 /**
  * @author: zhaohui
@@ -70,23 +68,17 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
     }
 
     @Override
-    public void parseTradeOrder(String txHash) {
-        try {
-            AbiInputDecoder.DecodedCall call = AbiInputDecoder.decodeTxHash(web3j, txHash, DappPool.ABI_JSON);
-            if (call.getFunctionName().equals(DappPool.FUNC_TRADEORDER)) {
-                log.info("Input Args: {}", GsonUtil.toJson(call.getArgs()));
-            }
-
-            List<AbiEventLogDecoder.DecodedEvent> events =
-                    AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON);
-            for (AbiEventLogDecoder.DecodedEvent event : events) {
-                if (event.getEventName().equals(DappPool.TRADEORDER_EVENT.getName())) {
-                    log.info("Log Args: {}", GsonUtil.toJson(event.getArgs()));
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception {
+        AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.TRADEORDER_EVENT);
+        if (event == null) {
+            return null;
         }
+        NFTTradeOrderEventBean nftTradeOrderEventBean = new NFTTradeOrderEventBean();
+        nftTradeOrderEventBean.setTokenId(((BigInteger) event.getArgs().get("tokenId")).toString(10));
+        nftTradeOrderEventBean.setSellerAddress((String) event.getArgs().get("seller"));
+        nftTradeOrderEventBean.setBuyerAddress((String) event.getArgs().get("buyer"));
+        nftTradeOrderEventBean.setPrice(EthMathUtil.bigIntegerToDouble((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
+        return nftTradeOrderEventBean;
     }
 
     @Override

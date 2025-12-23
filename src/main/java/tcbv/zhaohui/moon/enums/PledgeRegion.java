@@ -1,4 +1,4 @@
-package tcbv.zhaohui.moon.beans.events;
+package tcbv.zhaohui.moon.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
