@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.SjPackageTxDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.SjPackageTxEntity" id="SjPackageTxMap">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="NUMERIC"/>
+            <result property="stage" column="stage" jdbcType="INTEGER"/>
+            <result property="buyerId" column="buyer_id" jdbcType="VARCHAR"/>
+            <result property="hash" column="hash" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="pacakgeCnt" column="pacakge_cnt" jdbcType="INTEGER"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="SjPackageTxMap">
+            select id, price, stage, buyer_id, hash, address, create_time, pacakge_cnt
+            from tb_sj_package_tx
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="SjPackageTxMap">
+            select  id, price, stage, buyer_id, hash, address, create_time, pacakge_cnt
+            from tb_sj_package_tx
+            <where>
+                <if test="entity.id != null">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.price != null">
+                    and price = #{entity.price}
+                </if>
+                <if test="entity.stage != null">
+                    and stage = #{entity.stage}
+                </if>
+                <if test="entity.buyerId != null and entity.buyerId != ''">
+                    and buyer_id = #{entity.buyerId}
+                </if>
+                <if test="entity.hash != null and entity.hash != ''">
+                    and hash = #{entity.hash}
+                </if>
+                <if test="entity.address != null and entity.address != ''">
+                    and address = #{entity.address}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+                <if test="entity.pacakgeCnt != null">
+                    and pacakge_cnt = #{entity.pacakgeCnt}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_sj_package_tx
+            <where>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="price != null">
+                    and price = #{price}
+                </if>
+                <if test="stage != null">
+                    and stage = #{stage}
+                </if>
+                <if test="buyerId != null and buyerId != ''">
+                    and buyer_id = #{buyerId}
+                </if>
+                <if test="hash != null and hash != ''">
+                    and hash = #{hash}
+                </if>
+                <if test="address != null and address != ''">
+                    and address = #{address}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+                <if test="pacakgeCnt != null">
+                    and pacakge_cnt = #{pacakgeCnt}
+                </if>
+            </where>
+        </select>
+    <select id="queryByHash" resultType="tcbv.zhaohui.moon.entity.SjPackageTxEntity">
+        select id, price, stage, buyer_id, hash, address, create_time, pacakge_cnt
+        from tb_sj_package_tx
+        where hash = #{hash}
+    </select>
+
+    <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sj_package_tx(price, stage, buyer_id, hash, address, create_time, pacakge_cnt)
+            values (#{price}, #{stage}, #{buyerId}, #{hash}, #{address}, #{createTime}, #{pacakgeCnt})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sj_package_tx(price, stage, buyer_id, hash, address, create_time, pacakge_cnt)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.price}, #{entity.stage}, #{entity.buyerId}, #{entity.hash}, #{entity.address}, #{entity.createTime}, #{entity.pacakgeCnt})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_sj_package_tx(id, price, stage, buyer_id, hash, address, create_time, pacakge_cnt)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.price}, #{entity.stage}, #{entity.buyerId}, #{entity.hash}, #{entity.address}, #{entity.createTime}, #{entity.pacakgeCnt})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                price = values(price),
+                stage = values(stage),
+                buyer_id = values(buyer_id),
+                hash = values(hash),
+                address = values(address),
+                create_time = values(create_time),
+                pacakge_cnt = values(pacakge_cnt)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_sj_package_tx
+            <set>
+                <if test="price != null">
+                    price = #{price},
+                </if>
+                <if test="stage != null">
+                    stage = #{stage},
+                </if>
+                <if test="buyerId != null and buyerId != ''">
+                    buyer_id = #{buyerId},
+                </if>
+                <if test="hash != null and hash != ''">
+                    hash = #{hash},
+                </if>
+                <if test="address != null and address != ''">
+                    address = #{address},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+                <if test="pacakgeCnt != null">
+                    pacakge_cnt = #{pacakgeCnt},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_sj_package_tx where id = #{id}
+        </delete>
+
+    </mapper>

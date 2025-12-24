@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.service;
 
+import tcbv.zhaohui.moon.beans.events.BuySpaceJediPackageEventBean;
 import tcbv.zhaohui.moon.beans.events.NFTTradeOrderEventBean;
 import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
 import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
@@ -26,4 +27,6 @@ public interface DappPoolService {
     PledgeEventBean parsedPledge(String txHash) throws Exception;
 
     WithdrawEventBean parsedWithdraw(String txHash) throws Exception;
+
+    BuySpaceJediPackageEventBean parseBuySpaceJediPackage(String txHash) throws Exception;
 }

@@ -33,6 +33,10 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
     private Token20Service spaceJediService;
 
     @Autowired
+    @Qualifier("usdtService")
+    private Token20Service usdtService;
+
+    @Autowired
     private ICardNFTTokenService cardNFTTokenService;
 
     @Override
@@ -113,5 +117,24 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
         PledgeRegion pledgeRegion = EnumUtil.fromFieldValue(PledgeRegion.class, "level", level.intValue());
         withdrawEventBean.setRegion(pledgeRegion);
         return withdrawEventBean;
+    }
+
+    @Override
+    public BuySpaceJediPackageEventBean parseBuySpaceJediPackage(String txHash) throws Exception {
+        AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.BUYSPACEJEDIPACKAGE_EVENT);
+        if (event == null) {
+            return null;
+        }
+        BuySpaceJediPackageEventBean buySpaceJediPackageEventBean = new BuySpaceJediPackageEventBean();
+        buySpaceJediPackageEventBean.setBuyerAddress((String) event.getArgs().get("buyer"));
+        BigInteger totalCostWei = (BigInteger) event.getArgs().get("totalCost");
+        Double totalCost = EthMathUtil.bigIntegerToDouble(totalCostWei, spaceJediService.getDecimals());
+        buySpaceJediPackageEventBean.setTotalCost(totalCost);
+        BigInteger priceWei = (BigInteger) event.getArgs().get("price");
+        Double price = EthMathUtil.bigIntegerToDouble(priceWei, usdtService.getDecimals());
+        buySpaceJediPackageEventBean.setPrice(price);
+        buySpaceJediPackageEventBean.setStage(((BigInteger) event.getArgs().get("stage")).intValue());
+        buySpaceJediPackageEventBean.setBuyCnt(((BigInteger) event.getArgs().get("buyCnt")).intValue());
+        return buySpaceJediPackageEventBean;
     }
 }
