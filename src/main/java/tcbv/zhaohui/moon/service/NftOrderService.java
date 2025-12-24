@@ -57,4 +57,10 @@ public interface NftOrderService {
      * @param nftOrderEntity 订单
      */
     void tradeOrder(NftOrderEntity nftOrderEntity);
+
+    /**
+     * 订单取消
+     * @param nftOrderEntity 订单
+     */
+    void cancelOrder(NftOrderEntity nftOrderEntity) throws Exception;
 }

@@ -151,6 +151,20 @@ public class CardNftController {
     @ApiOperation("取消订单")
     @JwtAddressRequired
     public Rsp<String> cancelOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
+        NftApproveWithDataInputBean cancleOrderBean = cardNftService.parseApproveWithData(dto.getTxHash());
+        if (!cancleOrderBean.getToAddress().equalsIgnoreCase("0x000000000000000000000000000000000000dEaD")) {
+            return Rsp.error("本项目只认0x000000000000000000000000000000000000dEaD为黑洞地址");
+        }
+        String userId = JwtContext.getUserId();
+        String address = JwtContext.getAddress();
+        NftOrderEntity nftOrderEntity = new NftOrderEntity();
+        nftOrderEntity.setId(dto.getNftOrderId());
+        nftOrderEntity.setUserId(userId);
+        nftOrderEntity.setTokenId(cancleOrderBean.getTokenId());
+        nftOrderEntity.setCancelHash(dto.getTxHash());
+        nftOrderEntity.setStatus(NftOrderStatusEnum.CANCEL.getStatus());
+        nftOrderEntity.setAddress(address);
+        nftOrderService.cancelOrder(nftOrderEntity);
         return Rsp.ok();
     }
 }

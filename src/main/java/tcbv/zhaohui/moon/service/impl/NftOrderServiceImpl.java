@@ -105,9 +105,6 @@ public class NftOrderServiceImpl implements NftOrderService {
                 queryEntity.getTradeHash().equals(nftOrderEntity.getTradeHash())) {
             throw new RuntimeException("TraderHash[" + nftOrderEntity.getTradeHash() + "]对应订单已存在");
         }
-        if (!queryEntity.getUserId().equals(nftOrderEntity.getBuyerId())) {
-            throw new RuntimeException("订单不属于该用户");
-        }
         if (!queryEntity.getTokenId().equals(nftOrderEntity.getTokenId())) {
             throw new RuntimeException("NFT tokenId不属于该订单");
         }
@@ -118,6 +115,29 @@ public class NftOrderServiceImpl implements NftOrderService {
             throw new RuntimeException("订单状态不正确，不是挂单状态");
         }
         nftOrderEntity.setTradeTime(new Date());
+        this.nftOrderDao.update(nftOrderEntity);
+    }
+
+    @Override
+    public void cancelOrder(NftOrderEntity nftOrderEntity) throws Exception {
+        NftOrderEntity queryEntity = this.nftOrderDao.queryById(nftOrderEntity.getId());
+        if (StringUtils.isNotBlank(queryEntity.getCancelHash()) &&
+                queryEntity.getCancelHash().equals(nftOrderEntity.getCancelHash())) {
+            throw new RuntimeException("CancelHash[" + nftOrderEntity.getCancelHash() + "]对应订单已存在");
+        }
+        if (!queryEntity.getUserId().equals(nftOrderEntity.getUserId())) {
+            throw new RuntimeException("订单不属于该用户");
+        }
+        if (!queryEntity.getTokenId().equals(nftOrderEntity.getTokenId())) {
+            throw new RuntimeException("NFT tokenId不属于该订单");
+        }
+        if (!queryEntity.getStatus().equals(NftOrderStatusEnum.PENDING.getStatus())) {
+            throw new RuntimeException("订单状态不正确，不是挂单状态");
+        }
+        BigInteger tokenId = new BigInteger(nftOrderEntity.getTokenId());
+        String cancelHash = dappPoolService.cancelOrder(nftOrderEntity.getAddress(), tokenId);
+        nftOrderEntity.setSubmitHash(cancelHash);
+        nftOrderEntity.setCancelTime(new Date());
         this.nftOrderDao.update(nftOrderEntity);
     }
 }
