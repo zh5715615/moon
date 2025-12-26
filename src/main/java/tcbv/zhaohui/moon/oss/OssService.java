@@ -53,4 +53,8 @@ public class OssService {
         }
         return oss;
     }
+
+    public String signUrl(BucketType bucketType, String ossPath){
+        return ossClient.signUrl(bucketType, ossPath);
+    }
 }

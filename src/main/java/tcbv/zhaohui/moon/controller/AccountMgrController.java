@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.web3j.crypto.*;
+import tcbv.zhaohui.moon.dto.KeyInfoDto;
 import tcbv.zhaohui.moon.entity.WalletEntity;
 import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssService;
@@ -22,9 +23,13 @@ import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.AesUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.KeyInfoCipherVo;
 
+import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.util.Base64;
 
 import static tcbv.zhaohui.moon.beans.Constants.OSS_WALLET_PREFIX;
@@ -54,6 +59,10 @@ public class AccountMgrController {
 
     @Value("${star-wars.secret.aes-key}")
     private String aesKey;
+
+    static {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    }
 
     private String randomPassword() {
         byte[] bytes = new byte[32];
@@ -121,5 +130,52 @@ public class AccountMgrController {
             walletService.insert(walletEntity);
         }
         return Rsp.okData("生成成功");
+    }
+
+    @PostMapping("/generteKeystoreByMnemonicAndPassword")
+    public Rsp<KeyInfoCipherVo> generateKeystoreByMnemonicAndPassword(@RequestBody @Valid KeyInfoDto dto) throws Exception {
+        // 1. 助记词转种子
+        byte[] seed = MnemonicUtils.generateSeed(dto.getMnemonic(), "");
+
+        // 2. 从种子派生主密钥，再按 BIP44 路径派生第一个账户（标准以太坊路径）
+        Bip32ECKeyPair masterKeypair = Bip32ECKeyPair.generateKeyPair(seed);
+        int[] bip44 = {
+                44 | Bip32ECKeyPair.HARDENED_BIT,
+                60 | Bip32ECKeyPair.HARDENED_BIT,
+                Bip32ECKeyPair.HARDENED_BIT,
+                0,
+                0
+        };
+        Bip32ECKeyPair derivedKeyPair = Bip32ECKeyPair.deriveKeyPair(masterKeypair, bip44);
+
+        // 3. 创建 Credentials
+        Credentials credentials = Credentials.create(derivedKeyPair);
+        String address = credentials.getAddress();
+        log.info("钱包地址: {}", address);
+
+        // 4. 设置 keystore 密码（用于加密私钥）
+        String keystorePassword = dto.getPassword(); // 用户设置的密码，非助记词 passphrase
+
+        // 5. 保存到文件
+        WalletFile walletFile = Wallet.createStandard(keystorePassword, derivedKeyPair);
+
+        // 6. 将 WalletFile 转为 JSON 字符串
+        String keystoreJson = objectMapper.writeValueAsString(walletFile);
+        log.info("Keystore JSON: {}", keystoreJson);
+
+        byte[] bytes = keystoreJson.getBytes();
+        MultipartFile mockFile = new StringMultipartFile(
+                new String(bytes),
+                address.toLowerCase() + ".json",
+                "application/json"
+        );
+        ossService.upload(BucketType.PRIVATE_BUCKET, OSS_WALLET_PREFIX, mockFile, CONTENT_TYPE_JSON);
+
+        String encryptPwd = AesUtil.encrypt(aesKey, keystorePassword);
+        KeyInfoCipherVo keyInfoCipherVo = new KeyInfoCipherVo();
+        keyInfoCipherVo.setAddress(address);
+        keyInfoCipherVo.setEncryptPwd(encryptPwd);
+        keyInfoCipherVo.setKeystoreContent(Base64.getEncoder().encodeToString(bytes));
+        return Rsp.okData(keyInfoCipherVo);
     }
 }

@@ -1,7 +1,10 @@
 package tcbv.zhaohui.moon.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.web3j.crypto.*;
 import org.web3j.protocol.exceptions.TransactionException;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.EthTransactionBean;
@@ -15,9 +18,6 @@ import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Type;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.RawTransaction;
-import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -28,12 +28,20 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.oss.BucketType;
+import tcbv.zhaohui.moon.oss.OssConfig;
+import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.service.IEthereumService;
+import tcbv.zhaohui.moon.utils.AesUtil;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
+import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,11 +62,38 @@ public class EthereumService implements IEthereumService {
     @Autowired
     protected Web3Config web3Config;
 
+    @Autowired
+    private OssService ossService;
+
+    @Resource
+    private OssConfig ossConfig;
+
+    @Value("${star-wars.secret.aes-key}")
+    private String aesKey;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private String parseSecretKey() throws Exception {
+        String password = AesUtil.decrypt(aesKey, web3Config.getEncryptPassword());
+        String fileUrl = "wallet/" + web3Config.getUserAddress().toLowerCase() + ".json";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ossService.downloadFileByName(BucketType.PRIVATE_BUCKET, fileUrl, baos);
+        String keystoreJson = baos.toString(StandardCharsets.UTF_8.name());
+        WalletFile walletFile = objectMapper.readValue(keystoreJson, WalletFile.class);
+        BigInteger privateKey = Wallet.decrypt(password, walletFile).getPrivateKey();
+        return Numeric.toHexStringWithPrefix(privateKey);
+    }
+
     @Override
     public void init() {
         HttpService httpService = new HttpService(web3Config.getEthUrl());
         web3j = Web3j.build(httpService);
-        credentials = Credentials.create(web3Config.getUserPrivKey());
+        try {
+            String privateKey = parseSecretKey();
+            credentials = Credentials.create(privateKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         contractGasProvider = new ContractGasProvider() {
             @Override
             public BigInteger getGasPrice(String method) {

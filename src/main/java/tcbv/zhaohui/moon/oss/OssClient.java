@@ -240,9 +240,7 @@ public class OssClient {
 
 
     private String getPath(String prefix, String filename) {
-        // 文件路径
-        String yyyyMM = DateUtil.format(new Date(), "yyyyMM");
-        String path = yyyyMM + "/" + filename;
+        String path = filename;
         if (StringUtils.isNotBlank(prefix)) {
             path = prefix + "/" + path;
         }
@@ -275,5 +273,45 @@ public class OssClient {
                         .withExpiration(new Date(System.currentTimeMillis() + 1000L * second));
         URL url = client.generatePresignedUrl(generatePresignedUrlRequest);
         return url.toString();
+    }
+
+    public String signUrl(BucketType bucketType, String ossPath) {
+        if (StringUtils.isBlank(ossPath)) {
+            log.info("ossPath is null");
+            return "";
+        }
+
+        if (bucketType.isPub()) {
+            return ossPath;
+        }
+
+        // 创建凭证提供者
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(ossConfig.getAccessKey(), ossConfig.getSecretKey());
+        StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(credentials);
+
+        // 创建 S3 客户端 (用于 Presigner)
+        S3Presigner presigner = S3Presigner.builder()
+                .credentialsProvider(credentialsProvider)
+                .endpointOverride(URI.create(ossConfig.getEndpoint())) // 重写端点以兼容非 AWS 的 S3 服务
+                .region(Region.of(ossConfig.getRegion())) // 对于大多数 S3 兼容服务，使用 US_EAST_1 即可，除非特别指定
+                .serviceConfiguration(
+                        S3Configuration.builder()
+                                .pathStyleAccessEnabled(true) // 强制使用路径风格
+                                .build())
+                .build();
+
+        // 构建预签名请求
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofSeconds(60))
+                .getObjectRequest(req -> req.bucket(bucketType.getBucketName()).key(ossPath))
+                .build();
+
+        // 生成预签名 URL
+        PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(getObjectPresignRequest);
+
+        // 获取可分享的 URL
+        String presignedUrl = presignedRequest.url().toString();
+        log.debug("预签名 URL: {}", presignedUrl);
+        return presignedUrl;
     }
 }

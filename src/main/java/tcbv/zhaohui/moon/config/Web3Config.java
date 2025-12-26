@@ -16,8 +16,8 @@ public class Web3Config {
     @Value("${web3.chain-id}")
     private long chainId; //链id
 
-    @Value("${web3.account.private-key}")
-    private String userPrivKey; //用户私钥
+    @Value("${web3.account.encrypt-password}")
+    private String encryptPassword; //用户私钥
 
     @Value("${web3.account.address}")
     private String userAddress; //用户地址
