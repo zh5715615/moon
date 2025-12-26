@@ -9,7 +9,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -80,5 +82,10 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public boolean deleteById(Integer id) {
         return this.walletDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<WalletEntity> queryAll() {
+        return this.walletDao.queryAll();
     }
 }

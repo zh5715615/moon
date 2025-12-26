@@ -70,8 +70,12 @@
                 </if>
             </where>
         </select>
+    <select id="queryAll" resultMap="WalletMap">
+        select id, address, encrypt_pwd, keystore_path, create_time
+        from tb_wallet
+    </select>
 
-        <!--新增所有列-->
+    <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
             insert into tb_wallet(address, encrypt_pwd, keystore_path, create_time)
             values (#{address}, #{encryptPwd}, #{keystorePath}, #{createTime})

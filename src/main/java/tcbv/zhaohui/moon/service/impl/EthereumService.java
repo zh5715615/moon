@@ -44,6 +44,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -53,9 +54,7 @@ public class EthereumService implements IEthereumService {
 
     protected Credentials credentials;
 
-    protected Credentials weekCredentials;
-
-    protected Credentials moonCredentials;
+    protected Map<String, Credentials> mgr500Account;
 
     protected ContractGasProvider contractGasProvider;
 

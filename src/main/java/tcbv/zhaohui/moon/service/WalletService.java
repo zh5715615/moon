@@ -4,6 +4,8 @@ import tcbv.zhaohui.moon.entity.WalletEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 /**
  * tb_wallet(Wallet)表服务接口
  *
@@ -51,4 +53,10 @@ public interface WalletService {
      * @return 是否成功
      */
     boolean deleteById(Integer id);
+
+    /**
+     * 查询全部数据
+     * @return List<WalletEntity>
+     */
+    List<WalletEntity> queryAll();
 }

@@ -80,5 +80,11 @@ public interface WalletDao {
      * @return 影响行数
      */
     int deleteById(Integer id);
+
+    /**
+     * 查询全部数据
+     * @return List<WalletEntity>
+     */
+    List<WalletEntity> queryAll();
 }
 
