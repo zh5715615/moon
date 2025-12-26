@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import tcbv.zhaohui.moon.service.IEthereumService;
 import tcbv.zhaohui.moon.service.Token20Service;
 import tcbv.zhaohui.moon.utils.AbiInputDecoder;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
@@ -51,8 +52,8 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
-    public void init(String contractAddress) {
-        super.init();
+    public void init(IEthereumService ethereumService, String contractAddress) {
+        super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         cardNFTToken = CardNFTToken.load(contractAddress, web3j, transactionManager, contractGasProvider);
     }
@@ -110,6 +111,11 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     @Override
     public String approve(String to, String tokenId) throws Exception {
         return cardNFTToken.approve(to, new BigInteger(tokenId, 10)).send().getTransactionHash();
+    }
+
+    public String approve(String from, String to, String tokenId) throws Exception {
+        CardNFTToken localCardNFTToken = CardNFTToken.load(cardNFTToken.getContractAddress(), web3j, mgr500Account.get(from), contractGasProvider);
+        return localCardNFTToken.approve(to, new BigInteger(tokenId, 10)).send().getTransactionHash();
     }
 
     @Override

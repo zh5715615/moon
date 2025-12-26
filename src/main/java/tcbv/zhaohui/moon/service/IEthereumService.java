@@ -1,17 +1,32 @@
 package tcbv.zhaohui.moon.service;
 
 import org.web3j.abi.datatypes.Event;
+import org.web3j.crypto.Credentials;
+import org.web3j.protocol.Web3j;
 import org.web3j.protocol.exceptions.TransactionException;
+import org.web3j.tx.gas.ContractGasProvider;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
+import tcbv.zhaohui.moon.config.Web3Config;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface IEthereumService {
     /**
      * 初始化以太坊
      */
     void init();
+
+    Web3j getWeb3j();
+
+    Credentials getCredentials();
+
+    Map<String, Credentials> getCredentialsMap();
+
+    ContractGasProvider getContractGasProvider();
+
+    Web3Config getWeb3Config();
 
     /**
      * 根据区块高度获取区块详情

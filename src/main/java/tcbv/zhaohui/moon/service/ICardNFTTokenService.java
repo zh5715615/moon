@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.service;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
 import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
+import tcbv.zhaohui.moon.service.impl.EthereumService;
 
 /**
  * @author: zhaohui
@@ -11,7 +12,7 @@ import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
  * @date: 2025/12/12 9:27
  */
 public interface ICardNFTTokenService {
-    void init(String contractAddress);
+    void init(IEthereumService ethereumService, String contractAddress);
 
     long balanceOf(String owner) throws Exception;
 
@@ -34,6 +35,8 @@ public interface ICardNFTTokenService {
     String tokenURI(String tokenId) throws Exception;
 
     String approve(String to, String tokenId) throws Exception;
+
+    String approve(String from, String to, String tokenId) throws Exception;
 
     String burn(String tokenId) throws Exception;
 

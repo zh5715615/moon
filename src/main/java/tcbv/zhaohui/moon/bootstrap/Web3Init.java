@@ -38,10 +38,10 @@ public class Web3Init implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         log.info("================= web3服务初始化开始 =================");
         ethereumService.init();
-        usdtService.init(web3Config.getUsdtContractAddress());
-        spaceJediService.init(web3Config.getSpaceJediContractAddress());
-        cardNFTTokenService.init(web3Config.getCardNftContractAddress());
-        dappPoolService.init(web3Config.getDappPoolContractAddress());
+        usdtService.init(ethereumService, web3Config.getUsdtContractAddress());
+        spaceJediService.init(ethereumService, web3Config.getSpaceJediContractAddress());
+        cardNFTTokenService.init(ethereumService, web3Config.getCardNftContractAddress());
+        dappPoolService.init(ethereumService, web3Config.getDappPoolContractAddress());
         log.info("================= web3服务初始化完成 =================");
     }
 }

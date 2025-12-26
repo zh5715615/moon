@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.web3j.crypto.*;
+import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.dto.KeyInfoDto;
 import tcbv.zhaohui.moon.entity.WalletEntity;
 import tcbv.zhaohui.moon.oss.BucketType;
@@ -81,7 +82,7 @@ public class AccountMgrController {
         byte[] bytes = new byte[32];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(bytes);
-        return Base64.getEncoder().encodeToString(bytes);
+        return Numeric.toHexStringNoPrefix(bytes);
     }
 
     private String generateWallet() throws Exception {

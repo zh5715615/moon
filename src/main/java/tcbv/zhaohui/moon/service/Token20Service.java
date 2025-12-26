@@ -1,5 +1,7 @@
 package tcbv.zhaohui.moon.service;
 
+import tcbv.zhaohui.moon.service.impl.EthereumService;
+
 import java.io.IOException;
 
 /**
@@ -13,7 +15,7 @@ public interface Token20Service {
      * 初始化
      * @param contractAddress 合约地址
      */
-    void init(String contractAddress);
+    void init(IEthereumService ethereumService, String contractAddress);
 
     /**
      * 获取token精度
@@ -60,6 +62,8 @@ public interface Token20Service {
      * @param value 金额
      */
     String transfer(String toAddress, double value);
+
+    String transfer(String fromAddress, String toAddress, double value);
 
     /**
      * 代理转账

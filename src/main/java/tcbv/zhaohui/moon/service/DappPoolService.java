@@ -14,7 +14,7 @@ import java.math.BigInteger;
  * @date: 2025/12/20 17:41
  */
 public interface DappPoolService {
-    void init(String contractAddress);
+    void init(IEthereumService ethereumService, String contractAddress);
 
     String extractSpaceJediOnlyTest(Double amount) throws Exception;
 

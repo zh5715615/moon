@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.web3j.crypto.*;
 import org.web3j.protocol.exceptions.TransactionException;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
@@ -19,33 +20,29 @@ import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Type;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
-import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.entity.WalletEntity;
 import tcbv.zhaohui.moon.oss.BucketType;
-import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.service.IEthereumService;
+import tcbv.zhaohui.moon.service.WalletService;
 import tcbv.zhaohui.moon.utils.AesUtil;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.security.Security;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -64,17 +61,21 @@ public class EthereumService implements IEthereumService {
     @Autowired
     private OssService ossService;
 
-    @Resource
-    private OssConfig ossConfig;
+    @Autowired
+    private WalletService walletService;
 
     @Value("${star-wars.secret.aes-key}")
     private String aesKey;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private String parseSecretKey() throws Exception {
-        String password = AesUtil.decrypt(aesKey, web3Config.getEncryptPassword());
-        String fileUrl = "wallet/" + web3Config.getUserAddress().toLowerCase() + ".json";
+    static {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    }
+
+    private String parseSecretKey(String address, String encryptPassword) throws Exception {
+        String password = AesUtil.decrypt(aesKey, encryptPassword);
+        String fileUrl = "wallet/" + address.toLowerCase() + ".json";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ossService.downloadFileByName(BucketType.PRIVATE_BUCKET, fileUrl, baos);
         String keystoreJson = baos.toString(StandardCharsets.UTF_8.name());
@@ -83,13 +84,31 @@ public class EthereumService implements IEthereumService {
         return Numeric.toHexStringWithPrefix(privateKey);
     }
 
+    private void initMgr500Account() throws Exception {
+        List<WalletEntity> walletEntityList = walletService.queryAll();
+        mgr500Account = new ConcurrentHashMap<>();
+        if (CollectionUtils.isEmpty(walletEntityList)) {
+            return;
+        }
+        for (WalletEntity walletEntity : walletEntityList) {
+            try {
+                String privateKey = parseSecretKey(walletEntity.getAddress(), walletEntity.getEncryptPwd());
+                mgr500Account.put(walletEntity.getAddress(), Credentials.create(privateKey));
+            } catch (CipherException e) {
+                log.error("initMgr500Account error, address:{}", walletEntity.getAddress(), e);
+            }
+        }
+    }
+
     @Override
     public void init() {
         HttpService httpService = new HttpService(web3Config.getEthUrl());
         web3j = Web3j.build(httpService);
         try {
-            String privateKey = parseSecretKey();
+            String privateKey = parseSecretKey(web3Config.getUserAddress(), web3Config.getEncryptPassword());
             credentials = Credentials.create(privateKey);
+
+            initMgr500Account();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,6 +133,31 @@ public class EthereumService implements IEthereumService {
                 return new BigInteger(web3Config.getGasLimit());
             }
         };
+    }
+
+    @Override
+    public Web3j getWeb3j() {
+        return web3j;
+    }
+
+    @Override
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    @Override
+    public Map<String, Credentials> getCredentialsMap() {
+        return mgr500Account;
+    }
+
+    @Override
+    public ContractGasProvider getContractGasProvider() {
+        return contractGasProvider;
+    }
+
+    @Override
+    public Web3Config getWeb3Config() {
+        return web3Config;
     }
 
     @Override
@@ -287,5 +331,13 @@ public class EthereumService implements IEthereumService {
             errorMsg = split[1];
         }
         return "Transaction error: status is " + status + ", Fail with error '" + errorMsg + "'";
+    }
+
+    protected void init(IEthereumService ethereumService) {
+        this.web3j = ethereumService.getWeb3j();
+        this.credentials = ethereumService.getCredentials();
+        this.mgr500Account = ethereumService.getCredentialsMap();
+        this.contractGasProvider = ethereumService.getContractGasProvider();
+        this.web3Config = ethereumService.getWeb3Config();
     }
 }

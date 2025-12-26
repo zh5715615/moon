@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.service.impl.EthereumService;
 
 import java.math.BigInteger;
 
@@ -23,7 +24,7 @@ public class DappPoolServiceTest {
     public static final String TEST_ADDRESS = "0xa24bDb249e80574A96D8B02b148E81B9be684675";
 
     @Autowired
-    private IEthereumService ethereumService;
+    private EthereumService ethereumService;
 
     @Autowired
     @Qualifier("spaceJediService")
@@ -41,9 +42,9 @@ public class DappPoolServiceTest {
     @BeforeEach
     void init() {
         ethereumService.init();
-        spaceJediService.init(web3Config.getSpaceJediContractAddress());
-        cardNFTTokenService.init(web3Config.getCardNftContractAddress());
-        dappPoolService.init(web3Config.getDappPoolContractAddress());
+        spaceJediService.init(ethereumService, web3Config.getSpaceJediContractAddress());
+        cardNFTTokenService.init(ethereumService, web3Config.getCardNftContractAddress());
+        dappPoolService.init(ethereumService, web3Config.getDappPoolContractAddress());
     }
 
     @Test

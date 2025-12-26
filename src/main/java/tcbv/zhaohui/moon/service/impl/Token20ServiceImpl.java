@@ -5,6 +5,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.contract.Token20Contract;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
+import tcbv.zhaohui.moon.service.IEthereumService;
 import tcbv.zhaohui.moon.service.Token20Service;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
@@ -26,8 +27,8 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
     private String contractAddress;
 
     @Override
-    public void init(String contractAddress) {
-        super.init();
+    public void init(IEthereumService ethereumService, String contractAddress) {
+        super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         this.token20Contract = Token20Contract.load(contractAddress, web3j, transactionManager, contractGasProvider);
         this.decimals = decimals();
@@ -96,6 +97,17 @@ public class Token20ServiceImpl extends EthereumService implements Token20Servic
     public String transfer(String toAddress, double value) {
         try {
             return token20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Web3TxGuard
+    public String transfer(String fromAddress, String toAddress, double value) {
+        try {
+            Token20Contract localToken20Contract = Token20Contract.load(contractAddress, web3j, mgr500Account.get(fromAddress), contractGasProvider);
+            return localToken20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

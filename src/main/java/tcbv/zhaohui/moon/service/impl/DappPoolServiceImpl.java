@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.DappPoolService;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.service.IEthereumService;
 import tcbv.zhaohui.moon.service.Token20Service;
 import tcbv.zhaohui.moon.utils.*;
 
@@ -40,8 +41,8 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
     private ICardNFTTokenService cardNFTTokenService;
 
     @Override
-    public void init(String contractAddress) {
-        super.init();
+    public void init(IEthereumService ethereumService, String contractAddress) {
+        super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         dappPool = DappPool.load(contractAddress, web3j, transactionManager, contractGasProvider);
     }
