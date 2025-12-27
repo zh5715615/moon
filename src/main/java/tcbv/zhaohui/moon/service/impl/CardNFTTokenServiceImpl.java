@@ -3,8 +3,10 @@ package tcbv.zhaohui.moon.service.impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
 import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.contract.CardNFTToken;
+import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.oss.*;
 import tcbv.zhaohui.moon.service.ICardNFTTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.service.IEthereumService;
 import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.utils.AbiEventLogDecoder;
 import tcbv.zhaohui.moon.utils.AbiInputDecoder;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
@@ -202,23 +205,5 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     @Override
     public String approveWithData(String to, String tokenId, byte[] data) throws Exception {
         return cardNFTToken.approveWithData(to, new BigInteger(tokenId, 10), data).send().getTransactionHash();
-    }
-
-    @Override
-    public NftApproveWithDataInputBean parseApproveWithData(String txHash) throws Exception {
-        NftApproveWithDataInputBean approveWithDataInputBean = new NftApproveWithDataInputBean();
-        LinkedHashMap<String, Object> args = AbiInputDecoder.decodeTxHash(web3j, txHash, CardNFTToken.ABI_JSON, CardNFTToken.FUNC_APPROVEWITHDATA);
-        if (args.containsKey("to")) {
-            approveWithDataInputBean.setToAddress(args.get("to").toString());
-        }
-        if (args.containsKey("tokenId")) {
-            approveWithDataInputBean.setTokenId(((BigInteger) args.get("tokenId")).toString(10));
-        }
-        if (args.containsKey("data")) {
-            byte[] bts = (byte[]) args.get("data");
-            BigInteger priceWei = new BigInteger(bts);
-            approveWithDataInputBean.setPrice(EthMathUtil.bigIntegerToDouble(priceWei, spaceJediService.getDecimals()));
-        }
-        return approveWithDataInputBean;
     }
 }

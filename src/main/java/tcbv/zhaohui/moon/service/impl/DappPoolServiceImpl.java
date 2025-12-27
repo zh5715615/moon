@@ -138,4 +138,30 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
         buySpaceJediPackageEventBean.setBuyCnt(((BigInteger) event.getArgs().get("buyCnt")).intValue());
         return buySpaceJediPackageEventBean;
     }
+
+
+    @Override
+    public SubmitOrderEventBean parseSubmitOrder(String txHash) throws Exception {
+        AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.SUBMITORDER_EVENT);
+        if (event == null) {
+            return null;
+        }
+        SubmitOrderEventBean submitOrderEventBean = new SubmitOrderEventBean();
+        submitOrderEventBean.setOwner((String) event.getArgs().get("owner"));
+        submitOrderEventBean.setTokenId(((BigInteger) event.getArgs().get("tokenId")).toString(10));
+        submitOrderEventBean.setPrice(EthMathUtil.bigIntegerToDouble((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
+        return submitOrderEventBean;
+    }
+
+    @Override
+    public CancelOrderEventBean parseCancelOrder(String txHash) throws Exception {
+        AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.CANCELORDER_EVENT);
+        if (event == null) {
+            return null;
+        }
+        SubmitOrderEventBean cancelOrderEventBean = new SubmitOrderEventBean();
+        cancelOrderEventBean.setOwner((String) event.getArgs().get("owner"));
+        cancelOrderEventBean.setTokenId(((BigInteger) event.getArgs().get("tokenId")).toString(10));
+        return cancelOrderEventBean;
+    }
 }

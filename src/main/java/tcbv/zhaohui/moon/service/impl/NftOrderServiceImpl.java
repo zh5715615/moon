@@ -69,9 +69,6 @@ public class NftOrderServiceImpl implements NftOrderService {
             throw new RuntimeException("SubmitHash[" + submitHash + "]对应订单已存在");
         }
         nftOrderEntity.setCreateTime(new Date());
-        BigInteger tokenId = new BigInteger(nftOrderEntity.getTokenId());
-        submitHash = dappPoolService.submitOrder(nftOrderEntity.getAddress(), tokenId, nftOrderEntity.getPrice());
-        nftOrderEntity.setSubmitHash(submitHash);
         this.nftOrderDao.insert(nftOrderEntity);
         return nftOrderEntity;
     }
@@ -134,9 +131,7 @@ public class NftOrderServiceImpl implements NftOrderService {
         if (!queryEntity.getStatus().equals(NftOrderStatusEnum.PENDING.getStatus())) {
             throw new RuntimeException("订单状态不正确，不是挂单状态");
         }
-        BigInteger tokenId = new BigInteger(nftOrderEntity.getTokenId());
-        String cancelHash = dappPoolService.cancelOrder(nftOrderEntity.getAddress(), tokenId);
-        nftOrderEntity.setSubmitHash(cancelHash);
+        nftOrderEntity.setCancelHash(nftOrderEntity.getCancelHash());
         nftOrderEntity.setCancelTime(new Date());
         this.nftOrderDao.update(nftOrderEntity);
     }

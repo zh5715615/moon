@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import tcbv.zhaohui.moon.beans.NFTAttributesBean;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
+import tcbv.zhaohui.moon.beans.events.CancelOrderEventBean;
 import tcbv.zhaohui.moon.beans.events.NFTTradeOrderEventBean;
+import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
 import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dto.TradeOrderDto;
@@ -117,15 +119,19 @@ public class CardNftController {
     @ApiOperation("挂单卡片")
     @JwtAddressRequired
     public Rsp<String> submitOrder(@RequestBody @Validated TransactionDto dto) throws Exception {
-        NftApproveWithDataInputBean approveWithDataInputBean = cardNftService.parseApproveWithData(dto.getTxHash());
+        SubmitOrderEventBean submitOrderEventBean = dappPoolService.parseSubmitOrder(dto.getTxHash());
         String userId = JwtContext.getUserId();
         String address = JwtContext.getAddress();
+        if (!address.equalsIgnoreCase(submitOrderEventBean.getOwner())) {
+            return Rsp.error("订单不属于当前用户");
+        }
         NftOrderEntity nftOrderEntity = new NftOrderEntity();
         nftOrderEntity.setUserId(userId);
-        nftOrderEntity.setTokenId(approveWithDataInputBean.getTokenId());
-        nftOrderEntity.setPrice(approveWithDataInputBean.getPrice());
+        nftOrderEntity.setTokenId(submitOrderEventBean.getTokenId());
+        nftOrderEntity.setPrice(submitOrderEventBean.getPrice());
         nftOrderEntity.setStatus(NftOrderStatusEnum.PENDING.getStatus());
         nftOrderEntity.setAddress(address);
+        nftOrderEntity.setSubmitHash(dto.getTxHash());
         nftOrderService.insert(nftOrderEntity);
         return Rsp.ok();
     }
@@ -151,12 +157,12 @@ public class CardNftController {
     @ApiOperation("取消订单")
     @JwtAddressRequired
     public Rsp<String> cancelOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
-        NftApproveWithDataInputBean cancleOrderBean = cardNftService.parseApproveWithData(dto.getTxHash());
-        if (!cancleOrderBean.getToAddress().equalsIgnoreCase("0x000000000000000000000000000000000000dEaD")) {
-            return Rsp.error("本项目只认0x000000000000000000000000000000000000dEaD为黑洞地址");
-        }
+        CancelOrderEventBean cancleOrderBean = dappPoolService.parseCancelOrder(dto.getTxHash());
         String userId = JwtContext.getUserId();
         String address = JwtContext.getAddress();
+        if (!address.equalsIgnoreCase(cancleOrderBean.getOwner())) {
+            return Rsp.error("订单不属于当前用户");
+        }
         NftOrderEntity nftOrderEntity = new NftOrderEntity();
         nftOrderEntity.setId(dto.getNftOrderId());
         nftOrderEntity.setUserId(userId);
