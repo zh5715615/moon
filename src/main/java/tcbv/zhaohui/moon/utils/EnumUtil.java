@@ -1,9 +1,13 @@
 package tcbv.zhaohui.moon.utils;
 
+import tcbv.zhaohui.moon.exceptions.BizException;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.SYSTEM_ERROR;
 
 /**
  * (EnumUtils)枚举通用操作
@@ -110,7 +114,7 @@ public class EnumUtil {
                 values.add((V) value);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BizException(SYSTEM_ERROR, e.getMessage());
         }
         return values;
     }
@@ -144,8 +148,8 @@ public class EnumUtil {
             }
             return null;
         } catch (Exception ex) {
-            throw new RuntimeException("Enum parse failed: " + enumClass.getName()
-                    + ", field=" + fieldOrSectionName + ", target=" + targetValue, ex);
+            throw new BizException(SYSTEM_ERROR, "Enum parse failed: " + enumClass.getName()
+                    + ", field=" + fieldOrSectionName + ", target=" + targetValue + ", exception:" + ex.getMessage());
         }
     }
 }

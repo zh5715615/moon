@@ -1,5 +1,7 @@
 package tcbv.zhaohui.moon.service.chain;
 
+import tcbv.zhaohui.moon.exceptions.ChainException;
+
 /**
  * @author: zhaohui
  * @Title: Token20Service
@@ -17,25 +19,25 @@ public interface Token20Service {
      * 获取token精度
      * @return 精度
      */
-    int decimals();
+    int decimals() throws ChainException;
 
     /**
      * 获取token名称
      * @return token名称
      */
-    String name();
+    String name() throws ChainException;
 
     /**
      * 获取token标志
      * @return token标志
      */
-    String symbol();
+    String symbol() throws ChainException;
 
     /**
      * 获取发行量
      * @return 发行量
      */
-    double totalSupply();
+    double totalSupply() throws ChainException;
 
     /**
      * 获取审批对象的金额
@@ -43,14 +45,14 @@ public interface Token20Service {
      * @param spender 被审批人
      * @return 金额
      */
-    double allowance(String owner, String spender);
+    double allowance(String owner, String spender) throws ChainException;
 
     /**
      * 用户余额
      * @param accountAddress 用户地址
      * @return 余额
      */
-    double balanceOf(String accountAddress);
+    double balanceOf(String accountAddress) throws ChainException;
 
     /**
      * 转账

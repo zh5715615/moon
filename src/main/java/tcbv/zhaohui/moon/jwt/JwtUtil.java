@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import tcbv.zhaohui.moon.exceptions.BizException;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
@@ -11,6 +12,9 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.TOKEN_EXPIRED;
+import static tcbv.zhaohui.moon.exceptions.BizException.TOKEN_INVALID;
 
 /**
  * @author: zhaohui
@@ -58,10 +62,10 @@ public class JwtUtil {
             Claims claims = verify(token).getPayload();
             return claims.getSubject();
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("TOKEN_EXPIRED");
+            throw new BizException(TOKEN_EXPIRED, "TOKEN_EXPIRED");
         } catch (JwtException e) {
             // 包含签名错误、格式错误、篡改等
-            throw new RuntimeException("TOKEN_INVALID");
+            throw new BizException(TOKEN_INVALID, "TOKEN_INVALID");
         }
     }
 

@@ -39,7 +39,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public int decimals() {
+    public int decimals() throws ChainException {
         try {
             return token20Contract.decimals().send().intValue();
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public String name() {
+    public String name() throws ChainException {
         try {
             return token20Contract.name().send();
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public String symbol() {
+    public String symbol() throws ChainException {
         try {
             return token20Contract.symbol().send();
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public double totalSupply() {
+    public double totalSupply() throws ChainException {
         try {
             BigInteger totalSupply = token20Contract.totalSupply().send();
             return EthMathUtil.bigIntegerToDouble(totalSupply, decimals);
@@ -76,7 +76,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public double allowance(String owner, String spender) {
+    public double allowance(String owner, String spender) throws ChainException {
         try {
             BigInteger allowance = token20Contract.allowance(owner, spender).send();
             return EthMathUtil.bigIntegerToDouble(allowance, decimals);
@@ -86,7 +86,7 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public double balanceOf(String accountAddress) {
+    public double balanceOf(String accountAddress) throws ChainException {
         try {
             BigInteger bigInteger = token20Contract.balanceOf(accountAddress).send();
             return EthMathUtil.bigIntegerToDouble(bigInteger, decimals);

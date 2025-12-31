@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.service.impl;
 
 import tcbv.zhaohui.moon.entity.SjPackageTxEntity;
 import tcbv.zhaohui.moon.dao.SjPackageTxDao;
+import tcbv.zhaohui.moon.exceptions.BizException;
 import tcbv.zhaohui.moon.service.SjPackageTxService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.UUID;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.HASH_ALREADY_HANDLE;
 
 /**
  * SJ套餐包交易(SjPackageTx)表服务实现类
@@ -57,7 +60,7 @@ public class SjPackageTxServiceImpl implements SjPackageTxService {
     public SjPackageTxEntity insert(SjPackageTxEntity sjPackageTxEntity) {
         SjPackageTxEntity queryEntity = this.sjPackageTxDao.queryByHash(sjPackageTxEntity.getHash());
         if (queryEntity != null) {
-            throw new RuntimeException("重复交易");
+            throw new BizException(HASH_ALREADY_HANDLE, "TraderHash[" + sjPackageTxEntity.getHash() + "]对应订单已存在");
         }
         sjPackageTxEntity.setCreateTime(new Date());
         this.sjPackageTxDao.insert(sjPackageTxEntity);

@@ -21,6 +21,18 @@ public class BizException extends RuntimeException{
 
     public static final int REGION_NOT_MATCH= 50006;
 
+    public static final int ORDER_NOT_MATCH = 50007;
+
+    public static final int PRICE_NOT_MATCH = 50008;
+
+    public static final int STATUS_NOT_MATCH = 50009;
+
+    public static final int TOKEN_EXPIRED = 50010;
+
+    public static final int TOKEN_INVALID = 50011;
+
+    public static final int SYSTEM_ERROR = 50099;
+
     @Getter
     private final int code;
 

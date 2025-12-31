@@ -14,6 +14,8 @@ public class ChainException extends RuntimeException {
 
     public static final int INVOKE_EXCEPTION = 30002;
 
+    public static final int GENERATE_WALLET_FAILED = 30003;
+
     @Getter
     private final int code;
 

@@ -16,6 +16,7 @@ import org.web3j.crypto.*;
 import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.dto.KeyInfoDto;
 import tcbv.zhaohui.moon.entity.WalletEntity;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.StringMultipartFile;
@@ -39,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static tcbv.zhaohui.moon.beans.Constants.OSS_WALLET_PREFIX;
+import static tcbv.zhaohui.moon.exceptions.ChainException.GENERATE_WALLET_FAILED;
 import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_JSON;
 
 /**
@@ -151,7 +153,7 @@ public class AccountMgrController {
                 try {
                     return generateWallet();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new ChainException(GENERATE_WALLET_FAILED, e.getMessage());
                 }
             });
             futures.add(future);

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.web3j.tuples.generated.Tuple3;
+import tcbv.zhaohui.moon.service.chain.impl.UsdtServiceImpl;
+import tcbv.zhaohui.moon.utils.Rsp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,9 +22,14 @@ import java.util.Map;
 @RequestMapping("/api/v1/moon/test")
 @Slf4j
 public class TestController {
+    private final UsdtServiceImpl usdtService;
     private int packageCnt;
 
     private Map<String, Integer> userPackageCnt = new HashMap<>();
+
+    public TestController(UsdtServiceImpl usdtService) {
+        this.usdtService = usdtService;
+    }
 
     @GetMapping("/getPackageCnt")
     public Tuple3<Integer, Double, Integer> getPackageCnt() {
@@ -97,5 +104,10 @@ public class TestController {
         packageCnt += buyCnt;
         userPackageCnt.put(address, userOwnCnt + buyCnt);
         return "购买成功";
+    }
+
+    @GetMapping("/decimals")
+    public Rsp<Integer> decimals(){
+        return Rsp.okData(usdtService.decimals());
     }
 }

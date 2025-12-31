@@ -7,6 +7,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tcbv.zhaohui.moon.exceptions.BizException;
+import tcbv.zhaohui.moon.exceptions.ChainException;
+import tcbv.zhaohui.moon.exceptions.DBException;
+import tcbv.zhaohui.moon.exceptions.OssException;
 import tcbv.zhaohui.moon.utils.Rsp;
 
 import javax.validation.ConstraintViolationException;
@@ -26,6 +30,30 @@ public class ExceptionHandlerAdvice {
     public Rsp handleException(Exception e) {
         log.error("", e);
         return Rsp.error(-1, e.getMessage());
+    }
+
+    @ExceptionHandler(ChainException.class)
+    public Rsp handleException(ChainException e) {
+        log.error("", e);
+        return Rsp.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(OssException.class)
+    public Rsp handleException(OssException e) {
+        log.error("", e);
+        return Rsp.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(DBException.class)
+    public Rsp handleException(DBException e) {
+        log.error("", e);
+        return Rsp.error(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(BizException.class)
+    public Rsp handleException(BizException e) {
+        log.error("", e);
+        return Rsp.error(e.getCode(), e.getMessage());
     }
 
     /**

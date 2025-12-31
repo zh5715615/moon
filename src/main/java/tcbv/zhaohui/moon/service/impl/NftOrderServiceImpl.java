@@ -1,11 +1,10 @@
 package tcbv.zhaohui.moon.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import tcbv.zhaohui.moon.entity.NftOrderEntity;
 import tcbv.zhaohui.moon.dao.NftOrderDao;
 import tcbv.zhaohui.moon.enums.NftOrderStatusEnum;
-import tcbv.zhaohui.moon.service.chain.DappPoolService;
+import tcbv.zhaohui.moon.exceptions.BizException;
 import tcbv.zhaohui.moon.service.NftOrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.util.Date;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.*;
 
 /**
  * 卡片订单(NftOrder)表服务实现类
@@ -25,9 +26,6 @@ import java.util.Date;
 public class NftOrderServiceImpl implements NftOrderService {
     @Resource
     private NftOrderDao nftOrderDao;
-
-    @Autowired
-    private DappPoolService dappPoolService;
 
     /**
      * 通过ID查询单条数据
@@ -60,11 +58,11 @@ public class NftOrderServiceImpl implements NftOrderService {
      * @return 实例对象
      */
     @Override
-    public NftOrderEntity insert(NftOrderEntity nftOrderEntity) throws Exception {
+    public NftOrderEntity insert(NftOrderEntity nftOrderEntity) throws BizException {
         String submitHash = nftOrderEntity.getSubmitHash();
         NftOrderEntity queryEntity = this.nftOrderDao.queryBySubmitHash(submitHash);
         if (queryEntity != null) {
-            throw new RuntimeException("SubmitHash[" + submitHash + "]对应订单已存在");
+            throw new BizException(HASH_ALREADY_HANDLE, "SubmitHash[" + submitHash + "]对应订单已存在");
         }
         nftOrderEntity.setCreateTime(new Date());
         this.nftOrderDao.insert(nftOrderEntity);
@@ -98,16 +96,16 @@ public class NftOrderServiceImpl implements NftOrderService {
         NftOrderEntity queryEntity = this.nftOrderDao.queryById(nftOrderEntity.getId());
         if (StringUtils.isNotBlank(queryEntity.getTradeHash()) &&
                 queryEntity.getTradeHash().equals(nftOrderEntity.getTradeHash())) {
-            throw new RuntimeException("TraderHash[" + nftOrderEntity.getTradeHash() + "]对应订单已存在");
+            throw new BizException(HASH_ALREADY_HANDLE, "TraderHash[" + nftOrderEntity.getTradeHash() + "]对应订单已存在");
         }
         if (!queryEntity.getTokenId().equals(nftOrderEntity.getTokenId())) {
-            throw new RuntimeException("NFT tokenId不属于该订单");
+            throw new BizException(ORDER_NOT_MATCH, "NFT tokenId不属于该订单");
         }
         if (!queryEntity.getPrice().equals(nftOrderEntity.getPrice())) {
-            throw new RuntimeException("订单价格不匹配");
+            throw new BizException(PRICE_NOT_MATCH, "订单价格不匹配");
         }
         if (!queryEntity.getStatus().equals(NftOrderStatusEnum.PENDING.getStatus())) {
-            throw new RuntimeException("订单状态不正确，不是挂单状态");
+            throw new BizException(STATUS_NOT_MATCH, "订单状态不正确，不是挂单状态");
         }
         nftOrderEntity.setTradeTime(new Date());
         this.nftOrderDao.update(nftOrderEntity);
@@ -118,16 +116,16 @@ public class NftOrderServiceImpl implements NftOrderService {
         NftOrderEntity queryEntity = this.nftOrderDao.queryById(nftOrderEntity.getId());
         if (StringUtils.isNotBlank(queryEntity.getCancelHash()) &&
                 queryEntity.getCancelHash().equals(nftOrderEntity.getCancelHash())) {
-            throw new RuntimeException("CancelHash[" + nftOrderEntity.getCancelHash() + "]对应订单已存在");
+            throw new BizException(HASH_ALREADY_HANDLE, "CancelHash[" + nftOrderEntity.getCancelHash() + "]对应订单已存在");
         }
         if (!queryEntity.getUserId().equals(nftOrderEntity.getUserId())) {
-            throw new RuntimeException("订单不属于该用户");
+            throw new BizException(USER_NOT_MATCH, "订单不属于该用户");
         }
         if (!queryEntity.getTokenId().equals(nftOrderEntity.getTokenId())) {
-            throw new RuntimeException("NFT tokenId不属于该订单");
+            throw new BizException(ORDER_NOT_MATCH, "NFT tokenId不属于该订单");
         }
         if (!queryEntity.getStatus().equals(NftOrderStatusEnum.PENDING.getStatus())) {
-            throw new RuntimeException("订单状态不正确，不是挂单状态");
+            throw new BizException(STATUS_NOT_MATCH, "订单状态不正确，不是挂单状态");
         }
         nftOrderEntity.setCancelHash(nftOrderEntity.getCancelHash());
         nftOrderEntity.setCancelTime(new Date());

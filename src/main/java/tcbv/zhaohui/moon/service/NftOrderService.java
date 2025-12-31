@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.service;
 import tcbv.zhaohui.moon.entity.NftOrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import tcbv.zhaohui.moon.exceptions.BizException;
 
 /**
  * 卡片订单(NftOrder)表服务接口
@@ -34,7 +35,7 @@ public interface NftOrderService {
      * @param nftOrderEntity 实例对象
      * @return 实例对象
      */
-    NftOrderEntity insert(NftOrderEntity nftOrderEntity) throws Exception;
+    NftOrderEntity insert(NftOrderEntity nftOrderEntity) throws BizException;
 
     /**
      * 修改数据
