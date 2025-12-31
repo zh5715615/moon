@@ -1,6 +1,8 @@
 package tcbv.zhaohui.moon.service.chain;
 
+import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.*;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 
 import java.math.BigInteger;
 
@@ -18,6 +20,8 @@ public interface DappPoolService {
     String submitOrder(String seller, BigInteger tokenId, Double price) throws Exception;
 
     String cancelOrder(String owner, BigInteger tokenId) throws Exception;
+
+    PresaleInfoBean getPackageCnt() throws ChainException;
 
     NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception;
 

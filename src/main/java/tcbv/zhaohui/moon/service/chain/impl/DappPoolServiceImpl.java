@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.*;
 import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.enums.PledgeRegion;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
@@ -17,6 +20,8 @@ import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.utils.*;
 
 import java.math.BigInteger;
+
+import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
 
 /**
  * @author: zhaohui
@@ -70,6 +75,20 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
     @Web3TxGuard
     public String cancelOrder(String owner, BigInteger tokenId) throws Exception {
         return dappPool.cancelOrder(owner, tokenId).send().getTransactionHash();
+    }
+
+    @Override
+    public PresaleInfoBean getPackageCnt() throws ChainException {
+        try {
+            Tuple3<BigInteger, BigInteger, BigInteger> tuple3 = dappPool.getPackageCnt().send();
+            PresaleInfoBean presaleInfoBean = new PresaleInfoBean();
+            presaleInfoBean.setSold(tuple3.component1().intValue());
+            presaleInfoBean.setPrice(EthMathUtil.bigIntegerToDouble(tuple3.component2(), usdtService.getDecimals()));
+            presaleInfoBean.setStage(tuple3.component3().intValue());
+            return presaleInfoBean;
+        } catch (Exception e) {
+            throw new ChainException(QUERY_EXCEPTION, "Query package cnt failed: " + e.getMessage());
+        }
     }
 
     @Override
