@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 
 import java.io.IOException;
@@ -16,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Slf4j
-public class EthereumServiceTest {
+public class EthereumServiceImplTest {
 
     @Autowired
-    private IEthereumService ethereumService;
+    private EthereumService ethereumService;
 
     @BeforeEach
     void before() {

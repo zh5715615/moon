@@ -1,33 +1,24 @@
-package tcbv.zhaohui.moon.service.impl;
+package tcbv.zhaohui.moon.service.chain.impl;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
-import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
-import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.contract.CardNFTToken;
-import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.oss.*;
-import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
-import tcbv.zhaohui.moon.service.IEthereumService;
-import tcbv.zhaohui.moon.service.Token20Service;
-import tcbv.zhaohui.moon.utils.AbiEventLogDecoder;
-import tcbv.zhaohui.moon.utils.AbiInputDecoder;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.LinkedHashMap;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.name;
 import static tcbv.zhaohui.moon.beans.Constants.OSS_NFT_METADATA_PREFIX;
 import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_JSON;
 
@@ -39,7 +30,7 @@ import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_JSON;
  */
 @Service
 @Slf4j
-public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFTTokenService {
+public class CardNFTTokenServiceImpl extends EthereumServiceImpl implements CardNFTTokenService {
     private CardNFTToken cardNFTToken;
 
     @Autowired
@@ -55,7 +46,7 @@ public class CardNFTTokenServiceImpl extends EthereumService implements ICardNFT
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
-    public void init(IEthereumService ethereumService, String contractAddress) {
+    public void init(EthereumService ethereumService, String contractAddress) {
         super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         cardNFTToken = CardNFTToken.load(contractAddress, web3j, transactionManager, contractGasProvider);

@@ -1,8 +1,4 @@
-package tcbv.zhaohui.moon.service;
-
-import tcbv.zhaohui.moon.service.impl.EthereumService;
-
-import java.io.IOException;
+package tcbv.zhaohui.moon.service.chain;
 
 /**
  * @author: zhaohui
@@ -15,7 +11,7 @@ public interface Token20Service {
      * 初始化
      * @param contractAddress 合约地址
      */
-    void init(IEthereumService ethereumService, String contractAddress);
+    void init(EthereumService ethereumService, String contractAddress);
 
     /**
      * 获取token精度
@@ -61,9 +57,9 @@ public interface Token20Service {
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    String transfer(String toAddress, double value);
+    String transfer(String toAddress, double value) throws Exception;
 
-    String transfer(String fromAddress, String toAddress, double value);
+    String transfer(String fromAddress, String toAddress, double value)  throws Exception;
 
     /**
      * 代理转账
@@ -71,14 +67,14 @@ public interface Token20Service {
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    String transferFrom(String fromAddress, String toAddress, double value);
+    String transferFrom(String fromAddress, String toAddress, double value) throws Exception;
 
     /**
      * 授权审批
      * @param spender 被授权这地址
      * @param value 授权金额
      */
-    String approve(String spender, double value);
+    String approve(String spender, double value) throws Exception;
 
     /**
      * 获取合约地址

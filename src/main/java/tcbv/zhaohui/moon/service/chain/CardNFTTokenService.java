@@ -1,10 +1,7 @@
-package tcbv.zhaohui.moon.service;
+package tcbv.zhaohui.moon.service.chain;
 
 import tcbv.zhaohui.moon.beans.NFTMetadataBean;
 import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
-import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
-import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
-import tcbv.zhaohui.moon.service.impl.EthereumService;
 
 /**
  * @author: zhaohui
@@ -12,8 +9,8 @@ import tcbv.zhaohui.moon.service.impl.EthereumService;
  * @Description:
  * @date: 2025/12/12 9:27
  */
-public interface ICardNFTTokenService {
-    void init(IEthereumService ethereumService, String contractAddress);
+public interface CardNFTTokenService {
+    void init(EthereumService ethereumService, String contractAddress);
 
     long balanceOf(String owner) throws Exception;
 

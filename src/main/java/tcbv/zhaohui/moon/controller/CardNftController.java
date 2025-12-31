@@ -17,7 +17,6 @@ import tcbv.zhaohui.moon.beans.NFTTokenMintInfoBean;
 import tcbv.zhaohui.moon.beans.events.CancelOrderEventBean;
 import tcbv.zhaohui.moon.beans.events.NFTTradeOrderEventBean;
 import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
-import tcbv.zhaohui.moon.beans.inputs.NftApproveWithDataInputBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dto.TradeOrderDto;
 import tcbv.zhaohui.moon.dto.TransactionDto;
@@ -29,8 +28,8 @@ import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.SysOss;
-import tcbv.zhaohui.moon.service.DappPoolService;
-import tcbv.zhaohui.moon.service.ICardNFTTokenService;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
 import tcbv.zhaohui.moon.service.NftOrderService;
 import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.GsonUtil;
@@ -58,7 +57,7 @@ import static tcbv.zhaohui.moon.oss.OssClient.CONTENT_TYPE_IMAGE;
 @Slf4j
 public class CardNftController {
     @Autowired
-    private ICardNFTTokenService cardNftService;
+    private CardNFTTokenService cardNftService;
 
     @Autowired
     private NftOrderService nftOrderService;

@@ -1,6 +1,5 @@
-package tcbv.zhaohui.moon.service;
+package tcbv.zhaohui.moon.service.chain;
 
-import org.web3j.abi.datatypes.Event;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.exceptions.TransactionException;
@@ -12,7 +11,7 @@ import tcbv.zhaohui.moon.config.Web3Config;
 import java.io.IOException;
 import java.util.Map;
 
-public interface IEthereumService {
+public interface EthereumService {
     /**
      * 初始化以太坊
      */

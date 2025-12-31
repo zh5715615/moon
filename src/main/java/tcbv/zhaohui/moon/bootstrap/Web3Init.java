@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.service.*;
+import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -15,7 +18,7 @@ import javax.servlet.ServletContextListener;
 public class Web3Init implements ServletContextListener {
 
     @Autowired
-    private IEthereumService ethereumService;
+    private EthereumService ethereumService;
 
     @Autowired
     @Qualifier("usdtService")
@@ -26,7 +29,7 @@ public class Web3Init implements ServletContextListener {
     private Token20Service spaceJediService;
 
     @Autowired
-    private ICardNFTTokenService cardNFTTokenService;
+    private CardNFTTokenService cardNFTTokenService;
 
     @Autowired
     private DappPoolService dappPoolService;

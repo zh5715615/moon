@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.service.impl.EthereumService;
+import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
+import tcbv.zhaohui.moon.service.chain.impl.EthereumServiceImpl;
 
 import java.math.BigInteger;
 
@@ -24,14 +27,14 @@ public class DappPoolServiceTest {
     public static final String TEST_ADDRESS = "0xa24bDb249e80574A96D8B02b148E81B9be684675";
 
     @Autowired
-    private EthereumService ethereumService;
+    private EthereumServiceImpl ethereumService;
 
     @Autowired
     @Qualifier("spaceJediService")
     private Token20Service spaceJediService;
 
     @Autowired
-    private ICardNFTTokenService cardNFTTokenService;
+    private CardNFTTokenService cardNFTTokenService;
 
     @Autowired
     private DappPoolService dappPoolService;

@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.service.impl.EthereumService;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
+import tcbv.zhaohui.moon.service.chain.impl.EthereumServiceImpl;
 
 /**
  * @author: zhaohui
@@ -22,7 +23,7 @@ public class Token20ServiceTest {
     public static final String TEST_ADDRESS = "0xa24bDb249e80574A96D8B02b148E81B9be684675";
 
     @Autowired
-    private EthereumService ethereumService;
+    private EthereumServiceImpl ethereumService;
 
     @Autowired
     @Qualifier("usdtService")
@@ -49,10 +50,10 @@ public class Token20ServiceTest {
     }
 
     @Test
-    void testTransfer() {
-        String txHash = usdt20Service.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", 100.0);
-        System.out.println(txHash);
-        txHash = usdt20Service.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", "0x177fbb4590d0d3ed2e7cf6de8e871f9ee5e54302", 10.0);
+    void testTransfer() throws Exception {
+//        String txHash = usdt20Service.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", 100.0);
+//        System.out.println(txHash);
+        String txHash = spaceJediService.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", "0x177fbb4590d0d3ed2e7cf6de8e871f9ee5e54302", 10.0);
         System.out.println(txHash);
     }
 }

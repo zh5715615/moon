@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tcbv.zhaohui.moon.exceptions.OssException;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
+
+import static tcbv.zhaohui.moon.exceptions.OssException.FILE_READ_ERROR;
 
 /**
  * @author: zhaohui
@@ -39,7 +42,7 @@ public class OssService {
         try {
             uploadResult = ossClient.upload(file.getBytes(), bucketType, prefix, fileName, contentType);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new OssException(FILE_READ_ERROR, "文件读取失败: " + e.getMessage());
         }
         // 保存文件信息
         SysOss oss = new SysOss();

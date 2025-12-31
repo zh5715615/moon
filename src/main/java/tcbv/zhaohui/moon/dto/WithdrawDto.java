@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author: zhaohui
  * @Title: WithdrawDto
@@ -16,5 +18,6 @@ import lombok.EqualsAndHashCode;
 @ApiModel("提取质押奖励请求体")
 public class WithdrawDto extends TransactionDto{
     @ApiModelProperty("质押ID")
+    @NotBlank(message = "质押ID不能为空")
     private String pledgeId;
 }

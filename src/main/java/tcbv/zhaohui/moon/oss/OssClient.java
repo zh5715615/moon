@@ -1,7 +1,5 @@
 package tcbv.zhaohui.moon.oss;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.IdUtil;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.Protocol;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -36,7 +35,10 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import tcbv.zhaohui.moon.exceptions.OssException;
 import tcbv.zhaohui.moon.utils.EnumUtil;
+
+import static tcbv.zhaohui.moon.exceptions.OssException.*;
 
 /**
  * @author: zhaohui
@@ -90,8 +92,7 @@ public class OssClient {
             }
 
         } catch (Exception e) {
-
-            throw new RuntimeException("配置错误! 请检查系统配置:[" + e.getMessage() + "]");
+            throw new OssException(CONFIG_PARAM_ERROR, "配置错误! 请检查系统配置:[" + e.getMessage() + "]");
         }
     }
 
@@ -105,7 +106,7 @@ public class OssClient {
             client.createBucket(createBucketRequest);
             client.setBucketPolicy(bucketName, getPolicy(bucketName, accessPolicy.getPolicyType()));
         } catch (Exception e) {
-            throw new RuntimeException("创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
+            throw new OssException(CREATE_BUCKET_ERROR, "创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
         }
     }
 
@@ -126,9 +127,8 @@ public class OssClient {
             while ((len = inputStream.read(buffer)) > 0) {
                 os.write(buffer, 0, len);
             }
-        } catch (Exception ex) {
-            log.error("请求OSS下载异常：", ex);
-            throw new RuntimeException("请求OSS下载异常");
+        } catch (IOException e) {
+            throw new OssException(DOWNLOAD_ERROR, "请求OSS下载异常, " + e.getMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class OssClient {
             contentType = CONTENT_TYPE_DEFAULT;
         }
         if (StringUtils.isBlank(path)) {
-            throw new RuntimeException("上传文件路径不能为空");
+            throw new OssException(NULL_EXCEPTION, "上传文件路径不能为空");
         }
         if (!(inputStream instanceof ByteArrayInputStream)) {
             inputStream = new ByteArrayInputStream(IoUtil.readBytes(inputStream));
@@ -197,8 +197,8 @@ public class OssClient {
             // 设置上传对象的 Acl 为公共读
             putObjectRequest.setCannedAcl(getAccessPolicy().getAcl());
             client.putObject(putObjectRequest);
-        } catch (Exception e) {
-            throw new RuntimeException("上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
+        } catch (IOException e) {
+            throw new OssException(CONFIG_PARAM_ERROR, "上传文件失败，请检查配置信息:[" + e.getMessage() + "]");
         }
 
         if (!bucketType.isPub()) {

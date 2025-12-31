@@ -1,4 +1,4 @@
-package tcbv.zhaohui.moon.service;
+package tcbv.zhaohui.moon.service.chain;
 
 import tcbv.zhaohui.moon.beans.events.*;
 
@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * @date: 2025/12/20 17:41
  */
 public interface DappPoolService {
-    void init(IEthereumService ethereumService, String contractAddress);
+    void init(EthereumService ethereumService, String contractAddress);
 
     String extractSpaceJediOnlyTest(Double amount) throws Exception;
 

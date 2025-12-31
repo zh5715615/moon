@@ -13,16 +13,21 @@ import tcbv.zhaohui.moon.entity.PledgeEntity;
 import tcbv.zhaohui.moon.dao.PledgeDao;
 import tcbv.zhaohui.moon.entity.PledgePromotionEntity;
 import tcbv.zhaohui.moon.entity.UserEntity;
+import tcbv.zhaohui.moon.exceptions.BizException;
+import tcbv.zhaohui.moon.exceptions.DBException;
 import tcbv.zhaohui.moon.service.PledgeService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.UUID;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.*;
+import static tcbv.zhaohui.moon.exceptions.DBException.INSERT_FAILED;
 
 /**
  * 质押表(Pledge)表服务实现类
@@ -85,7 +90,7 @@ public class PledgeServiceImpl implements PledgeService {
     public PledgeEntity insert(PledgeEntity pledgeEntity) {
         if (pledgeEntity == null) {
             log.error("insert pledgeEntity is null");
-            throw new IllegalArgumentException("pledgeEntity is null");
+            throw new BizException(NULL_EXCEPTION, "pledgeEntity is null");
         }
 
         final String txHash = pledgeEntity.getPledgeHash();
@@ -93,18 +98,18 @@ public class PledgeServiceImpl implements PledgeService {
 
         if (StringUtils.isBlank(txHash)) {
             log.error("insert pledge failed: pledgeHash is blank, pledge={}", pledgeEntity);
-            throw new IllegalArgumentException("pledgeHash is blank");
+            throw new BizException(NULL_EXCEPTION, "pledgeHash is blank");
         }
         if (StringUtils.isBlank(userId)) {
             log.error("insert pledge failed: userId is blank, txHash={}, pledge={}", txHash, pledgeEntity);
-            throw new IllegalArgumentException("userId is blank");
+            throw new BizException(NULL_EXCEPTION, "userId is blank");
         }
 
         // 幂等校验：同一个 txHash 只允许处理一次
         PledgeEntity existed = pledgeDao.queryByPledgeHash(txHash);
         if (existed != null) {
             log.warn("pledge hash already exists: txHash={}, existedPledgeId={}", txHash, existed.getId());
-            throw new RuntimeException("pledge hash[" + txHash + "] is exist");
+            throw new BizException(HASH_ALREADY_HANDLE, "pledge hash[" + txHash + "] is exist");
         }
 
         final String pledgeId = UUID.randomUUID().toString();
@@ -116,13 +121,13 @@ public class PledgeServiceImpl implements PledgeService {
         } catch (Exception e) {
             log.error("insert pledge db failed: pledgeId={}, txHash={}, userId={}, pledge={}",
                     pledgeId, txHash, userId, pledgeEntity, e);
-            throw e;
+            throw new DBException(INSERT_FAILED, "插入质押表失败: " + e.getMessage());
         }
 
         if (insertCnt <= 0) {
             log.error("insert pledge affected rows <= 0: pledgeId={}, txHash={}, userId={}",
                     pledgeId, txHash, userId);
-            throw new RuntimeException("insert pledge failed");
+            throw new DBException(INSERT_FAILED, "插入质押表失败" );
         }
 
         // 不满足奖励条件直接结束（减少嵌套）
@@ -271,10 +276,10 @@ public class PledgeServiceImpl implements PledgeService {
         String id = pledgeEntity.getId();
         PledgeEntity queryEntity = pledgeDao.queryById(id);
         if (!queryEntity.getUserId().equals(pledgeEntity.getUserId())) {
-            throw new RuntimeException("Pledge not belong to user");
+            throw new BizException(USER_NOT_MATCH, "Pledge not belong to user");
         }
         if (pledgeEntity.getRegion() != queryEntity.getRegion()) {
-            throw new RuntimeException("Region not match");
+            throw new BizException(REGION_NOT_MATCH, "Region not match");
         }
 
         Date now = new Date();

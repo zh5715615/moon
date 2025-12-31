@@ -1,4 +1,4 @@
-package tcbv.zhaohui.moon.service.impl;
+package tcbv.zhaohui.moon.service.chain.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +28,10 @@ import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.entity.WalletEntity;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssService;
-import tcbv.zhaohui.moon.service.IEthereumService;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.service.WalletService;
 import tcbv.zhaohui.moon.utils.AesUtil;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
@@ -44,9 +45,11 @@ import java.security.Security;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+import static tcbv.zhaohui.moon.exceptions.ChainException.INVOKE_EXCEPTION;
+
+@Service("ethereumService")
 @Slf4j
-public class EthereumService implements IEthereumService {
+public class EthereumServiceImpl implements EthereumService {
     protected Web3j web3j;
 
     protected Credentials credentials;
@@ -306,7 +309,7 @@ public class EthereumService implements IEthereumService {
         EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).send();
         if (ethSendTransaction.hasError()) {
             log.info("transfer error: {}", ethSendTransaction.getError().getMessage());
-            throw new RuntimeException("transfer error: " + ethSendTransaction.getError().getMessage());
+            throw new ChainException(INVOKE_EXCEPTION, "transfer error: " + ethSendTransaction.getError().getMessage());
         } else {
             String transactionHash = ethSendTransaction.getTransactionHash();
             log.info("Transfer transactionHash:" + transactionHash);
@@ -328,12 +331,12 @@ public class EthereumService implements IEthereumService {
         String[] split = revertReason.split(":");
         String errorMsg = revertReason;
         if (split.length >= 2) {
-            errorMsg = split[1];
+            errorMsg = split[1].trim();
         }
         return "Transaction error: status is " + status + ", Fail with error '" + errorMsg + "'";
     }
 
-    protected void init(IEthereumService ethereumService) {
+    protected void init(EthereumService ethereumService) {
         this.web3j = ethereumService.getWeb3j();
         this.credentials = ethereumService.getCredentials();
         this.mgr500Account = ethereumService.getCredentialsMap();

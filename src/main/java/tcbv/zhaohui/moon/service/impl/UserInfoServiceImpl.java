@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dao.UserDao;
 import tcbv.zhaohui.moon.dto.WalletLoginDto;
 import tcbv.zhaohui.moon.entity.UserEntity;
+import tcbv.zhaohui.moon.exceptions.BizException;
 import tcbv.zhaohui.moon.service.UserInfoService;
 import tcbv.zhaohui.moon.jwt.JwtUtil;
 import tcbv.zhaohui.moon.utils.Web3CryptoUtil;
@@ -22,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static tcbv.zhaohui.moon.exceptions.BizException.LOGIN_TIMEOUT;
+import static tcbv.zhaohui.moon.exceptions.BizException.LOGIN_VALID_FAILED;
+
 /**
  * @author dawn
  * @date 2024/11/14 9:46
@@ -29,9 +33,6 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
-    @Autowired
-    private Web3Config web3Config;
-
     @Autowired
     private UserDao userDao;
 
@@ -50,14 +51,14 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (timestampCheck) {
             long now = System.currentTimeMillis() / 1000;
             if (now > loginDto.getTimestamp() + 30 || now < loginDto.getTimestamp() - 30) {
-                throw new RuntimeException("登录超时");
+                throw new BizException(LOGIN_TIMEOUT, "登录超时");
             }
         }
 
         boolean result = Web3CryptoUtil.validate(loginDto.getSign(), loginDto.getDataSign(),
                 loginDto.getAddress());
         if (!result) {
-            throw new RuntimeException("登录签名校验失败");
+            throw new BizException(LOGIN_VALID_FAILED, "登录签名校验失败");
         }
 
         UserEntity userEntity = userDao.queryByAddress(loginDto.getAddress());

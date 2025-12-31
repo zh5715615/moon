@@ -15,7 +15,7 @@ import tcbv.zhaohui.moon.dto.WithdrawDto;
 import tcbv.zhaohui.moon.entity.PledgeEntity;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
-import tcbv.zhaohui.moon.service.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.PledgeService;
 import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.Rsp;

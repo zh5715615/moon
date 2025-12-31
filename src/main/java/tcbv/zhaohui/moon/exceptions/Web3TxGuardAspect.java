@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.exceptions.TransactionException;
-import tcbv.zhaohui.moon.service.IEthereumService;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
 
 /**
  * @author: zhaohui
@@ -22,7 +22,7 @@ import tcbv.zhaohui.moon.service.IEthereumService;
 @RequiredArgsConstructor
 public class Web3TxGuardAspect {
     @Autowired
-    private IEthereumService ethereumService;
+    private EthereumService ethereumService;
 
     @Around("@annotation(guard)")
     public Object aroundMethod(ProceedingJoinPoint pjp, Web3TxGuard guard) throws Throwable {
@@ -43,7 +43,7 @@ public class Web3TxGuardAspect {
             String reason = ethereumService.parseTransactionException(te);
             log.error("{}:{} => {}", className, methodName, reason);
             // 你也可以换成自定义业务异常，比如 BizException(finalMsg)
-            throw new RuntimeException(reason);
+            throw new ChainException(ChainException.INVOKE_EXCEPTION, "Invoke " + className + "[" + methodName + "]failed, reason --> " + reason);
         }
     }
 }

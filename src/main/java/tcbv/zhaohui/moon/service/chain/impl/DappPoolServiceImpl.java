@@ -1,4 +1,4 @@
-package tcbv.zhaohui.moon.service.impl;
+package tcbv.zhaohui.moon.service.chain.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +10,10 @@ import tcbv.zhaohui.moon.beans.events.*;
 import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
-import tcbv.zhaohui.moon.service.DappPoolService;
-import tcbv.zhaohui.moon.service.ICardNFTTokenService;
-import tcbv.zhaohui.moon.service.IEthereumService;
-import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
+import tcbv.zhaohui.moon.service.chain.EthereumService;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.utils.*;
 
 import java.math.BigInteger;
@@ -26,7 +26,7 @@ import java.math.BigInteger;
  */
 @Service
 @Slf4j
-public class DappPoolServiceImpl extends EthereumService implements DappPoolService {
+public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPoolService {
     private DappPool dappPool;
 
     @Autowired
@@ -38,10 +38,10 @@ public class DappPoolServiceImpl extends EthereumService implements DappPoolServ
     private Token20Service usdtService;
 
     @Autowired
-    private ICardNFTTokenService cardNFTTokenService;
+    private CardNFTTokenService cardNFTTokenService;
 
     @Override
-    public void init(IEthereumService ethereumService, String contractAddress) {
+    public void init(EthereumService ethereumService, String contractAddress) {
         super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         dappPool = DappPool.load(contractAddress, web3j, transactionManager, contractGasProvider);

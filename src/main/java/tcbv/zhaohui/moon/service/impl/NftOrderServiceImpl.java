@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import tcbv.zhaohui.moon.entity.NftOrderEntity;
 import tcbv.zhaohui.moon.dao.NftOrderDao;
 import tcbv.zhaohui.moon.enums.NftOrderStatusEnum;
-import tcbv.zhaohui.moon.service.DappPoolService;
+import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.NftOrderService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -13,9 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
-import java.math.BigInteger;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * 卡片订单(NftOrder)表服务实现类

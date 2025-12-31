@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
-import tcbv.zhaohui.moon.service.Token20Service;
+import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.service.UserInfoService;
 import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.GsonUtil;
@@ -88,7 +88,7 @@ public class PromoteController {
 
     @PostMapping("/airdrop")
     @ApiOperation("空投")
-    public Rsp airdrop(@RequestParam("file") MultipartFile file) throws IOException {
+    public Rsp airdrop(@RequestParam("file") MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             return Rsp.error("文件为空");
         }
