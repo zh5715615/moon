@@ -2,9 +2,13 @@ package tcbv.zhaohui.moon.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -14,8 +18,20 @@ import java.util.Map;
  * @Description:
  * @date: 2025/12/19 16:23
  */
+@Component
 public class JwtUtil {
-    private static final SecretKey KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static SecretKey key;
+
+    @Value("${star-wars.jwt.secret-base64}")
+    private String secretBase64;
+
+    @PostConstruct
+    public void init() {
+        if (secretBase64 == null || secretBase64.trim().isEmpty()) {
+            throw new IllegalStateException("jwt.secret-base64 must be configured!");
+        }
+        key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretBase64));
+    }
 
     public static String generateToken(String userId, long ttlSeconds, Map<String, Object> extraClaims) {
         Instant now = Instant.now();
@@ -26,13 +42,13 @@ public class JwtUtil {
                 .issuedAt(Date.from(now))              // iat
                 .expiration(Date.from(exp))            // exp
                 .claims(extraClaims)                   // 自定义字段（可选）
-                .signWith(KEY)                         // HS256
+                .signWith(key)                         // HS256
                 .compact();
     }
 
     public static Jws<Claims> verify(String token) {
         return Jwts.parser()
-                .verifyWith(KEY)
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token);
     }

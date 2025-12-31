@@ -28,7 +28,8 @@ star-wars:
     timestamp-check: false
   promote-reward-percentage: 0.1
   jwt:
-    expired: 300 # 5分钟
+    secret-base64: "4pLpuxPq7TVWot6rXz/77ljJ6zTe1Fkpn0bNp2X4D64="
+    expired: 3600 # 5分钟
   auth:
     enable: false
   oss:
