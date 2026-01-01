@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.beans.events;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: NFTTradeOrderBean
@@ -16,5 +18,5 @@ public class NFTTradeOrderEventBean {
 
     private String buyerAddress;
 
-    private Double price;
+    private BigDecimal price;
 }

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 /**
  * 交易信息
  */
@@ -15,5 +17,5 @@ import lombok.NoArgsConstructor;
 public class EthTransactionBean extends TransactionBean {
     private String toAddress; //eth接收地址
 
-    private double amount; //交易金额
+    private BigDecimal amount; //交易金额
 }

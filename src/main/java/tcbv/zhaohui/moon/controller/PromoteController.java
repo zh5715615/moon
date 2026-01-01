@@ -21,6 +21,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -143,7 +144,7 @@ public class PromoteController {
         int cnt = 0;
         for (String[] firstTwoColumn : firstTwoColumns) {
             if (cnt > 0) {
-                String txHash = spaceJediService.transfer(firstTwoColumn[0], Double.parseDouble(firstTwoColumn[1]));
+                String txHash = spaceJediService.transfer(firstTwoColumn[0], new BigDecimal(firstTwoColumn[1]));
                 log.info("txHash: {}", txHash);
             }
             cnt++;

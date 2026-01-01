@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.beans.events;
 import lombok.Data;
 import tcbv.zhaohui.moon.enums.PledgeRegion;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: PledgeEventBean
@@ -15,5 +17,5 @@ public class PledgeEventBean {
 
     private PledgeRegion region;
 
-    private Double pledgeAmount;
+    private BigDecimal pledgeAmount;
 }

@@ -10,6 +10,8 @@ import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.service.chain.impl.EthereumServiceImpl;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: Token20ServiceTest
@@ -53,7 +55,7 @@ public class Token20ServiceTest {
     void testTransfer() throws Exception {
 //        String txHash = usdt20Service.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", 100.0);
 //        System.out.println(txHash);
-        String txHash = spaceJediService.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", "0x177fbb4590d0d3ed2e7cf6de8e871f9ee5e54302", 10.0);
+        String txHash = spaceJediService.transfer("0x36da0585ce5ca863ac82a736a1edc81bfaa3ba96", "0x177fbb4590d0d3ed2e7cf6de8e871f9ee5e54302", BigDecimal.valueOf(10.0));
         System.out.println(txHash);
     }
 }

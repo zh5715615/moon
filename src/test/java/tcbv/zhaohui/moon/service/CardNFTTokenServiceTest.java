@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.service.chain.impl.EthereumServiceImpl;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -50,8 +51,8 @@ public class CardNFTTokenServiceTest {
 
     @Test
     void approveTest() throws Exception {
-        double price = 0x100 * 1.0;
-        BigInteger priceInWei = EthMathUtil.doubleToBigInteger(price, spaceJediService.getDecimals());
+        BigDecimal price = BigDecimal.valueOf(0x100 * 1.0);
+        BigInteger priceInWei = EthMathUtil.decimalToBigInteger(price, spaceJediService.getDecimals());
         byte[] data = priceInWei.toByteArray();
         cardNFTTokenService.approveWithData(web3Config.getDappPoolContractAddress(), "92380587157001473839", data);
     }

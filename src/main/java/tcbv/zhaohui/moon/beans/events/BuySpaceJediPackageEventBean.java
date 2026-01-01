@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.beans.events;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: BuySpaceJediPackageEventBean
@@ -14,9 +16,9 @@ public class BuySpaceJediPackageEventBean {
 
     private int buyCnt;
 
-    private Double totalCost;
+    private BigDecimal totalCost;
 
-    private Double price;
+    private BigDecimal price;
 
     private int stage;
 }

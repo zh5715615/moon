@@ -21,6 +21,9 @@ import tcbv.zhaohui.moon.utils.EnumUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PresaleInfoVo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static tcbv.zhaohui.moon.beans.Constants.*;
 import static tcbv.zhaohui.moon.enums.PresaleStage.*;
 import static tcbv.zhaohui.moon.exceptions.BizException.SYSTEM_ERROR;
@@ -54,7 +57,7 @@ public class SJPackageTxController {
         sjPackageTxEntity.setBuyerId(userId);
         sjPackageTxEntity.setHash(dto.getTxHash());
         sjPackageTxEntity.setPacakgeCnt(buySpaceJediPackageEventBean.getBuyCnt());
-        sjPackageTxEntity.setPrice(buySpaceJediPackageEventBean.getPrice());
+        sjPackageTxEntity.setPrice(buySpaceJediPackageEventBean.getPrice().doubleValue());
         sjPackageTxEntity.setStage(buySpaceJediPackageEventBean.getStage());
         sjPackageTxEntity.setPacakgeCnt(buySpaceJediPackageEventBean.getBuyCnt());
         sjPackageTxService.insert(sjPackageTxEntity);
@@ -97,6 +100,7 @@ public class SJPackageTxController {
         return Math.max(0, totalSold - prefixSum[idx]);
     }
 
+
     @GetMapping("/presale/info")
     @ApiOperation("查询预售进度信息")
     public Rsp<PresaleInfoVo> presaleInfo() {
@@ -108,19 +112,72 @@ public class SJPackageTxController {
         double soldPercent = sold * 1.0 / PRESALE_TOTAL;
         presaleInfoVo.setSoldPercent(soldPercent);
 
+        //当前阶段
         PresaleStage currentStage = EnumUtil.fromFieldValue(PresaleStage.class, "stage", presaleInfoBean.getStage());
         if (currentStage == null) {
             throw new BizException(SYSTEM_ERROR, "Presale stage not found: " + presaleInfoBean.getStage());
         }
         PresaleInfoVo.CurrentRoundVo currentRoundVo = new PresaleInfoVo.CurrentRoundVo();
         currentRoundVo.setRound(currentStage.getStage());
-        currentRoundVo.setTotal(currentStage.getNumber());
+        currentRoundVo.setTotal(currentStage.getStage() == 1 ? currentStage.getNumber() + INNER_PRESALE_TOTAL : currentStage.getNumber());
         int currentSold = getCurrentStageSold(currentStage, sold);
         currentRoundVo.setSold(currentSold);
-        currentRoundVo.setPrice(currentStage.getPrice());
-        double currentSoldPercent = currentStage.getPrice() * PRESALE_SJ_NUMBER_PER;
+        currentRoundVo.setPrice(currentStage.getPrice().doubleValue());
+        double currentSoldPercent = currentStage.getPrice().doubleValue() * PRESALE_SJ_NUMBER_PER;
         currentRoundVo.setCost(currentSoldPercent);
         presaleInfoVo.setCurrentRound(currentRoundVo);
+
+        //下一阶段
+        PresaleInfoVo.AfterRoundVo afterRoundVo = new PresaleInfoVo.AfterRoundVo();
+        afterRoundVo.setRound(presaleInfoBean.getStage() + 1);
+        PresaleStage afterStage = EnumUtil.fromFieldValue(PresaleStage.class, "stage", presaleInfoBean.getStage() + 1);
+        if (afterStage == null) {
+            throw new BizException(SYSTEM_ERROR, "Presale stage not found: " + presaleInfoBean.getStage());
+        }
+        afterRoundVo.setTotal(afterStage.getNumber());
+        afterRoundVo.setPrice(afterStage.getPrice().doubleValue());
+        double afterSoldPercent = afterStage.getPrice().doubleValue() * PRESALE_SJ_NUMBER_PER;
+        afterRoundVo.setCost(afterSoldPercent);
+        double increasePercentage = (afterStage.getPrice().subtract(currentStage.getPrice())).divide(currentStage.getPrice()).doubleValue();
+        afterRoundVo.setIncreasePercentage(increasePercentage);
+        presaleInfoVo.setAfterRound(afterRoundVo);
+
+        //各阶段进度
+        List<PresaleInfoVo.RoundsVo> rounds = new ArrayList<>();
+        for (int i = 1; i <= currentStage.getStage() - 1; i++) {
+            PresaleInfoVo.RoundsVo prevRoundsVo = new PresaleInfoVo.RoundsVo();
+            PresaleStage iStage = EnumUtil.fromFieldValue(PresaleStage.class, "stage", i);
+            if (iStage == null) {
+                throw new BizException(SYSTEM_ERROR, "Presale stage not found: " + presaleInfoBean.getStage());
+            }
+            prevRoundsVo.setTotal(i == 1 ? iStage.getNumber() + INNER_PRESALE_TOTAL : iStage.getNumber());
+            prevRoundsVo.setSold(iStage.getNumber());
+            prevRoundsVo.setPrice(iStage.getPrice().doubleValue());
+            prevRoundsVo.setRound(i);
+            prevRoundsVo.setStatus("已完成");
+            rounds.add(prevRoundsVo);
+        }
+        PresaleInfoVo.RoundsVo currentRoundsVo = new PresaleInfoVo.RoundsVo();
+        currentRoundsVo.setTotal(currentStage.getStage() == 1 ? currentStage.getNumber() + INNER_PRESALE_TOTAL : currentStage.getNumber());
+        currentRoundsVo.setSold(currentSold);
+        currentRoundsVo.setPrice(currentStage.getPrice().doubleValue());
+        currentRoundsVo.setRound(currentStage.getStage());
+        currentRoundsVo.setStatus("进行中");
+        rounds.add(currentRoundsVo);
+        for (int i = currentStage.getStage() + 1; i <= 5; i++) {
+            PresaleInfoVo.RoundsVo afterRoundsVo = new PresaleInfoVo.RoundsVo();
+            PresaleStage iStage = EnumUtil.fromFieldValue(PresaleStage.class, "stage", i);
+            if (iStage == null) {
+                throw new BizException(SYSTEM_ERROR, "Presale stage not found: " + presaleInfoBean.getStage());
+            }
+            afterRoundsVo.setTotal(iStage.getNumber());
+            afterRoundsVo.setSold(0);
+            afterRoundsVo.setPrice(iStage.getPrice().doubleValue());
+            afterRoundsVo.setRound(i);
+            afterRoundsVo.setStatus("未开始");
+            rounds.add(afterRoundsVo);
+        }
+        presaleInfoVo.setRounds(rounds);
         return Rsp.okData(presaleInfoVo);
     }
 

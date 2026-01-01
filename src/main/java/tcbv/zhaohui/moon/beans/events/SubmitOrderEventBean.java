@@ -3,6 +3,8 @@ package tcbv.zhaohui.moon.beans.events;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: SubmitOrderEventBean
@@ -12,5 +14,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SubmitOrderEventBean extends CancelOrderEventBean {
-    private Double price;
+    private BigDecimal price;
 }

@@ -9,6 +9,7 @@ import tcbv.zhaohui.moon.beans.TransactionBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Map;
 
 public interface EthereumService {
@@ -67,7 +68,7 @@ public interface EthereumService {
      * @param amount 金额
      */
 
-    String sendEth(String toAddress, double amount) throws IOException;
+    String sendEth(String toAddress, BigDecimal amount) throws IOException;
 
     /**
      * 解析异常

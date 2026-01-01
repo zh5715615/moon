@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class BlockInfoBean {
 
     private String toAddress; //接收地址
 
-    private double amount; //交易金额
+    private BigDecimal amount; //交易金额
 
     private List<String> txHashList; //交易hash列表
 }

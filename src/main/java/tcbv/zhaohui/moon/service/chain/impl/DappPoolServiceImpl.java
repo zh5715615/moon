@@ -19,6 +19,7 @@ import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.utils.*;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
@@ -54,15 +55,15 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     @Web3TxGuard
-    public String extractSpaceJediOnlyTest(Double amount) throws Exception {
-        BigInteger amountWei = EthMathUtil.doubleToBigInteger(amount, spaceJediService.getDecimals());
+    public String extractSpaceJediOnlyTest(BigDecimal amount) throws Exception {
+        BigInteger amountWei = EthMathUtil.decimalToBigInteger(amount, spaceJediService.getDecimals());
         return dappPool.extractSpaceJediOnlyTest(amountWei).send().getTransactionHash();
     }
 
     @Override
     @Web3TxGuard
-    public String submitOrder(String seller, BigInteger tokenId, Double price) throws Exception {
-        BigInteger priceWei = EthMathUtil.doubleToBigInteger(price, spaceJediService.getDecimals());
+    public String submitOrder(String seller, BigInteger tokenId, BigDecimal price) throws Exception {
+        BigInteger priceWei = EthMathUtil.decimalToBigInteger(price, spaceJediService.getDecimals());
         boolean exists = cardNFTTokenService.exists(tokenId.toString(10));
         if (!exists) {
             log.error("tokenId {} not exists", tokenId);
@@ -83,7 +84,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
             Tuple3<BigInteger, BigInteger, BigInteger> tuple3 = dappPool.getPackageCnt().send();
             PresaleInfoBean presaleInfoBean = new PresaleInfoBean();
             presaleInfoBean.setSold(tuple3.component1().intValue());
-            presaleInfoBean.setPrice(EthMathUtil.bigIntegerToDouble(tuple3.component2(), usdtService.getDecimals()));
+            presaleInfoBean.setPrice(EthMathUtil.bigIntegerToBigDecimal(tuple3.component2(), usdtService.getDecimals()));
             presaleInfoBean.setStage(tuple3.component3().intValue());
             return presaleInfoBean;
         } catch (Exception e) {
@@ -101,7 +102,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
         nftTradeOrderEventBean.setTokenId(((BigInteger) event.getArgs().get("tokenId")).toString(10));
         nftTradeOrderEventBean.setSellerAddress((String) event.getArgs().get("seller"));
         nftTradeOrderEventBean.setBuyerAddress((String) event.getArgs().get("buyer"));
-        nftTradeOrderEventBean.setPrice(EthMathUtil.bigIntegerToDouble((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
+        nftTradeOrderEventBean.setPrice(EthMathUtil.bigIntegerToBigDecimal((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
         return nftTradeOrderEventBean;
     }
 
@@ -113,7 +114,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
         }
         PledgeEventBean pledgeEventBean = new PledgeEventBean();
         BigInteger pledgeAmountWei = (BigInteger) event.getArgs().get("amount");
-        Double pledgeAmount = EthMathUtil.bigIntegerToDouble(pledgeAmountWei, spaceJediService.getDecimals());
+        BigDecimal pledgeAmount = EthMathUtil.bigIntegerToBigDecimal(pledgeAmountWei, spaceJediService.getDecimals());
         pledgeEventBean.setPledgeAmount(pledgeAmount);
         pledgeEventBean.setUserAddress((String) event.getArgs().get("user"));
         BigInteger level = (BigInteger) event.getArgs().get("level");
@@ -130,7 +131,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
         }
         WithdrawEventBean withdrawEventBean = new WithdrawEventBean();
         BigInteger withdrawAmountWei = (BigInteger) event.getArgs().get("amount");
-        Double withdrawAmount = EthMathUtil.bigIntegerToDouble(withdrawAmountWei, spaceJediService.getDecimals());
+        BigDecimal withdrawAmount = EthMathUtil.bigIntegerToBigDecimal(withdrawAmountWei, spaceJediService.getDecimals());
         withdrawEventBean.setWithrawAmount(withdrawAmount);
         withdrawEventBean.setUserAddress((String) event.getArgs().get("user"));
         BigInteger level = (BigInteger) event.getArgs().get("level");
@@ -148,10 +149,10 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
         BuySpaceJediPackageEventBean buySpaceJediPackageEventBean = new BuySpaceJediPackageEventBean();
         buySpaceJediPackageEventBean.setBuyerAddress((String) event.getArgs().get("buyer"));
         BigInteger totalCostWei = (BigInteger) event.getArgs().get("totalCost");
-        Double totalCost = EthMathUtil.bigIntegerToDouble(totalCostWei, spaceJediService.getDecimals());
+        BigDecimal totalCost = EthMathUtil.bigIntegerToBigDecimal(totalCostWei, spaceJediService.getDecimals());
         buySpaceJediPackageEventBean.setTotalCost(totalCost);
         BigInteger priceWei = (BigInteger) event.getArgs().get("price");
-        Double price = EthMathUtil.bigIntegerToDouble(priceWei, usdtService.getDecimals());
+        BigDecimal price = EthMathUtil.bigIntegerToBigDecimal(priceWei, usdtService.getDecimals());
         buySpaceJediPackageEventBean.setPrice(price);
         buySpaceJediPackageEventBean.setStage(((BigInteger) event.getArgs().get("stage")).intValue());
         buySpaceJediPackageEventBean.setBuyCnt(((BigInteger) event.getArgs().get("buyCnt")).intValue());
@@ -168,7 +169,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
         SubmitOrderEventBean submitOrderEventBean = new SubmitOrderEventBean();
         submitOrderEventBean.setOwner((String) event.getArgs().get("owner"));
         submitOrderEventBean.setTokenId(((BigInteger) event.getArgs().get("tokenId")).toString(10));
-        submitOrderEventBean.setPrice(EthMathUtil.bigIntegerToDouble((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
+        submitOrderEventBean.setPrice(EthMathUtil.bigIntegerToBigDecimal((BigInteger) event.getArgs().get("price"), spaceJediService.getDecimals()));
         return submitOrderEventBean;
     }
 

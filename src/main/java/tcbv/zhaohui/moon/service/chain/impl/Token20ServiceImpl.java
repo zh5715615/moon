@@ -10,6 +10,7 @@ import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.utils.EthMathUtil;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
@@ -66,30 +67,30 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     }
 
     @Override
-    public double totalSupply() throws ChainException {
+    public BigDecimal totalSupply() throws ChainException {
         try {
             BigInteger totalSupply = token20Contract.totalSupply().send();
-            return EthMathUtil.bigIntegerToDouble(totalSupply, decimals);
+            return EthMathUtil.bigIntegerToBigDecimal(totalSupply, decimals);
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query token20 totalSupply failed: " + e.getMessage());
         }
     }
 
     @Override
-    public double allowance(String owner, String spender) throws ChainException {
+    public BigDecimal allowance(String owner, String spender) throws ChainException {
         try {
             BigInteger allowance = token20Contract.allowance(owner, spender).send();
-            return EthMathUtil.bigIntegerToDouble(allowance, decimals);
+            return EthMathUtil.bigIntegerToBigDecimal(allowance, decimals);
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query token20 allowance failed: " + e.getMessage());
         }
     }
 
     @Override
-    public double balanceOf(String accountAddress) throws ChainException {
+    public BigDecimal balanceOf(String accountAddress) throws ChainException {
         try {
             BigInteger bigInteger = token20Contract.balanceOf(accountAddress).send();
-            return EthMathUtil.bigIntegerToDouble(bigInteger, decimals);
+            return EthMathUtil.bigIntegerToBigDecimal(bigInteger, decimals);
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query token20 balanceOf failed: " + e.getMessage());
         }
@@ -97,27 +98,27 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
 
     @Override
     @Web3TxGuard
-    public String transfer(String toAddress, double value) throws Exception {
-        return token20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
+    public String transfer(String toAddress, BigDecimal value) throws Exception {
+        return token20Contract.transfer(toAddress, EthMathUtil.decimalToBigInteger(value, decimals)).send().getTransactionHash();
     }
 
     @Override
     @Web3TxGuard
-    public String transfer(String fromAddress, String toAddress, double value) throws Exception {
+    public String transfer(String fromAddress, String toAddress, BigDecimal value) throws Exception {
         Token20Contract localToken20Contract = Token20Contract.load(contractAddress, web3j, mgr500Account.get(fromAddress), contractGasProvider);
-        return localToken20Contract.transfer(toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
+        return localToken20Contract.transfer(toAddress, EthMathUtil.decimalToBigInteger(value, decimals)).send().getTransactionHash();
     }
 
     @Override
     @Web3TxGuard
-    public String transferFrom(String fromAddress, String toAddress, double value) throws Exception {
-        return token20Contract.transferFrom(fromAddress, toAddress, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
+    public String transferFrom(String fromAddress, String toAddress, BigDecimal value) throws Exception {
+        return token20Contract.transferFrom(fromAddress, toAddress, EthMathUtil.decimalToBigInteger(value, decimals)).send().getTransactionHash();
     }
 
     @Override
     @Web3TxGuard
-    public String approve(String spender, double value) throws Exception {
-        return token20Contract.approve(spender, EthMathUtil.doubleToBigInteger(value, decimals)).send().getTransactionHash();
+    public String approve(String spender, BigDecimal value) throws Exception {
+        return token20Contract.approve(spender, EthMathUtil.decimalToBigInteger(value, decimals)).send().getTransactionHash();
     }
 
     @Override

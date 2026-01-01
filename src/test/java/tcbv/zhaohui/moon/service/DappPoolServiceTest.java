@@ -12,6 +12,7 @@ import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.service.chain.impl.EthereumServiceImpl;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -53,7 +54,7 @@ public class DappPoolServiceTest {
     @Test
     void extractSpaceJediOnlyTest() {
         try {
-            String txHash = dappPoolService.extractSpaceJediOnlyTest(1.0);
+            String txHash = dappPoolService.extractSpaceJediOnlyTest(BigDecimal.valueOf(1.0));
             log.info("txHash:{}", txHash);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +64,7 @@ public class DappPoolServiceTest {
     @Test
     void submitOrderTest() {
         try {
-            String txHash = dappPoolService.submitOrder(TEST_ADDRESS, new BigInteger("92380587157001473839", 10), 256.0);
+            String txHash = dappPoolService.submitOrder(TEST_ADDRESS, new BigInteger("92380587157001473839", 10), BigDecimal.valueOf(256.0));
             log.info("txHash:{}", txHash);
         } catch (Exception e) {
             throw new RuntimeException(e);

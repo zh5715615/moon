@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
@@ -222,7 +223,7 @@ public class PledgeServiceImpl implements PledgeService {
         // 先链上转账，再写奖励记录（你也可以相反：先落库pending，再转账；更易补偿）
         String rewardHash;
         try {
-            rewardHash = spaceJediService.transfer(parentAddress, rewardAmount);
+            rewardHash = spaceJediService.transfer(parentAddress, BigDecimal.valueOf(rewardAmount));
         } catch (Exception e) {
             log.error("reward transfer failed: to={}, rewardAmount={}, userId={}, parentId={}, pledgeId={}, txHash={}",
                     parentAddress, rewardAmount, userId, parentId, pledgeId, txHash, e);

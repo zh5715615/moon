@@ -15,27 +15,27 @@ public class EthMathUtil {
         return bigInteger.longValue();
     }
 
-    /**
-     * 大整数转浮点型
-     * @param bigInteger 大整数
-     * @param decimals 精度
-     * @return 浮点型金额
-     */
-    public static double bigIntegerToDouble(BigInteger bigInteger, int decimals) {
-        BigDecimal bigDecimal = new BigDecimal(bigInteger);
-        return bigDecimal.divide(BigDecimal.TEN.pow(decimals)).doubleValue();
-    }
-
-    /**
-     * 浮点型转大整数
-     * @param d 浮点型
-     * @param decimals 精度
-     * @return 大整数金额
-     */
-    public static BigInteger doubleToBigInteger(double d, int decimals) {
-        BigDecimal bigDecimal = BigDecimal.valueOf(d);
-        return decimalToBigInteger(bigDecimal, decimals);
-    }
+//    /**
+//     * 大整数转浮点型
+//     * @param bigInteger 大整数
+//     * @param decimals 精度
+//     * @return 浮点型金额
+//     */
+//    public static double bigIntegerToDouble(BigInteger bigInteger, int decimals) {
+//        BigDecimal bigDecimal = new BigDecimal(bigInteger);
+//        return bigDecimal.divide(BigDecimal.TEN.pow(decimals)).doubleValue();
+//    }
+//
+//    /**
+//     * 浮点型转大整数
+//     * @param d 浮点型
+//     * @param decimals 精度
+//     * @return 大整数金额
+//     */
+//    public static BigInteger doubleToBigInteger(double d, int decimals) {
+//        BigDecimal bigDecimal = BigDecimal.valueOf(d);
+//        return decimalToBigInteger(bigDecimal, decimals);
+//    }
 
     public static BigInteger decimalToBigInteger(BigDecimal bigDecimal, int decimals) {
         return bigDecimal.multiply(BigDecimal.TEN.pow(decimals)).toBigInteger();

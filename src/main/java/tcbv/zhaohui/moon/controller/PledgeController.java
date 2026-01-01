@@ -58,7 +58,7 @@ public class PledgeController {
         pledgeEntity.setUserId(userId);
         pledgeEntity.setAddress(address);
         pledgeEntity.setRegion(pledgeRegion.getLevel());
-        pledgeEntity.setAmount(pledgeEventBean.getPledgeAmount());
+        pledgeEntity.setAmount(pledgeEventBean.getPledgeAmount().doubleValue());
         int expire = web3Config.isEnvProd() ? pledgeRegion.getPeriodProd() : pledgeRegion.getPeriodTest();
         Date expireTime = DateUtils.addSeconds(now, expire);
         pledgeEntity.setExpireTime(expireTime);
@@ -82,7 +82,7 @@ public class PledgeController {
         pledgeEntity.setUserId(userId);
         pledgeEntity.setAddress(address);
         pledgeEntity.setRegion(pledgeRegion.getLevel());
-        pledgeEntity.setWithdrawAmount(withdrawEventBean.getWithrawAmount());
+        pledgeEntity.setWithdrawAmount(withdrawEventBean.getWithrawAmount().doubleValue());
         pledgeEntity.setId(dto.getPledgeId());
         pledgeEntity.setWithdrawHash(dto.getTxHash());
         pledgeService.withdraw(pledgeEntity);

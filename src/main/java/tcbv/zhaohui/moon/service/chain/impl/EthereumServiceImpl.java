@@ -54,7 +54,7 @@ public class EthereumServiceImpl implements EthereumService {
 
     protected Credentials credentials;
 
-    protected Map<String, Credentials> mgr500Account;
+    protected Map<String, Credentials> mgr500Account = new ConcurrentHashMap<>();
 
     protected ContractGasProvider contractGasProvider;
 
@@ -89,7 +89,6 @@ public class EthereumServiceImpl implements EthereumService {
 
     private void initMgr500Account() throws Exception {
         List<WalletEntity> walletEntityList = walletService.queryAll();
-        mgr500Account = new ConcurrentHashMap<>();
         if (CollectionUtils.isEmpty(walletEntityList)) {
             return;
         }
@@ -111,7 +110,7 @@ public class EthereumServiceImpl implements EthereumService {
             String privateKey = parseSecretKey(web3Config.getUserAddress(), web3Config.getEncryptPassword());
             credentials = Credentials.create(privateKey);
 
-            initMgr500Account();
+//            initMgr500Account();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,7 +236,7 @@ public class EthereumServiceImpl implements EthereumService {
         ethTransactionBean.setToAddress(transaction.getTo());
         BigInteger amountBigInteger = transaction.getValue();
         BigDecimal bigDecimal = new BigDecimal(amountBigInteger);
-        double amount = bigDecimal.divide(BigDecimal.TEN.pow(18)).doubleValue();
+        BigDecimal amount = bigDecimal.divide(BigDecimal.TEN.pow(18));
         ethTransactionBean.setAmount(amount);
         return ethTransactionBean;
     }
@@ -298,12 +297,12 @@ public class EthereumServiceImpl implements EthereumService {
     }
 
     @Override
-    public String sendEth(String toAddress, double amount) throws IOException {
+    public String sendEth(String toAddress, BigDecimal amount) throws IOException {
         long nonce = getAccountNonce(web3Config.getUserAddress());
         BigInteger gasPrice = new BigInteger(web3Config.getGasPrice());
         BigInteger gasLimit = new BigInteger(web3Config.getGasLimit());
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
-                BigInteger.valueOf(nonce), gasPrice, gasLimit, toAddress, EthMathUtil.doubleToBigInteger(amount, 18));
+                BigInteger.valueOf(nonce), gasPrice, gasLimit, toAddress, EthMathUtil.decimalToBigInteger(amount, 18));
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, web3Config.getChainId(), credentials);
         String hexValue = Numeric.toHexString(signedMessage);
         EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).send();

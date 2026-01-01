@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.beans;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: PresaleInfoBean
@@ -12,7 +14,7 @@ import lombok.Data;
 public class PresaleInfoBean {
     private Integer sold;
 
-    private Double price;
+    private BigDecimal price;
 
     private Integer stage;
 }

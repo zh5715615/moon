@@ -127,7 +127,7 @@ public class CardNftController {
         NftOrderEntity nftOrderEntity = new NftOrderEntity();
         nftOrderEntity.setUserId(userId);
         nftOrderEntity.setTokenId(submitOrderEventBean.getTokenId());
-        nftOrderEntity.setPrice(submitOrderEventBean.getPrice());
+        nftOrderEntity.setPrice(submitOrderEventBean.getPrice().doubleValue());
         nftOrderEntity.setStatus(NftOrderStatusEnum.PENDING.getStatus());
         nftOrderEntity.setAddress(address);
         nftOrderEntity.setSubmitHash(dto.getTxHash());
@@ -145,7 +145,7 @@ public class CardNftController {
         nftOrderEntity.setId(dto.getNftOrderId());
         nftOrderEntity.setBuyerId(userId);
         nftOrderEntity.setTokenId(tradeOrderBean.getTokenId());
-        nftOrderEntity.setPrice(tradeOrderBean.getPrice());
+        nftOrderEntity.setPrice(tradeOrderBean.getPrice().doubleValue());
         nftOrderEntity.setTradeHash(dto.getTxHash());
         nftOrderEntity.setStatus(NftOrderStatusEnum.TRADED.getStatus());
         nftOrderService.tradeOrder(nftOrderEntity);

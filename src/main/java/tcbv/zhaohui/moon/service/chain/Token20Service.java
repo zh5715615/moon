@@ -2,6 +2,8 @@ package tcbv.zhaohui.moon.service.chain;
 
 import tcbv.zhaohui.moon.exceptions.ChainException;
 
+import java.math.BigDecimal;
+
 /**
  * @author: zhaohui
  * @Title: Token20Service
@@ -37,7 +39,7 @@ public interface Token20Service {
      * 获取发行量
      * @return 发行量
      */
-    double totalSupply() throws ChainException;
+    BigDecimal totalSupply() throws ChainException;
 
     /**
      * 获取审批对象的金额
@@ -45,23 +47,23 @@ public interface Token20Service {
      * @param spender 被审批人
      * @return 金额
      */
-    double allowance(String owner, String spender) throws ChainException;
+    BigDecimal allowance(String owner, String spender) throws ChainException;
 
     /**
      * 用户余额
      * @param accountAddress 用户地址
      * @return 余额
      */
-    double balanceOf(String accountAddress) throws ChainException;
+    BigDecimal balanceOf(String accountAddress) throws ChainException;
 
     /**
      * 转账
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    String transfer(String toAddress, double value) throws Exception;
+    String transfer(String toAddress, BigDecimal value) throws Exception;
 
-    String transfer(String fromAddress, String toAddress, double value)  throws Exception;
+    String transfer(String fromAddress, String toAddress, BigDecimal value)  throws Exception;
 
     /**
      * 代理转账
@@ -69,14 +71,14 @@ public interface Token20Service {
      * @param toAddress 转账目的地址
      * @param value 金额
      */
-    String transferFrom(String fromAddress, String toAddress, double value) throws Exception;
+    String transferFrom(String fromAddress, String toAddress, BigDecimal value) throws Exception;
 
     /**
      * 授权审批
      * @param spender 被授权这地址
      * @param value 授权金额
      */
-    String approve(String spender, double value) throws Exception;
+    String approve(String spender, BigDecimal value) throws Exception;
 
     /**
      * 获取合约地址

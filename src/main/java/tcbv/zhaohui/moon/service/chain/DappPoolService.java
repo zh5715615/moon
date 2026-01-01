@@ -4,6 +4,7 @@ import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.*;
 import tcbv.zhaohui.moon.exceptions.ChainException;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -15,9 +16,9 @@ import java.math.BigInteger;
 public interface DappPoolService {
     void init(EthereumService ethereumService, String contractAddress);
 
-    String extractSpaceJediOnlyTest(Double amount) throws Exception;
+    String extractSpaceJediOnlyTest(BigDecimal amount) throws Exception;
 
-    String submitOrder(String seller, BigInteger tokenId, Double price) throws Exception;
+    String submitOrder(String seller, BigInteger tokenId, BigDecimal price) throws Exception;
 
     String cancelOrder(String owner, BigInteger tokenId) throws Exception;
 

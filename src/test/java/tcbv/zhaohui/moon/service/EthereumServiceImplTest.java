@@ -11,6 +11,7 @@ import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,7 +66,7 @@ public class EthereumServiceImplTest {
     @Test
     void testSendEth() throws IOException {
         String to = "0xab429a6547EC5aC5754B0b63500e32e5A932D915";
-        double amount = 1;
+        BigDecimal amount = BigDecimal.ONE;
         String txHash = ethereumService.sendEth(to, amount);
         log.info("txHash is {}", txHash);
     }
