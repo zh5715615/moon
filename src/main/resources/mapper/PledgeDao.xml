@@ -112,6 +112,108 @@
                 </if>
             </where>
         </select>
+    <select id="queryPledgePromotionByPage" resultMap="PledgeMap">
+        select
+            tb_pledge.id,
+            tb_pledge.user_id,
+            tb_pledge.region,
+            tb_pledge.amount,
+            tb_pledge.withdraw_amount,
+            tb_pledge.expire_time,
+            tb_pledge.create_time,
+            tb_pledge.withdraw_time,
+            tb_pledge.pledge_hash,
+            tb_pledge.withdraw_hash,
+            tb_user.address
+        from tb_pledge_promotion
+            left join tb_pledge on tb_pledge.id = tb_pledge_promotion.pledge_id
+            left join tb_user on tb_user.id = tb_pledge.user_id
+        <where>
+            <if test="entity.id != null and entity.id != ''">
+                and tb_pledge.id = #{entity.id}
+            </if>
+            <if test="entity.userId != null and entity.userId != ''">
+                and tb_pledge.user_id = #{entity.userId}
+            </if>
+            <if test="entity.region != null">
+                and tb_pledge.region = #{entity.region}
+            </if>
+            <if test="entity.amount != null">
+                and tb_pledge.amount = #{entity.amount}
+            </if>
+            <if test="entity.withdrawAmount != null">
+                and tb_pledge.withdraw_amount = #{entity.withdrawAmount}
+            </if>
+            <if test="entity.expireTime != null">
+                and tb_pledge.expire_time = #{entity.expireTime}
+            </if>
+            <if test="entity.createTime != null">
+                and tb_pledge.create_time = #{entity.createTime}
+            </if>
+            <if test="entity.withdrawTime != null">
+                and tb_pledge.withdraw_time = #{entity.withdrawTime}
+            </if>
+            <if test="entity.pledgeHash != null and entity.pledgeHash != ''">
+                and tb_pledge.pledge_hash = #{entity.pledgeHash}
+            </if>
+            <if test="entity.withdrawHash != null and entity.withdrawHash != ''">
+                and tb_pledge.withdraw_hash = #{entity.withdrawHash}
+            </if>
+            <if test="entity.address != null and entity.address != ''">
+                and tb_user.address = #{entity.address}
+            </if>
+        </where>
+        <if test="pageable.sort != null">
+            ORDER BY
+            <foreach collection="pageable.sort" item="order" separator=",">
+                ${order.property} ${order.direction}
+            </foreach>
+        </if>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="countPledgePromotion" resultType="java.lang.Long">
+        select count(1)
+        from tb_pledge_promotion
+        left join tb_pledge on tb_pledge.id = tb_pledge_promotion.pledge_id
+        left join tb_user on tb_user.id = tb_pledge.user_id
+        <where>
+            <if test="entity.id != null and entity.id != ''">
+                and tb_pledge.id = #{entity.id}
+            </if>
+            <if test="entity.userId != null and entity.userId != ''">
+                and tb_pledge.user_id = #{entity.userId}
+            </if>
+            <if test="entity.region != null">
+                and tb_pledge.region = #{entity.region}
+            </if>
+            <if test="entity.amount != null">
+                and tb_pledge.amount = #{entity.amount}
+            </if>
+            <if test="entity.withdrawAmount != null">
+                and tb_pledge.withdraw_amount = #{entity.withdrawAmount}
+            </if>
+            <if test="entity.expireTime != null">
+                and tb_pledge.expire_time = #{entity.expireTime}
+            </if>
+            <if test="entity.createTime != null">
+                and tb_pledge.create_time = #{entity.createTime}
+            </if>
+            <if test="entity.withdrawTime != null">
+                and tb_pledge.withdraw_time = #{entity.withdrawTime}
+            </if>
+            <if test="entity.pledgeHash != null and entity.pledgeHash != ''">
+                and tb_pledge.pledge_hash = #{entity.pledgeHash}
+            </if>
+            <if test="entity.withdrawHash != null and entity.withdrawHash != ''">
+                and tb_pledge.withdraw_hash = #{entity.withdrawHash}
+            </if>
+            <if test="entity.address != null and entity.address != ''">
+                and tb_user.address = #{entity.address}
+            </if>
+        </where>
+    </select>
 
     <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="false">

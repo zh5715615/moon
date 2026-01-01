@@ -29,6 +29,14 @@ public interface PledgeService {
     Page<PledgeEntity> queryByPage(PledgeEntity pledgeEntity, PageRequest pageRequest);
 
     /**
+     * 分页查询质押推广奖励
+     * @param pledgeEntity 筛选条件
+     * @param pageRequest 分页对象
+     * @return 查询结果
+     */
+    Page<PledgeEntity> queryPledgePromotionByPage(PledgeEntity pledgeEntity, PageRequest pageRequest);
+
+    /**
      * 新增数据
      *
      * @param pledgeEntity 实例对象

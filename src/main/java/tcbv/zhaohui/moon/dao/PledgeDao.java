@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.dao;
 
+import org.springframework.data.domain.PageRequest;
 import tcbv.zhaohui.moon.entity.PledgeEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
@@ -87,5 +88,20 @@ public interface PledgeDao {
      * @return 质押信息
      */
     PledgeEntity queryByPledgeHash(String pledgeHash);
+
+    /**
+     * 根据质押状态查询质押信息
+     * @param pledgeEntity 质押信息
+     * @return 质押信息
+     */
+    long countPledgePromotion(@Param("entity") PledgeEntity pledgeEntity);
+
+    /**
+     * 根据质押状态查询质押信息
+     * @param pledgeEntity 质押信息
+     * @param pageRequest 分页信息
+     * @return 质押信息
+     */
+    List<PledgeEntity> queryPledgePromotionByPage(@Param("entity") PledgeEntity pledgeEntity, @Param("pageable") PageRequest pageRequest);
 }
 

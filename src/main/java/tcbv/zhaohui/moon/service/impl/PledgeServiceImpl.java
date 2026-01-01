@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
+import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.dao.PledgePromotionDao;
 import tcbv.zhaohui.moon.dao.UserDao;
@@ -56,6 +57,9 @@ public class PledgeServiceImpl implements PledgeService {
     @Value("${star-wars.promote-reward-percentage}")
     private double promoteRewardPercentage;
 
+    @Autowired
+    private Web3Config web3Config;
+
     /**
      * 通过ID查询单条数据
      *
@@ -78,6 +82,12 @@ public class PledgeServiceImpl implements PledgeService {
     public Page<PledgeEntity> queryByPage(PledgeEntity pledgeEntity, PageRequest pageRequest) {
         long total = this.pledgeDao.count(pledgeEntity);
         return new PageImpl<>(this.pledgeDao.queryAllByLimit(pledgeEntity, pageRequest), pageRequest, total);
+    }
+
+    @Override
+    public Page<PledgeEntity> queryPledgePromotionByPage(PledgeEntity pledgeEntity, PageRequest pageRequest) {
+        long total = this.pledgeDao.countPledgePromotion(pledgeEntity);
+        return new PageImpl<>(this.pledgeDao.queryPledgePromotionByPage(pledgeEntity, pageRequest), pageRequest, total);
     }
 
     /**
@@ -223,7 +233,7 @@ public class PledgeServiceImpl implements PledgeService {
         // 先链上转账，再写奖励记录（你也可以相反：先落库pending，再转账；更易补偿）
         String rewardHash;
         try {
-            rewardHash = spaceJediService.transfer(parentAddress, BigDecimal.valueOf(rewardAmount));
+            rewardHash = spaceJediService.transfer(web3Config.getPromoterAddress(), parentAddress, BigDecimal.valueOf(rewardAmount));
         } catch (Exception e) {
             log.error("reward transfer failed: to={}, rewardAmount={}, userId={}, parentId={}, pledgeId={}, txHash={}",
                     parentAddress, rewardAmount, userId, parentId, pledgeId, txHash, e);

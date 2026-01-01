@@ -6,11 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.entity.PledgeEntity;
+import tcbv.zhaohui.moon.entity.SjPackageTxEntity;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
+import tcbv.zhaohui.moon.service.PledgeService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
 import tcbv.zhaohui.moon.service.UserInfoService;
 import tcbv.zhaohui.moon.syslog.Syslog;
@@ -19,18 +26,22 @@ import tcbv.zhaohui.moon.utils.Rsp;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import tcbv.zhaohui.moon.vo.PromoteHistoryVo;
+import tcbv.zhaohui.moon.vo.PromoteInfoVo;
+
+import static tcbv.zhaohui.moon.beans.Constants.PROMOTE_TOTAL;
 
 @RestController
 @RequestMapping("/api/v1/moon/promote")
@@ -43,6 +54,12 @@ public class PromoteController {
     @Autowired
     @Qualifier("spaceJediService")
     private Token20Service spaceJediService;
+
+    @Autowired
+    private PledgeService pledgeService;
+
+    @Autowired
+    private Web3Config web3Config;
 
     @Syslog(module = "PROMOTE")
     @PutMapping("/link/{promoCode}")
@@ -154,5 +171,35 @@ public class PromoteController {
         // return Rsp.ok(firstTwoColumns);
 
         return Rsp.ok(); // 或者根据业务需求返回其他内容
+    }
+
+    @GetMapping
+    @ApiOperation("推广奖励信息")
+    public Rsp<PromoteInfoVo> promote() {
+        PromoteInfoVo promoteInfoVo = new PromoteInfoVo();
+        promoteInfoVo.setTotal(PROMOTE_TOTAL);
+        BigDecimal balance = spaceJediService.balanceOf(web3Config.getPromoterAddress());
+        promoteInfoVo.setFree(balance.doubleValue());
+        return Rsp.okData(promoteInfoVo);
+    }
+
+    @GetMapping("/history")
+    @ApiOperation("推广历史")
+    public Rsp<List<PromoteHistoryVo>> promoteHistory() {
+        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "create_time"));
+        Page<PledgeEntity> pageEntity = pledgeService.queryPledgePromotionByPage(new PledgeEntity(), pageRequest);
+        if (pageEntity == null || pageEntity.getContent().isEmpty()) {
+            return Rsp.okData(Collections.emptyList());
+        }
+        List<PromoteHistoryVo> promoteHistoryVos = new ArrayList<>();
+        for (PledgeEntity pledgeEntity : pageEntity.getContent()) {
+            PromoteHistoryVo promoteHistoryVo = new PromoteHistoryVo();
+            promoteHistoryVo.setAddress(pledgeEntity.getAddress());
+            promoteHistoryVo.setPledgeAmount(pledgeEntity.getAmount().doubleValue());
+            promoteHistoryVo.setPledgeTime(pledgeEntity.getCreateTime());
+            promoteHistoryVo.setHash(pledgeEntity.getPledgeHash());
+            promoteHistoryVos.add(promoteHistoryVo);
+        }
+        return Rsp.okData(promoteHistoryVos);
     }
 }

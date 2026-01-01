@@ -23,32 +23,41 @@
 
         <!--查询指定行数据-->
         <select id="queryAllByLimit" resultMap="SjPackageTxMap">
-            select  id, price, stage, buyer_id, hash, address, create_time, pacakge_cnt
+            select
+                tb_sj_package_tx.id,
+                tb_sj_package_tx.price,
+                tb_sj_package_tx.stage,
+                tb_sj_package_tx.buyer_id,
+                tb_sj_package_tx.hash,
+                COALESCE(tb_sj_package_tx.address, tb_user.address) AS address,
+                tb_sj_package_tx.create_time,
+                tb_sj_package_tx.pacakge_cnt
             from tb_sj_package_tx
+                left join tb_user on tb_sj_package_tx.buyer_id = tb_user.id
             <where>
                 <if test="entity.id != null">
-                    and id = #{entity.id}
+                    and tb_sj_package_tx.id = #{entity.id}
                 </if>
                 <if test="entity.price != null">
-                    and price = #{entity.price}
+                    and tb_sj_package_tx.price = #{entity.price}
                 </if>
                 <if test="entity.stage != null">
-                    and stage = #{entity.stage}
+                    and tb_sj_package_tx.stage = #{entity.stage}
                 </if>
                 <if test="entity.buyerId != null and entity.buyerId != ''">
-                    and buyer_id = #{entity.buyerId}
+                    and tb_sj_package_tx.buyer_id = #{entity.buyerId}
                 </if>
                 <if test="entity.hash != null and entity.hash != ''">
-                    and hash = #{entity.hash}
+                    and tb_sj_package_tx.hash = #{entity.hash}
                 </if>
                 <if test="entity.address != null and entity.address != ''">
                     and address = #{entity.address}
                 </if>
                 <if test="entity.createTime != null">
-                    and create_time = #{entity.createTime}
+                    and tb_sj_package_tx.create_time = #{entity.createTime}
                 </if>
                 <if test="entity.pacakgeCnt != null">
-                    and pacakge_cnt = #{entity.pacakgeCnt}
+                    and tb_sj_package_tx.pacakge_cnt = #{entity.pacakgeCnt}
                 </if>
             </where>
             <if test="pageable.sort != null">

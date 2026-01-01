@@ -19,4 +19,8 @@ public class Constants {
     public static final int INNER_PRESALE_TOTAL = 1000;   //内步预售1000套
     public static final int PRESALE_SJ_NUMBER_PER = 1350; //每套1350
     /** 预售相关常量 end **/
+
+    /** 推广相关常量 begin **/
+    public static final int PROMOTE_TOTAL = 13500000; //推广奖励1000
+    /** 推广相关常量 end **/
 }

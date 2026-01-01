@@ -54,6 +54,8 @@ public class EthereumServiceImpl implements EthereumService {
 
     protected Credentials credentials;
 
+    protected Credentials promoteCredentials;
+
     protected Map<String, Credentials> mgr500Account = new ConcurrentHashMap<>();
 
     protected ContractGasProvider contractGasProvider;
@@ -107,9 +109,10 @@ public class EthereumServiceImpl implements EthereumService {
         HttpService httpService = new HttpService(web3Config.getEthUrl());
         web3j = Web3j.build(httpService);
         try {
-            String privateKey = parseSecretKey(web3Config.getUserAddress(), web3Config.getEncryptPassword());
+            String privateKey = parseSecretKey(web3Config.getContractOwnerAddress(), web3Config.getContractOwnerEncryptPassword());
             credentials = Credentials.create(privateKey);
-
+            String promotePrivateKey = parseSecretKey(web3Config.getPromoterAddress(), web3Config.getPromoterEncryptPassword());
+            promoteCredentials = Credentials.create(promotePrivateKey);
 //            initMgr500Account();
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,6 +148,11 @@ public class EthereumServiceImpl implements EthereumService {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    @Override
+    public Credentials getPromoteCredentials() {
+        return promoteCredentials;
     }
 
     @Override
@@ -298,7 +306,7 @@ public class EthereumServiceImpl implements EthereumService {
 
     @Override
     public String sendEth(String toAddress, BigDecimal amount) throws IOException {
-        long nonce = getAccountNonce(web3Config.getUserAddress());
+        long nonce = getAccountNonce(web3Config.getContractOwnerAddress());
         BigInteger gasPrice = new BigInteger(web3Config.getGasPrice());
         BigInteger gasLimit = new BigInteger(web3Config.getGasLimit());
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
@@ -338,6 +346,7 @@ public class EthereumServiceImpl implements EthereumService {
     protected void init(EthereumService ethereumService) {
         this.web3j = ethereumService.getWeb3j();
         this.credentials = ethereumService.getCredentials();
+        this.promoteCredentials = ethereumService.getPromoteCredentials();
         this.mgr500Account = ethereumService.getCredentialsMap();
         this.contractGasProvider = ethereumService.getContractGasProvider();
         this.web3Config = ethereumService.getWeb3Config();

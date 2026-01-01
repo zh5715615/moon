@@ -138,7 +138,7 @@ public class SyslogAspect {
                     if (data instanceof Object) {
                         syslogEntity.setResponseParam(GsonUtil.toJson(rsp.getData(), true));
                     } else {
-                        syslogEntity.setResponseParam(data.toString());
+                        syslogEntity.setResponseParam(data == null ? null : data.toString());
                     }
 
                 }

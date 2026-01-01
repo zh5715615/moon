@@ -6,8 +6,12 @@ spring:
 
 web3:
   account:
-    encrypt-password: "lcHVSyAG4VHhALrcTiE10Q=="
-    address: "0xa24bDb249e80574A96D8B02b148E81B9be684675"
+    contract-owner:
+      encrypt-password: "lcHVSyAG4VHhALrcTiE10Q=="
+      address: "0xa24bDb249e80574A96D8B02b148E81B9be684675"
+    promoter:
+      encrypt-password: "+Ne+rqjm6+cO37qEwwl0Cfes6HyjVpy3ZUMQ6u9ZjfU="
+      address: "0x7c92cd77d3fba3ea33f7d94254bf3e23b25513c2"
   url: "https://go.getblock.io/aaefaf5b1ccb4b64901988b3899efff9"
   chain-id: 97
   gas-fee:

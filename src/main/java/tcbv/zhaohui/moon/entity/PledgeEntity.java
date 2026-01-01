@@ -25,13 +25,13 @@ public class PledgeEntity {
      */
     private String userId;
     /**
-     * 用户id
+     * 用户地址
      */
     private String address;
     /**
      * 质押区域
      */
-    private int region;
+    private Integer region;
     /**
      * 质押金额
      */

@@ -16,11 +16,17 @@ public class Web3Config {
     @Value("${web3.chain-id}")
     private long chainId; //链id
 
-    @Value("${web3.account.encrypt-password}")
-    private String encryptPassword; //用户私钥
+    @Value("${web3.account.contract-owner.encrypt-password}")
+    private String contractOwnerEncryptPassword; //合约管理者私钥
 
-    @Value("${web3.account.address}")
-    private String userAddress; //用户地址
+    @Value("${web3.account.contract-owner.address}")
+    private String contractOwnerAddress; //合约管理者地址
+
+    @Value("${web3.account.promoter.encrypt-password}")
+    private String promoterEncryptPassword; //推广用户私钥
+
+    @Value("${web3.account.promoter.address}")
+    private String promoterAddress; //推广用户地址
 
     @Value("${web3.gas-fee.price}")
     private String gasPrice;  //交易gas费

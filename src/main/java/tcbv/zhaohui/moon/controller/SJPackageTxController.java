@@ -4,6 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.beans.PresaleInfoBean;
@@ -19,9 +22,12 @@ import tcbv.zhaohui.moon.service.SjPackageTxService;
 import tcbv.zhaohui.moon.syslog.Syslog;
 import tcbv.zhaohui.moon.utils.EnumUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.PresaleHistoryVo;
 import tcbv.zhaohui.moon.vo.PresaleInfoVo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static tcbv.zhaohui.moon.beans.Constants.*;
@@ -179,6 +185,28 @@ public class SJPackageTxController {
         }
         presaleInfoVo.setRounds(rounds);
         return Rsp.okData(presaleInfoVo);
+    }
+
+    @GetMapping("/presale/history")
+    @ApiOperation("预售历史记录")
+    public Rsp<List<PresaleHistoryVo>> presaleHistory() {
+        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "create_time"));
+        Page<SjPackageTxEntity> pageEntity = sjPackageTxService.queryByPage(new SjPackageTxEntity(), pageRequest);
+        if (pageEntity == null || pageEntity.getContent().isEmpty()) {
+            return Rsp.okData(Collections.emptyList());
+        }
+        List<PresaleHistoryVo> presaleHistoryVos = new ArrayList<>();
+        for (SjPackageTxEntity sjPackageTxEntity : pageEntity.getContent()) {
+            PresaleHistoryVo presaleHistoryVo = new PresaleHistoryVo();
+            presaleHistoryVo.setHash(sjPackageTxEntity.getHash());
+            presaleHistoryVo.setDatetime(sjPackageTxEntity.getCreateTime());
+            presaleHistoryVo.setCost(sjPackageTxEntity.getPrice() * sjPackageTxEntity.getPacakgeCnt() * PRESALE_SJ_NUMBER_PER);
+            presaleHistoryVo.setCount(sjPackageTxEntity.getPacakgeCnt());
+            presaleHistoryVo.setAddress(sjPackageTxEntity.getAddress());
+            presaleHistoryVo.setRound(sjPackageTxEntity.getStage());
+            presaleHistoryVos.add(presaleHistoryVo);
+        }
+        return Rsp.okData(presaleHistoryVos);
     }
 
 //    public static void main(String[] args) {

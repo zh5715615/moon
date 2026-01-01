@@ -22,6 +22,8 @@ public interface EthereumService {
 
     Credentials getCredentials();
 
+    Credentials getPromoteCredentials();
+
     Map<String, Credentials> getCredentialsMap();
 
     ContractGasProvider getContractGasProvider();

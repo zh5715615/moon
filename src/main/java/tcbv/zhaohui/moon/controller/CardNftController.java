@@ -110,7 +110,7 @@ public class CardNftController {
         }
         nftMetadataBean.setAttributes(attributes);
         nftMetadataBean.setDescription(description);
-        NFTTokenMintInfoBean nftTokenMintInfoBean = cardNftService.mint(web3Config.getUserAddress(), nftMetadataBean);
+        NFTTokenMintInfoBean nftTokenMintInfoBean = cardNftService.mint(web3Config.getContractOwnerAddress(), nftMetadataBean);
         return Rsp.okData(nftTokenMintInfoBean);
     }
 

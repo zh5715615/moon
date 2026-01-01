@@ -105,7 +105,12 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     @Override
     @Web3TxGuard
     public String transfer(String fromAddress, String toAddress, BigDecimal value) throws Exception {
-        Token20Contract localToken20Contract = Token20Contract.load(contractAddress, web3j, mgr500Account.get(fromAddress), contractGasProvider);
+        Token20Contract localToken20Contract;
+        if (fromAddress.equalsIgnoreCase(web3Config.getPromoterAddress())) {
+            localToken20Contract = Token20Contract.load(contractAddress, web3j, promoteCredentials, contractGasProvider);
+        } else {
+            localToken20Contract = Token20Contract.load(contractAddress, web3j, mgr500Account.get(fromAddress), contractGasProvider);
+        }
         return localToken20Contract.transfer(toAddress, EthMathUtil.decimalToBigInteger(value, decimals)).send().getTransactionHash();
     }
 
