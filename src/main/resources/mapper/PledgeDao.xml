@@ -13,6 +13,7 @@
             <result property="withdrawTime" column="withdraw_time" jdbcType="TIMESTAMP"/>
             <result property="pledgeHash" column="pledge_hash" jdbcType="VARCHAR"/>
             <result property="withdrawHash" column="withdraw_hash" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
         </resultMap>
 
 
@@ -32,38 +33,49 @@
 
         <!--查询指定行数据-->
         <select id="queryAllByLimit" resultMap="PledgeMap">
-            select  id, user_id, region, amount, withdraw_amount, expire_time, create_time, withdraw_time, pledge_hash, withdraw_hash
-            from tb_pledge
+            select
+                tb_pledge.id,
+                tb_pledge.user_id,
+                tb_pledge.region,
+                tb_pledge.amount,
+                tb_pledge.withdraw_amount,
+                tb_pledge.expire_time,
+                tb_pledge.create_time,
+                tb_pledge.withdraw_time,
+                tb_pledge.pledge_hash,
+                tb_pledge.withdraw_hash,
+                tb_user.address
+            from tb_pledge left join tb_user on tb_pledge.user_id = tb_user.id
             <where>
                 <if test="entity.id != null and entity.id != ''">
-                    and id = #{entity.id}
+                    and tb_pledge.id = #{entity.id}
                 </if>
                 <if test="entity.userId != null and entity.userId != ''">
-                    and user_id = #{entity.userId}
+                    and tb_pledge.user_id = #{entity.userId} and tb_pledge.withdraw_amount is null
                 </if>
                 <if test="entity.region != null">
-                    and region = #{entity.region}
+                    and tb_pledge.region = #{entity.region}
                 </if>
                 <if test="entity.amount != null">
-                    and amount = #{entity.amount}
+                    and tb_pledge.amount = #{entity.amount}
                 </if>
                 <if test="entity.withdrawAmount != null">
-                    and withdraw_amount = #{entity.withdrawAmount}
+                    and tb_pledge.withdraw_amount = #{entity.withdrawAmount}
                 </if>
                 <if test="entity.expireTime != null">
-                    and expire_time = #{entity.expireTime}
+                    and tb_pledge.expire_time = #{entity.expireTime}
                 </if>
                 <if test="entity.createTime != null">
-                    and create_time = #{entity.createTime}
+                    and tb_pledge.create_time = #{entity.createTime}
                 </if>
                 <if test="entity.withdrawTime != null">
-                    and withdraw_time = #{entity.withdrawTime}
+                    and tb_pledge.withdraw_time = #{entity.withdrawTime}
                 </if>
                 <if test="entity.pledgeHash != null and entity.pledgeHash != ''">
-                    and pledge_hash = #{entity.pledgeHash}
+                    and tb_pledge.pledge_hash = #{entity.pledgeHash}
                 </if>
                 <if test="entity.withdrawHash != null and entity.withdrawHash != ''">
-                    and withdraw_hash = #{entity.withdrawHash}
+                    and tb_pledge.withdraw_hash = #{entity.withdrawHash}
                 </if>
             </where>
             <if test="pageable.sort != null">
@@ -78,37 +90,37 @@
         <!--统计总行数-->
         <select id="count" resultType="java.lang.Long">
             select count(1)
-            from tb_pledge
+            from tb_pledge left join tb_user on tb_pledge.user_id = tb_user.id
             <where>
                 <if test="id != null and id != ''">
-                    and id = #{id}
+                    and tb_pledge.id = #{id}
                 </if>
                 <if test="userId != null and userId != ''">
-                    and user_id = #{userId}
+                    and tb_pledge.user_id = #{userId}
                 </if>
                 <if test="region != null">
-                    and region = #{region}
+                    and tb_pledge.region = #{region}
                 </if>
                 <if test="amount != null">
-                    and amount = #{amount}
+                    and tb_pledge.amount = #{amount}
                 </if>
                 <if test="withdrawAmount != null">
-                    and withdraw_amount = #{withdrawAmount}
+                    and tb_pledge.withdraw_amount = #{withdrawAmount}
                 </if>
                 <if test="expireTime != null">
-                    and expire_time = #{expireTime}
+                    and tb_pledge.expire_time = #{expireTime}
                 </if>
                 <if test="createTime != null">
-                    and create_time = #{createTime}
+                    and tb_pledge.create_time = #{createTime}
                 </if>
                 <if test="withdrawTime != null">
-                    and withdraw_time = #{withdrawTime}
+                    and tb_pledge.withdraw_time = #{withdrawTime}
                 </if>
                 <if test="pledgeHash != null and pledgeHash != ''">
-                    and pledge_hash = #{pledgeHash}
+                    and tb_pledge.pledge_hash = #{pledgeHash}
                 </if>
                 <if test="withdrawHash != null and withdrawHash != ''">
-                    and withdraw_hash = #{withdrawHash}
+                    and tb_pledge.withdraw_hash = #{withdrawHash}
                 </if>
             </where>
         </select>

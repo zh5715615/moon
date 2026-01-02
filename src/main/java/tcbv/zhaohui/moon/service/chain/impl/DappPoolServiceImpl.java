@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
+import software.amazon.ion.Decimal;
 import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.*;
 import tcbv.zhaohui.moon.contract.DappPool;
@@ -89,6 +91,18 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
             return presaleInfoBean;
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query package cnt failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public BigDecimal getCurrentRewardPercent(PledgeRegion region) throws ChainException {
+        try {
+            Tuple2<BigInteger, BigInteger> tuple2 = dappPool.getCurrentRewardPercent(BigInteger.valueOf(region.getLevel())).send();
+            BigInteger currentRewardPercent = tuple2.component2();
+            BigDecimal decimal = new BigDecimal(currentRewardPercent);
+            return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100));
+        } catch (Exception e) {
+            throw new ChainException(QUERY_EXCEPTION, "Query current reward percent failed: " + e.getMessage());
         }
     }
 

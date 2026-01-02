@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.service.chain;
 
 import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.*;
+import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.exceptions.ChainException;
 
 import java.math.BigDecimal;
@@ -23,6 +24,8 @@ public interface DappPoolService {
     String cancelOrder(String owner, BigInteger tokenId) throws Exception;
 
     PresaleInfoBean getPackageCnt() throws ChainException;
+
+    BigDecimal getCurrentRewardPercent(PledgeRegion region) throws ChainException;
 
     NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception;
 

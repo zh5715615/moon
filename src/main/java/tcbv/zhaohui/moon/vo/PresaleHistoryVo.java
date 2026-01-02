@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 @Data
 @ApiModel("预售历史记录响应体")
-public class PresaleHistoryVo implements Serializable {
+public class PresaleHistoryVo {
     @ApiModelProperty("交易hash")
     private String hash;
 
@@ -34,5 +35,6 @@ public class PresaleHistoryVo implements Serializable {
     private Double cost;
 
     @ApiModelProperty("购买时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date datetime;
 }

@@ -190,7 +190,7 @@ public class SJPackageTxController {
     @GetMapping("/presale/history")
     @ApiOperation("预售历史记录")
     public Rsp<List<PresaleHistoryVo>> presaleHistory() {
-        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "create_time"));
+        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "create_time"));
         Page<SjPackageTxEntity> pageEntity = sjPackageTxService.queryByPage(new SjPackageTxEntity(), pageRequest);
         if (pageEntity == null || pageEntity.getContent().isEmpty()) {
             return Rsp.okData(Collections.emptyList());

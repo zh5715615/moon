@@ -186,7 +186,7 @@ public class PromoteController {
     @GetMapping("/history")
     @ApiOperation("推广历史")
     public Rsp<List<PromoteHistoryVo>> promoteHistory() {
-        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "create_time"));
+        PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "create_time"));
         Page<PledgeEntity> pageEntity = pledgeService.queryPledgePromotionByPage(new PledgeEntity(), pageRequest);
         if (pageEntity == null || pageEntity.getContent().isEmpty()) {
             return Rsp.okData(Collections.emptyList());
