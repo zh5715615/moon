@@ -218,9 +218,11 @@ public class SJPackageTxController {
         return presaleHistory(null);
     }
 
-    @GetMapping("/presale/history/{userId}")
+    @GetMapping("/presale/userHistory")
     @ApiOperation("用户预售历史记录")
-    public Rsp<List<PresaleHistoryVo>> presaleHistoryWithUserId(@PathVariable("userId") String userId) {
+    @JwtAddressRequired
+    public Rsp<List<PresaleHistoryVo>> presaleHistoryWithUserId() {
+        String userId = JwtContext.getUserId();
         return presaleHistory(userId);
     }
 
