@@ -1,5 +1,7 @@
 package tcbv.zhaohui.moon.service.chain.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +47,7 @@ import java.security.Security;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static tcbv.zhaohui.moon.exceptions.ChainException.INVOKE_EXCEPTION;
+import static tcbv.zhaohui.moon.exceptions.ChainException.*;
 
 @Service("ethereumService")
 @Slf4j
@@ -341,6 +343,75 @@ public class EthereumServiceImpl implements EthereumService {
             errorMsg = split[1].trim();
         }
         return "Transaction error: status is " + status + ", Fail with error '" + errorMsg + "'";
+    }
+
+    private String computeMethodId(String functionSignature) {
+        byte[] hash = Hash.sha3(functionSignature.getBytes());
+        return "0x" + Numeric.toHexString(hash).substring(2, 10);
+    }
+
+    @Override
+    public String getMethodId(String abiJson, String methodName) throws ChainException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode abiArray = null;
+        try {
+            abiArray = mapper.readTree(abiJson);
+        } catch (JsonProcessingException e) {
+            throw new ChainException(QUERY_EXCEPTION, "Failed to parse ABI JSON");
+        }
+
+        for (JsonNode item : abiArray) {
+            if ("function".equals(item.get("type").asText()) && methodName.equals(item.get("name").asText())) {
+                String name = item.get("name").asText();
+                StringBuilder signature = new StringBuilder(name).append("(");
+
+                Iterator<JsonNode> inputs = item.get("inputs").elements();
+                while (inputs.hasNext()) {
+                    JsonNode input = inputs.next();
+                    signature.append(input.get("type").asText());
+                    if (inputs.hasNext()) {
+                        signature.append(",");
+                    }
+                }
+                signature.append(")");
+
+                return computeMethodId(signature.toString());
+            }
+        }
+        throw new ChainException(METHOD_NOT_FOUND, "Method not found");
+    }
+
+    @Override
+    public void checkTransaction(String txHash, String contractAddress, String methodId) throws ChainException {
+        Optional<TransactionReceipt> optional = null;
+        try {
+            optional = web3j.ethGetTransactionReceipt(txHash).send().getTransactionReceipt();
+        } catch (IOException e) {
+            throw new ChainException(QUERY_EXCEPTION, "Failed to query transaction receipt by txHash[" + txHash + "]: " + e.getMessage());
+        }
+        if (!optional.isPresent()) {
+            throw new ChainException(TXHASH_NOT_FOUND, "Txhash[" + txHash + "] not found");
+        }
+        TransactionReceipt txReceipt = optional.get();
+        String toAddress = txReceipt.getTo();
+        if (!contractAddress.equalsIgnoreCase(toAddress)) {
+            throw new ChainException(CONTRACT_ADDRESS_NOT_MATCH, "Contract address not match，expected: " + contractAddress + "，actual: " + toAddress);
+        }
+
+        if (!txReceipt.getStatus().equals("0x1")) {
+            throw new ChainException(TX_OF_INVOKE_FAILED, "This is tx of invoke failed");
+        }
+
+        Transaction tx = null;
+        try {
+            tx = web3j.ethGetTransactionByHash(txHash).send().getTransaction().get();
+        } catch (IOException e) {
+            throw new ChainException(QUERY_EXCEPTION, "Failed to query transaction by txHash[" + txHash + "]: " + e.getMessage());
+        }
+        String txMethodId = tx.getInput().substring(0, 10);
+        if (!txMethodId.equals(methodId)) {
+            throw new ChainException(METHOD_NOT_MATCH, "Method not match，expected: " + methodId + "，actual: " + txMethodId);
+        }
     }
 
     protected void init(EthereumService ethereumService) {

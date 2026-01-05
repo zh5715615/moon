@@ -62,16 +62,6 @@ public class DappPoolServiceTest {
     }
 
     @Test
-    void submitOrderTest() {
-        try {
-            String txHash = dappPoolService.submitOrder(TEST_ADDRESS, new BigInteger("92380587157001473839", 10), BigDecimal.valueOf(256.0));
-            log.info("txHash:{}", txHash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
     void pareseTradeOrderTest() throws Exception {
         dappPoolService.parseTradeOrder("0x6af5ccfa0e47bdf9894de3d06a75575eb6d0bcc18806ec2609bea622096344ab");
     }

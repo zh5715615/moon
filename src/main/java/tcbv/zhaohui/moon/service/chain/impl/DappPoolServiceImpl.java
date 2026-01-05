@@ -1,9 +1,11 @@
 package tcbv.zhaohui.moon.service.chain.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tuples.generated.Tuple3;
 import org.web3j.tx.RawTransactionManager;
@@ -23,8 +25,9 @@ import tcbv.zhaohui.moon.utils.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Optional;
 
-import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
+import static tcbv.zhaohui.moon.exceptions.ChainException.*;
 
 /**
  * @author: zhaohui
@@ -48,11 +51,29 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
     @Autowired
     private CardNFTTokenService cardNFTTokenService;
 
+    private String buySpaceJediPackageMethodId;
+
+    private String pledgeMethodId;
+
+    private String withdrawMethodId;
+
+    private String submitOrderMethodId;
+
+    private String cancelOrderMethodId;
+
+    private String tradeOrderMethodId;
+
     @Override
     public void init(EthereumService ethereumService, String contractAddress) {
         super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         dappPool = DappPool.load(contractAddress, web3j, transactionManager, contractGasProvider);
+        buySpaceJediPackageMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_BUYSPACEJEDIPACKAGE);
+        pledgeMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_PLEDGE);
+        withdrawMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_WITHDRAW);
+        submitOrderMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_SUBMITORDER);
+        cancelOrderMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_CANCELORDER);
+        tradeOrderMethodId = getMethodId(DappPool.ABI_JSON, DappPool.FUNC_TRADEORDER);
     }
 
     @Override
@@ -60,24 +81,6 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
     public String extractSpaceJediOnlyTest(BigDecimal amount) throws Exception {
         BigInteger amountWei = EthMathUtil.decimalToBigInteger(amount, spaceJediService.getDecimals());
         return dappPool.extractSpaceJediOnlyTest(amountWei).send().getTransactionHash();
-    }
-
-    @Override
-    @Web3TxGuard
-    public String submitOrder(String seller, BigInteger tokenId, BigDecimal price) throws Exception {
-        BigInteger priceWei = EthMathUtil.decimalToBigInteger(price, spaceJediService.getDecimals());
-        boolean exists = cardNFTTokenService.exists(tokenId.toString(10));
-        if (!exists) {
-            log.error("tokenId {} not exists", tokenId);
-            return null;
-        }
-        return dappPool.submitOrder(seller, tokenId, priceWei).send().getTransactionHash();
-    }
-
-    @Override
-    @Web3TxGuard
-    public String cancelOrder(String owner, BigInteger tokenId) throws Exception {
-        return dappPool.cancelOrder(owner, tokenId).send().getTransactionHash();
     }
 
     @Override
@@ -108,6 +111,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), tradeOrderMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.TRADEORDER_EVENT);
         if (event == null) {
             return null;
@@ -122,6 +126,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public PledgeEventBean parsedPledge(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), pledgeMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.PLEDGE_EVENT);
         if (event == null) {
             return null;
@@ -139,6 +144,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public WithdrawEventBean parsedWithdraw(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), withdrawMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.WITHDRAW_EVENT);
         if (event == null) {
             return null;
@@ -156,6 +162,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public BuySpaceJediPackageEventBean parseBuySpaceJediPackage(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), buySpaceJediPackageMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.BUYSPACEJEDIPACKAGE_EVENT);
         if (event == null) {
             return null;
@@ -176,6 +183,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public SubmitOrderEventBean parseSubmitOrder(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), submitOrderMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.SUBMITORDER_EVENT);
         if (event == null) {
             return null;
@@ -189,6 +197,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
 
     @Override
     public CancelOrderEventBean parseCancelOrder(String txHash) throws Exception {
+        checkTransaction(txHash, web3Config.getDappPoolContractAddress(), cancelOrderMethodId);
         AbiEventLogDecoder.DecodedEvent event = AbiEventLogDecoder.decodeTxEvents(web3j, txHash, DappPool.ABI_JSON, DappPool.CANCELORDER_EVENT);
         if (event == null) {
             return null;

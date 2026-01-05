@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.service.chain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.exceptions.TransactionException;
@@ -7,6 +8,7 @@ import org.web3j.tx.gas.ContractGasProvider;
 import tcbv.zhaohui.moon.beans.BlockInfoBean;
 import tcbv.zhaohui.moon.beans.TransactionBean;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -78,4 +80,20 @@ public interface EthereumService {
      * @return 异常信息
      */
     String parseTransactionException(TransactionException te);
+
+    /**
+     * 获取合约方法id
+     * @param abiJson 合约abi
+     * @return 方法id
+     */
+    String getMethodId(String abiJson, String methodName) throws ChainException;
+
+    /**
+     * 校验交易是否正常
+     * @param txHash 交易hash
+     * @param contractAddress 合约地址
+     * @param methodId 方法id
+     * @throws ChainException 异常
+     */
+    void checkTransaction(String txHash, String contractAddress, String methodId) throws ChainException;
 }

@@ -19,10 +19,6 @@ public interface DappPoolService {
 
     String extractSpaceJediOnlyTest(BigDecimal amount) throws Exception;
 
-    String submitOrder(String seller, BigInteger tokenId, BigDecimal price) throws Exception;
-
-    String cancelOrder(String owner, BigInteger tokenId) throws Exception;
-
     PresaleInfoBean getPackageCnt() throws ChainException;
 
     BigDecimal getCurrentRewardPercent(PledgeRegion region) throws ChainException;

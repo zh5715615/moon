@@ -16,6 +16,16 @@ public class ChainException extends RuntimeException {
 
     public static final int GENERATE_WALLET_FAILED = 30003;
 
+    public static final int TXHASH_NOT_FOUND = 30004;
+
+    public static final int METHOD_NOT_MATCH = 30005;
+
+    public static final int CONTRACT_ADDRESS_NOT_MATCH = 30006;
+
+    public static final int METHOD_NOT_FOUND = 30007;
+
+    public static final int TX_OF_INVOKE_FAILED = 30008;
+
     @Getter
     private final int code;
 
