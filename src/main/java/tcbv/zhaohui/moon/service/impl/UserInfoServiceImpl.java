@@ -76,7 +76,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         params.put("address", loginDto.getAddress());
         String token = JwtUtil.generateToken(userEntity.getId(), expired, params);
         String promoteLink = "http://api/v1/moon/promote/link/" + userEntity.getPromoCode();
-        return new LoginVo(loginDto.getAddress(), expired, token, promoteLink);
+        return new LoginVo(loginDto.getAddress(), expired, token, promoteLink, userEntity.getParentAddress());
     }
 
     @Override

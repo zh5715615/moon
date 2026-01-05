@@ -22,4 +22,7 @@ public class LoginVo {
 
     @ApiModelProperty("推广链接")
     private String promoLink;
+
+    @ApiModelProperty("父地址")
+    private String parentAddress;
 }

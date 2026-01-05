@@ -9,6 +9,7 @@
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
             <result property="promoCode" column="promo_Code" jdbcType="VARCHAR"/>
+            <result property="parentAddress" column="parent_address" jdbcType="VARCHAR"/>
         </resultMap>
 
 
@@ -19,10 +20,18 @@
             where id = #{id}
         </select>
 
-        <select id="queryByAddress" resultType="tcbv.zhaohui.moon.entity.UserEntity">
-            select  id, address, token, create_time, parent_id, promo_Code
-            from tb_user
-            where address = #{address}
+        <select id="queryByAddress" resultMap="UserMap">
+            SELECT
+                u1.id as id,
+                u1.address as address,
+                u1.token as token,
+                u1.create_time as create_time,
+                u1.parent_id as parent_id,
+                u1.promo_code as promo_Code,
+                u2.address AS parent_address
+            FROM tb_user u1
+                LEFT JOIN tb_user u2 ON u1.parent_id = u2.id
+            WHERE u1.address = #{address}
         </select>
 
         <select id="queryByPromoCode" resultType="tcbv.zhaohui.moon.entity.UserEntity">

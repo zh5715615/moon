@@ -27,6 +27,8 @@ public class UserEntity {
 
     private String parentId;
 
+    private String parentAddress;
+
     private String promoCode;
 }
 
