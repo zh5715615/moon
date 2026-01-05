@@ -76,7 +76,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         params.put("address", loginDto.getAddress());
         String token = JwtUtil.generateToken(userEntity.getId(), expired, params);
         String promoteLink = "http://api/v1/moon/promote/link/" + userEntity.getPromoCode();
-        return new LoginVo(loginDto.getAddress(), expired, token, promoteLink, userEntity.getParentAddress());
+        String parentAddress = userEntity.getParentAddress();
+        if (StringUtils.isNotBlank(parentAddress) && parentAddress.equalsIgnoreCase("0x000000000000000000000000000000000000dead")) {
+            parentAddress = null;
+        }
+        return new LoginVo(loginDto.getAddress(), expired, token, promoteLink, parentAddress);
     }
 
     @Override

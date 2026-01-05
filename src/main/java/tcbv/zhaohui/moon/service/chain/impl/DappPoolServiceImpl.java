@@ -84,6 +84,11 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
     }
 
     @Override
+    public String modifyPresaleDuration(long duration) throws Exception {
+        return dappPool.modifyPresaleDuration(BigInteger.valueOf(duration)).send().getTransactionHash();
+    }
+
+    @Override
     public PresaleInfoBean getPackageCnt() throws ChainException {
         try {
             Tuple3<BigInteger, BigInteger, BigInteger> tuple3 = dappPool.getPackageCnt().send();
@@ -106,6 +111,27 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
             return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100));
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query current reward percent failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public int getUserBuyPackageCnt() throws ChainException {
+        try {
+            return dappPool.getUserBuyPackageCnt().send().intValue();
+        } catch (Exception e) {
+            throw new ChainException(QUERY_EXCEPTION, "Query user buy package cnt failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public long getPresaleTime() throws ChainException {
+        try {
+            Tuple2<BigInteger, BigInteger> tuple2 = dappPool.getPresaleTime().send();
+            BigInteger presaleEndTimestamp = tuple2.component2();
+            BigDecimal decimal = new BigDecimal(presaleEndTimestamp);
+            return decimal.longValue();
+        } catch (Exception e) {
+            throw new ChainException(QUERY_EXCEPTION, "Query presale time failed: " + e.getMessage());
         }
     }
 

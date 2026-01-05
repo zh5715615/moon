@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import tcbv.zhaohui.moon.config.Web3Config;
+import tcbv.zhaohui.moon.exceptions.ChainException;
 import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
 import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
@@ -64,5 +65,23 @@ public class DappPoolServiceTest {
     @Test
     void pareseTradeOrderTest() throws Exception {
         dappPoolService.parseTradeOrder("0x6af5ccfa0e47bdf9894de3d06a75575eb6d0bcc18806ec2609bea622096344ab");
+    }
+
+    @Test
+    void getUserBuyPackageCnt() throws ChainException {
+        int cnt = dappPoolService.getUserBuyPackageCnt();
+        log.info("cnt:{}", cnt);
+    }
+
+    @Test
+    void getPresaleTime() throws ChainException {
+        long time = dappPoolService.getPresaleTime();
+        log.info("time:{}", time);
+    }
+
+    @Test
+    void modifyPresaleDuration() throws Exception {
+        String txHash = dappPoolService.modifyPresaleDuration(24 * 3600);
+        log.info("txHash:{}", txHash);
     }
 }

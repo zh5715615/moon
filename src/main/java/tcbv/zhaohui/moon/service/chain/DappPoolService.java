@@ -19,9 +19,15 @@ public interface DappPoolService {
 
     String extractSpaceJediOnlyTest(BigDecimal amount) throws Exception;
 
+    String modifyPresaleDuration(long duration) throws Exception;
+
     PresaleInfoBean getPackageCnt() throws ChainException;
 
     BigDecimal getCurrentRewardPercent(PledgeRegion region) throws ChainException;
+
+    int getUserBuyPackageCnt() throws ChainException;
+
+    long getPresaleTime() throws ChainException;
 
     NFTTradeOrderEventBean parseTradeOrder(String txHash) throws Exception;
 

@@ -3,6 +3,7 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -187,11 +188,13 @@ public class SJPackageTxController {
         return Rsp.okData(presaleInfoVo);
     }
 
-    @GetMapping("/presale/history")
-    @ApiOperation("预售历史记录")
-    public Rsp<List<PresaleHistoryVo>> presaleHistory() {
+    private Rsp<List<PresaleHistoryVo>> presaleHistory(String userId) {
+        SjPackageTxEntity queryEntity = new SjPackageTxEntity();
+        if (StringUtils.isNotBlank(userId)) {
+            queryEntity.setBuyerId(userId);
+        }
         PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "create_time"));
-        Page<SjPackageTxEntity> pageEntity = sjPackageTxService.queryByPage(new SjPackageTxEntity(), pageRequest);
+        Page<SjPackageTxEntity> pageEntity = sjPackageTxService.queryByPage(queryEntity, pageRequest);
         if (pageEntity == null || pageEntity.getContent().isEmpty()) {
             return Rsp.okData(Collections.emptyList());
         }
@@ -207,6 +210,24 @@ public class SJPackageTxController {
             presaleHistoryVos.add(presaleHistoryVo);
         }
         return Rsp.okData(presaleHistoryVos);
+    }
+
+    @GetMapping("/presale/history")
+    @ApiOperation("预售历史记录")
+    public Rsp<List<PresaleHistoryVo>> presaleHistory() {
+        return presaleHistory(null);
+    }
+
+    @GetMapping("/presale/history/{userId}")
+    @ApiOperation("用户预售历史记录")
+    public Rsp<List<PresaleHistoryVo>> presaleHistoryWithUserId(@PathVariable("userId") String userId) {
+        return presaleHistory(userId);
+    }
+
+    @GetMapping("/presale/endTimestamp")
+    @ApiOperation("预售结束时间")
+    public Rsp<Long> presaleEndTimestamp() {
+        return Rsp.okData(dappPoolService.getPresaleTime());
     }
 
 //    public static void main(String[] args) {
