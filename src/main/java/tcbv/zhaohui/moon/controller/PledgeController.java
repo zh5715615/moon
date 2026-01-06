@@ -159,6 +159,7 @@ public class PledgeController {
             long diff = pledgeEntity.getExpireTime().getTime() >= nowTimestamp ? pledgeEntity.getExpireTime().getTime() - nowTimestamp : 0L;
             BigDecimal progress = BigDecimal.ONE.subtract(BigDecimal.valueOf(diff).divide(BigDecimal.valueOf(period * 1000L), 2, RoundingMode.HALF_UP));
             userPledgeInfoVo.setProgress(progress.doubleValue());
+            userPledgeInfoVo.setPledgeId(pledgeEntity.getId());
             userPledgeInfoVoList.add(userPledgeInfoVo);
         }
         return Rsp.okData(userPledgeInfoVoList);

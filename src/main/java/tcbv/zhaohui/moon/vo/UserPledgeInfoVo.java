@@ -19,6 +19,9 @@ import java.util.Date;
 @Data
 @ApiModel("用户质押信息响应实体")
 public class UserPledgeInfoVo {
+    @ApiModelProperty("质押id")
+    private String pledgeId;
+
     @ApiModelProperty("质押区域")
     private String regionCode;
 
