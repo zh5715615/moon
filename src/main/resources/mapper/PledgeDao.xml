@@ -47,6 +47,7 @@
                 tb_user.address
             from tb_pledge left join tb_user on tb_pledge.user_id = tb_user.id
             <where>
+                tb_pledge.withdraw_hash is null
                 <if test="entity.id != null and entity.id != ''">
                     and tb_pledge.id = #{entity.id}
                 </if>
