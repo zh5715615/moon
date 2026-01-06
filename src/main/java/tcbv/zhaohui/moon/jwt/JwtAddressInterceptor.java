@@ -68,6 +68,14 @@ public class JwtAddressInterceptor implements HandlerInterceptor {
             JwtContext.setAddress(address);
             request.setAttribute("address", address);
 
+            String expectedRole = ann.role();
+            if (!expectedRole.isEmpty()) {
+                String actualRole = claims.get("role", String.class); // 假设 JWT 中角色字段叫 "role"
+                if (!expectedRole.equals(actualRole)) {
+                    write401(response, "Insufficient role: expected '" + expectedRole + "', but got '" + actualRole + "'");
+                    return false;
+                }
+            }
             return true;
 
         } catch (ExpiredJwtException e) {

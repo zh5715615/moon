@@ -74,13 +74,14 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         Map<String, Object> params = new HashMap<>();
         params.put("address", loginDto.getAddress());
+        params.put("role", "player");
         String token = JwtUtil.generateToken(userEntity.getId(), expired, params);
         String promoteLink = "http://api/v1/moon/promote/link/" + userEntity.getPromoCode();
         String parentAddress = userEntity.getParentAddress();
         if (StringUtils.isNotBlank(parentAddress) && parentAddress.equalsIgnoreCase("0x000000000000000000000000000000000000dead")) {
             parentAddress = null;
         }
-        return new LoginVo(loginDto.getAddress(), expired, token, promoteLink, parentAddress);
+        return new LoginVo(userEntity.getId(), loginDto.getAddress(), expired, token, promoteLink, parentAddress);
     }
 
     @Override
@@ -99,5 +100,15 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         userDao.bindPromoter(userId, pid);
         return null;
+    }
+
+    @Override
+    public LoginVo adminLogin() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("address", "0x00000000000000000000000000000000000admin");
+        params.put("role", "admin");
+        String userId = "1";
+        String token = JwtUtil.generateToken(userId, expired, params);
+        return new LoginVo(userId, expired, token);
     }
 }

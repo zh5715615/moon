@@ -17,6 +17,7 @@ import org.web3j.utils.Numeric;
 import tcbv.zhaohui.moon.dto.KeyInfoDto;
 import tcbv.zhaohui.moon.entity.WalletEntity;
 import tcbv.zhaohui.moon.exceptions.ChainException;
+import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.StringMultipartFile;
@@ -146,6 +147,7 @@ public class AccountMgrController {
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "number", value = "生成钱包数量", required = true)
     })
+    @JwtAddressRequired(role = "admin")
     public Rsp<List<String>> generate(@RequestParam("number") int number) throws Exception {
         List<Future<String>> futures = new ArrayList<>();
         for (int i = 0; i < number; i++) {
@@ -168,6 +170,7 @@ public class AccountMgrController {
 
     @PostMapping("/generteKeystoreByMnemonicAndPassword")
     @ApiOperation("通过助记词和密码生成keystore")
+    @JwtAddressRequired(role = "admin")
     public Rsp<KeyInfoCipherVo> generateKeystoreByMnemonicAndPassword(@RequestBody @Valid KeyInfoDto dto) throws Exception {
         // 1. 助记词转种子
         byte[] seed = MnemonicUtils.generateSeed(dto.getMnemonic(), "");
@@ -216,6 +219,7 @@ public class AccountMgrController {
 
     @PutMapping("/exportKeystores")
     @ApiOperation("导出所有（500）keystore文件")
+    @JwtAddressRequired(role = "admin")
     public Rsp exportKeystores() throws Exception {
         List<WalletEntity> walletEntityList = walletService.queryAll();
         String walletStorePath = "wallets";

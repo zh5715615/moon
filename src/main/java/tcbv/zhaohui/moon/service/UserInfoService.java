@@ -21,4 +21,10 @@ public interface UserInfoService {
      * @param promoCode 推广码
      */
     String bindPromoter(String userId, String promoCode);
+
+    /**
+     * 获取管理员token
+     * @return
+     */
+    LoginVo adminLogin();
 }

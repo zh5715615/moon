@@ -123,9 +123,11 @@ public class PledgeController {
         return Rsp.okData(pledgeRegionVoList);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/userInfo")
     @ApiOperation("用户质押信息")
-    public Rsp<List<UserPledgeInfoVo>> getUserPledge(@PathVariable("userId") String userId) {
+    @JwtAddressRequired
+    public Rsp<List<UserPledgeInfoVo>> getUserPledge() {
+        String userId = JwtContext.getUserId();
         PageRequest pageRequest = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "create_time"));
         PledgeEntity queryEntity = new PledgeEntity();
         queryEntity.setUserId(userId);

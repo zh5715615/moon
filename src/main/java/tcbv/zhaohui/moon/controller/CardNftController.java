@@ -83,6 +83,7 @@ public class CardNftController {
             @ApiImplicitParam(paramType = "form", dataType = "file", name = "file", value = "卡片图片", required = true),
             @ApiImplicitParam(paramType = "form", dataType = "String", name = "attributesMapStr", value = "卡片属性", required = false)
     })
+    @JwtAddressRequired(role = "admin")
     public Rsp<NFTTokenMintInfoBean> mint(
             @NotBlank(message = "卡片名称不能为空") @RequestParam("name") String name,
             @RequestParam("description") String description,

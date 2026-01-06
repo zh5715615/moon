@@ -106,6 +106,7 @@ public class PromoteController {
 
     @PostMapping("/airdrop")
     @ApiOperation("空投")
+    @JwtAddressRequired(role = "admin")
     public Rsp airdrop(@RequestParam("file") MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             return Rsp.error("文件为空");

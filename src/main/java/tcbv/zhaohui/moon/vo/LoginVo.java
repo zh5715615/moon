@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginVo {
+    @ApiModelProperty("用户id")
+    private String userId;
+
     @ApiModelProperty("钱包地址")
     private String address;
 
@@ -25,4 +28,10 @@ public class LoginVo {
 
     @ApiModelProperty("父地址")
     private String parentAddress;
+
+    public LoginVo(String userId, long expired, String token) {
+        this.userId = userId;
+        this.expired = expired;
+        this.token = token;
+    }
 }

@@ -17,6 +17,8 @@ public @interface JwtAddressRequired {
 
     String address() default "address";
 
+    String role() default "player";
+
     // true：没 token/没 address 就直接 401
     boolean required() default true;
 }
