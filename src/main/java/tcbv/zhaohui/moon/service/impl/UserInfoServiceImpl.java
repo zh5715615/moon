@@ -42,6 +42,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Value("${star-wars.login.timestamp-check}")
     private boolean timestampCheck;
 
+    @Value("${star-wars.serice.url}")
+    private String serviceUrl;
+
     /**
      * @param loginDto 钱包登录
      * @return
@@ -76,7 +79,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         params.put("address", loginDto.getAddress());
         params.put("role", "player");
         String token = JwtUtil.generateToken(userEntity.getId(), expired, params);
-        String promoteLink = "http://api/v1/moon/promote/link/" + userEntity.getPromoCode();
+        String promoteLink = serviceUrl + "/api/v1/moon/promote/link/" + userEntity.getPromoCode();
         String parentAddress = userEntity.getParentAddress();
         if (StringUtils.isNotBlank(parentAddress) && parentAddress.equalsIgnoreCase("0x000000000000000000000000000000000000dead")) {
             parentAddress = null;

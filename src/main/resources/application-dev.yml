@@ -28,6 +28,8 @@ web3:
       address: "0x71AE259Af40580190A76c72F3F1C47e963FE286f"
 
 star-wars:
+  serice:
+    url: "https://starwars.hnkc123.com"
   login:
     timestamp-check: false
   promote-reward-percentage: 0.1
