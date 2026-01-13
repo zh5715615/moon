@@ -20,11 +20,16 @@ public class Card {
     }
 
     private int calculateValue(String rank) {
-        return switch (rank) {
-            case "A" -> 1;
-            case "J", "Q", "K" -> 10;
-            default -> Integer.parseInt(rank);
-        };
+        switch (rank) {
+            case "A":
+                return 1;
+            case "J":
+            case "Q":
+            case "K":
+                return 10;
+            default:
+                return Integer.parseInt(rank);
+        }
     }
 
     public String getSuit() { return suit; }
