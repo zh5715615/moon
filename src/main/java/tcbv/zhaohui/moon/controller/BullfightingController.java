@@ -90,6 +90,7 @@ public class BullfightingController {
         if (win > 0) {
             vo.setSelf(maxBullfightingUserCard);
             vo.setOther(other);
+            vo.setRoundOfScore(dto.getScore());
         } else {
             vo.setSelf(other.get(0));
             List<BullfightingStartVo.UserCardVo> other1 = new ArrayList<>(other.subList(1, other.size()));
@@ -97,8 +98,8 @@ public class BullfightingController {
             // 随机插入位置：0 到 other1.size()（包含）
             int randomIndex = ThreadLocalRandom.current().nextInt(other1.size() + 1);
             other1.add(randomIndex, maxBullfightingUserCard);
-
             vo.setOther(other1);
+            vo.setRoundOfScore(-dto.getScore());
         }
 
         return Rsp.okData(vo);

@@ -23,7 +23,7 @@ public class BullfightingStartVo implements Serializable {
     @JsonProperty("remainingTimes")
     private Integer remainingTimes;
     @JsonProperty("roundOfScore")
-    private String roundOfScore;
+    private int roundOfScore;
     @JsonProperty("other")
     private List<UserCardVo> other;
 
