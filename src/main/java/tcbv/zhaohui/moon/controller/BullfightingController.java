@@ -1,15 +1,26 @@
 package tcbv.zhaohui.moon.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.BullfightingStartDto;
+import tcbv.zhaohui.moon.entity.BullfightingRecordEntity;
+import tcbv.zhaohui.moon.entity.BullfightingScoreEntity;
 import tcbv.zhaohui.moon.game.bullfighting.Card;
 import tcbv.zhaohui.moon.game.bullfighting.PokerDealer;
+import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
+import tcbv.zhaohui.moon.jwt.JwtContext;
+import tcbv.zhaohui.moon.service.BullfightingRecordService;
+import tcbv.zhaohui.moon.service.BullfightingScoreService;
+import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.BullfightingStartVo;
+import tcbv.zhaohui.moon.vo.BullfightingUserStatisticsVo;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -31,6 +42,12 @@ public class BullfightingController {
 
     @Autowired
     private PokerDealer pokerDealer;
+
+    @Autowired
+    private BullfightingRecordService bullfightingRecordService;
+
+    @Autowired
+    private BullfightingScoreService bullfightingScoreService;
 
     private static final Random random = new Random();
 
@@ -66,7 +83,41 @@ public class BullfightingController {
         }
     }
 
+    private BullfightingScoreEntity saveBullfightingRecord(BullfightingStartVo bullfightingStartVo) {
+        BullfightingRecordEntity bullfightingRecordEntity = new BullfightingRecordEntity();
+        bullfightingRecordEntity.setScore(Math.abs(bullfightingStartVo.getRoundOfScore()));
+        bullfightingRecordEntity.setUserId(JwtContext.getUserId());
+        bullfightingRecordEntity.setWinlose(bullfightingStartVo.getSelf().getWin());
+        bullfightingRecordEntity.setSelfCard(GsonUtil.toJson(bullfightingStartVo.getSelf(), true));
+        bullfightingRecordEntity.setOtherCard(GsonUtil.toJson(bullfightingStartVo.getOther(), true));
+        return bullfightingRecordService.save(bullfightingRecordEntity);
+    }
+
+    /**
+     * 随机生成指定长度的16进制字符串
+     * @param length 字符串长度
+     * @return 16进制字符串
+     */
+    public static String generateHex(int length) {
+        // Create a StringBuilder to store the generated hex string
+        StringBuilder hexBuilder = new StringBuilder();
+        // Define the characters used for generating the hex string
+        String hexCharacters = "0123456789abcdef";
+        // Loop until the desired length is reached
+        for (int i = 0; i < length; i++) {
+            // Generate a random index to select a character from hexCharacters
+            int randomIndex = (int) (Math.random() * hexCharacters.length());
+            // Get the character at the random index
+            char randomChar = hexCharacters.charAt(randomIndex);
+            // Append the random character to the hexBuilder
+            hexBuilder.append(randomChar);
+        }
+        // Return the generated hex string
+        return hexBuilder.toString();
+    }
+
     @PostMapping("/start")
+    @JwtAddressRequired
     public Rsp<BullfightingStartVo> start(@RequestBody @Valid BullfightingStartDto dto) {
         int win = tryExtendCard(dto.getScore());
 
@@ -87,21 +138,43 @@ public class BullfightingController {
             return Rsp.error("没有出现赢家");
         }
         List<BullfightingStartVo.UserCardVo> other = userCardVoList.stream().filter(userCardVo -> !userCardVo.equals(maxBullfightingUserCard)).toList();
+        String userAddress = JwtContext.getAddress();
         if (win > 0) {
+            maxBullfightingUserCard.setAddress(userAddress);
             vo.setSelf(maxBullfightingUserCard);
             vo.setOther(other);
+            for (BullfightingStartVo.UserCardVo item : other) {
+                item.setAddress("0x" + generateHex(40));
+            }
             vo.setRoundOfScore(dto.getScore());
         } else {
-            vo.setSelf(other.get(0));
+            BullfightingStartVo.UserCardVo selfVo = other.get(0);
+            selfVo.setAddress(userAddress);
+            vo.setSelf(selfVo);
             List<BullfightingStartVo.UserCardVo> other1 = new ArrayList<>(other.subList(1, other.size()));
 
             // 随机插入位置：0 到 other1.size()（包含）
             int randomIndex = ThreadLocalRandom.current().nextInt(other1.size() + 1);
             other1.add(randomIndex, maxBullfightingUserCard);
+            for (BullfightingStartVo.UserCardVo item : other1) {
+                item.setAddress("0x" + generateHex(40));
+            }
             vo.setOther(other1);
             vo.setRoundOfScore(-dto.getScore());
         }
 
+        BullfightingScoreEntity bullfightingScoreEntity = saveBullfightingRecord(vo);
+        vo.setUserScores(bullfightingScoreEntity.getScore());
+        vo.setRemainingTimes(bullfightingScoreEntity.getTimes());
+        return Rsp.okData(vo);
+    }
+
+    @GetMapping("/user/statistics")
+    @ApiOperation("用户斗牛统计信息")
+    @JwtAddressRequired
+    public Rsp<BullfightingUserStatisticsVo> userStatistics() {
+        String userId = JwtContext.getUserId();
+        BullfightingUserStatisticsVo vo = bullfightingScoreService.userStatistics(userId, new Date());
         return Rsp.okData(vo);
     }
 }

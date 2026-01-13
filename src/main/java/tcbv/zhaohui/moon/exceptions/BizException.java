@@ -31,6 +31,8 @@ public class BizException extends RuntimeException{
 
     public static final int TOKEN_INVALID = 50011;
 
+    public static final int BULLFIGHTING_TIMES_EXHAUSTEDLY = 50012;
+
     public static final int SYSTEM_ERROR = 50099;
 
     @Getter

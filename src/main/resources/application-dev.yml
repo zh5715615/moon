@@ -12,7 +12,7 @@ web3:
     promoter:
       encrypt-password: "+Ne+rqjm6+cO37qEwwl0Cfes6HyjVpy3ZUMQ6u9ZjfU="
       address: "0x7c92cd77d3fba3ea33f7d94254bf3e23b25513c2"
-  url: "https://go.getblock.io/39d7f251b243470cac0319c301732c1d"
+  url: "https://rpc.ankr.com/bsc_testnet_chapel/a3d1010a1cd3747f532fbeef2fee75fad688b86381227d43e51809437bc52b9d"
   chain-id: 97
   gas-fee:
     price: "100000000000"

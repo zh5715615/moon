@@ -81,7 +81,7 @@ public class DappPoolServiceTest {
 
     @Test
     void modifyPresaleDuration() throws Exception {
-        String txHash = dappPoolService.modifyPresaleDuration(24 * 3600);
+        String txHash = dappPoolService.modifyPresaleDuration(7 * 24 * 3600);
         log.info("txHash:{}", txHash);
     }
 }

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.BullfightingScoreDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.BullfightingScoreEntity" id="BullfightingScoreMap">
+            <result property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="INTEGER"/>
+            <result property="times" column="times" jdbcType="INTEGER"/>
+            <result property="gameDate" column="game_date" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+        <resultMap type="tcbv.zhaohui.moon.vo.BullfightingUserStatisticsVo" id="StatisticsMap">
+            <result property="todayCount" column="daily_games" jdbcType="VARCHAR"/>
+            <result property="totalCount" column="total_games" jdbcType="VARCHAR"/>
+            <result property="winRate" column="win_rate" jdbcType="INTEGER"/>
+            <result property="score" column="daily_net_score" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="BullfightingScoreMap">
+            select id, user_id, score, times, game_date
+            from tb_bullfighting_score
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="BullfightingScoreMap">
+            select  id, user_id, score, times, game_date
+            from tb_bullfighting_score
+            <where>
+                <if test="entity.id != null and entity.id != ''">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.userId != null and entity.userId != ''">
+                    and user_id = #{entity.userId}
+                </if>
+                <if test="entity.score != null">
+                    and score = #{entity.score}
+                </if>
+                <if test="entity.times != null">
+                    and times = #{entity.times}
+                </if>
+                <if test="entity.gameDate != null">
+                    and game_date = #{entity.gameDate}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_bullfighting_score
+            <where>
+                <if test="id != null and id != ''">
+                    and id = #{id}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and user_id = #{userId}
+                </if>
+                <if test="score != null">
+                    and score = #{score}
+                </if>
+                <if test="times != null">
+                    and times = #{times}
+                </if>
+                <if test="gameDate != null">
+                    and game_date = #{gameDate}
+                </if>
+            </where>
+        </select>
+    <select id="queryByUserId" resultMap="BullfightingScoreMap">
+        select id, user_id, score, times, game_date
+        from tb_bullfighting_score
+        where user_id = #{userId} and game_date = DATE(#{gameDate})
+    </select>
+
+    <select id="statictics" resultMap="StatisticsMap">
+        SELECT
+            COUNT(CASE WHEN DATE(create_time) = DATE(#{gameDate}) THEN 1 END) AS daily_games,
+            COUNT(*) AS total_games,
+            SUM(CASE WHEN winlose = 1 AND DATE(create_time) = DATE(#{gameDate}) THEN 1 ELSE 0 END) * 1.0 / NULLIF(COUNT(CASE WHEN DATE(create_time) = DATE(#{gameDate}) THEN 1 END), 0) AS win_rate,
+            (SELECT s.score
+             FROM tb_bullfighting_score s
+             WHERE s.user_id = #{userId}
+               AND DATE(s.game_date) = DATE(#{gameDate})) AS daily_net_score
+        FROM
+            tb_bullfighting_record
+        WHERE
+            user_id = #{userId};
+    </select>
+
+    <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_bullfighting_score(id, user_id, score, times, game_date)
+            values (#{id}, #{userId}, #{score}, #{times}, #{gameDate})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_bullfighting_score(id, user_id, score, times, game_date)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.score}, #{entity.times}, #{entity.gameDate})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_bullfighting_score(id, user_id, score, times, game_date)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.score}, #{entity.times}, #{entity.gameDate})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                user_id = values(user_id),
+                score = values(score),
+                times = values(times),
+                game_date = values(game_date)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_bullfighting_score
+            <set>
+                <if test="userId != null and userId != ''">
+                    user_id = #{userId},
+                </if>
+                <if test="score != null">
+                    score = #{score},
+                </if>
+                <if test="times != null">
+                    times = #{times},
+                </if>
+                <if test="gameDate != null">
+                    game_date = #{gameDate},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_bullfighting_score where id = #{id}
+        </delete>
+
+    </mapper>
