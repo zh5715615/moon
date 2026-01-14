@@ -98,5 +98,13 @@ public interface BullfightingScoreDao {
      * @return 用户统计信息
      */
     BullfightingUserStatisticsVo statictics(@Param("userId") String userId, @Param("gameDate") Date gameDate);
+
+    /**
+     * 用户排名
+     * @param userId 用户id
+     * @param date 日期
+     * @return 用户排名信息
+     */
+    BullfightingScoreEntity userRanking(@Param("userId") String userId, @Param("date") Date date);
 }
 

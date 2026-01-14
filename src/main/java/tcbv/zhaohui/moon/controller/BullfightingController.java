@@ -3,9 +3,13 @@ package tcbv.zhaohui.moon.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.dto.BullfightingStartDto;
@@ -19,8 +23,7 @@ import tcbv.zhaohui.moon.service.BullfightingRecordService;
 import tcbv.zhaohui.moon.service.BullfightingScoreService;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
-import tcbv.zhaohui.moon.vo.BullfightingStartVo;
-import tcbv.zhaohui.moon.vo.BullfightingUserStatisticsVo;
+import tcbv.zhaohui.moon.vo.*;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -176,5 +179,80 @@ public class BullfightingController {
         String userId = JwtContext.getUserId();
         BullfightingUserStatisticsVo vo = bullfightingScoreService.userStatistics(userId, new Date());
         return Rsp.okData(vo);
+    }
+
+    @GetMapping("/user/history")
+    @ApiOperation("用户斗牛历史")
+    @JwtAddressRequired
+    public Rsp<RestPage<BullfightingHistoryVo>> userHistory(@RequestParam(value = "winlose", required = false) Boolean winlose, @RequestParam("pageIndex") int pageIndex, @RequestParam("pageSize") int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageIndex <= 0 ? 0 : pageIndex - 1, pageSize, Sort.by(Sort.Direction.DESC, "create_time"));
+        BullfightingRecordEntity bullfightingRecordEntity = new BullfightingRecordEntity();
+        bullfightingRecordEntity.setUserId(JwtContext.getUserId());
+        bullfightingRecordEntity.setWinlose(winlose);
+        Page<BullfightingRecordEntity> pageEntity = this.bullfightingRecordService.queryByPage(bullfightingRecordEntity, pageRequest);
+        if (pageEntity.getTotalElements() == 0) {
+            return Rsp.okData(RestPage.empty());
+        }
+        List<BullfightingHistoryVo> bullfightingRecordVoList = new ArrayList<>();
+        for (BullfightingRecordEntity resultEntity : pageEntity.getContent()) {
+            BullfightingHistoryVo bullfightingRecordVo = new BullfightingHistoryVo();
+            BeanUtils.copyProperties(resultEntity, bullfightingRecordVo);
+            bullfightingRecordVo.setDate(resultEntity.getCreateTime());
+            bullfightingRecordVoList.add(bullfightingRecordVo);
+        }
+        Page<BullfightingHistoryVo> pageVo = new PageImpl<>(bullfightingRecordVoList, pageRequest, pageEntity.getTotalElements());
+        return Rsp.okData(RestPage.of(pageVo));
+    }
+
+    @GetMapping("/rankingList")
+    @ApiOperation("斗牛排行榜")
+    @JwtAddressRequired
+    public Rsp<BullfightingRankingVo> rankingList() {
+        String address = JwtContext.getAddress();
+        String userId = JwtContext.getUserId();
+        Date today = new Date();
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "score"));
+        BullfightingScoreEntity bullfightingScoreEntity = new BullfightingScoreEntity();
+        bullfightingScoreEntity.setGameDate(today);
+        Page<BullfightingScoreEntity> pageEntity = this.bullfightingScoreService.queryByPage(bullfightingScoreEntity, pageRequest);
+        if (pageEntity.getTotalElements() == 0) {
+            return Rsp.error("今天没有人玩");
+        }
+        List<BullfightingRankingItemVo> bullfightingRankingItemVoList = new ArrayList<>();
+        for (BullfightingScoreEntity resultEntity : pageEntity.getContent()) {
+            BullfightingRankingItemVo bullfightingScoreVo = new BullfightingRankingItemVo();
+            bullfightingScoreVo.setAddress(resultEntity.getAddress());
+            bullfightingScoreVo.setScore(resultEntity.getScore());
+            if (address.equals(resultEntity.getAddress())) {
+                bullfightingScoreVo.setSelf(true);
+            }
+            bullfightingRankingItemVoList.add(bullfightingScoreVo);
+        }
+
+        for (int i = 0; i < bullfightingRankingItemVoList.size(); i++) {
+            BullfightingRankingItemVo current = bullfightingRankingItemVoList.get(i);
+
+            if (i == 0) {
+                current.setRank(1);
+            } else {
+                BullfightingRankingItemVo prev = bullfightingRankingItemVoList.get(i - 1);
+
+                // 安全比较：假设 score 是 Integer
+                boolean sameScore = Objects.equals(current.getScore(), prev.getScore());
+
+                if (sameScore) {
+                    current.setRank(prev.getRank());
+                } else {
+                    current.setRank(i + 1);
+                }
+            }
+        }
+
+        BullfightingScoreEntity userScoreEntity = this.bullfightingScoreService.userRanking(userId, today);
+        BullfightingRankingVo bullfightingRankingVo = new BullfightingRankingVo();
+        bullfightingRankingVo.setRanking(userScoreEntity.getRank());
+        bullfightingRankingVo.setScore(userScoreEntity.getScore());
+        bullfightingRankingVo.setRankingList(bullfightingRankingItemVoList);
+        return Rsp.okData(bullfightingRankingVo);
     }
 }

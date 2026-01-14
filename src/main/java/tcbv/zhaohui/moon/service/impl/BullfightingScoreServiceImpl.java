@@ -87,4 +87,9 @@ public class BullfightingScoreServiceImpl implements BullfightingScoreService {
     public BullfightingUserStatisticsVo userStatistics(String userId, Date gameDate) {
         return bullfightingScoreDao.statictics(userId, gameDate);
     }
+
+    @Override
+    public BullfightingScoreEntity userRanking(String userId, Date today) {
+        return bullfightingScoreDao.userRanking(userId, today);
+    }
 }

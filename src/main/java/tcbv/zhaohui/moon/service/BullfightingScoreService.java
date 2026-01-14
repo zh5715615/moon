@@ -61,4 +61,12 @@ public interface BullfightingScoreService {
      * @return 用户统计信息
      */
     BullfightingUserStatisticsVo userStatistics(String userId, Date gameDate);
+
+    /**
+     * 用户排名
+     * @param userId 用户id
+     * @param today 今天
+     * @return 用户排名信息
+     */
+    BullfightingScoreEntity userRanking(String userId, Date today);
 }

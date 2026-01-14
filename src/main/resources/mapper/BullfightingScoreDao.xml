@@ -8,6 +8,8 @@
             <result property="score" column="score" jdbcType="INTEGER"/>
             <result property="times" column="times" jdbcType="INTEGER"/>
             <result property="gameDate" column="game_date" jdbcType="TIMESTAMP"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="rank" column="rank_position" jdbcType="INTEGER"/>
         </resultMap>
 
         <resultMap type="tcbv.zhaohui.moon.vo.BullfightingUserStatisticsVo" id="StatisticsMap">
@@ -27,8 +29,14 @@
 
         <!--查询指定行数据-->
         <select id="queryAllByLimit" resultMap="BullfightingScoreMap">
-            select  id, user_id, score, times, game_date
+            select  tb_bullfighting_score.id,
+                    tb_bullfighting_score.user_id,
+                    tb_bullfighting_score.score,
+                    tb_bullfighting_score.times,
+                    tb_bullfighting_score.game_date,
+                    tb_user.address
             from tb_bullfighting_score
+                left join tb_user on tb_bullfighting_score.user_id = tb_user.id
             <where>
                 <if test="entity.id != null and entity.id != ''">
                     and id = #{entity.id}
@@ -43,7 +51,7 @@
                     and times = #{entity.times}
                 </if>
                 <if test="entity.gameDate != null">
-                    and game_date = #{entity.gameDate}
+                    and game_date = Date(#{entity.gameDate})
                 </if>
             </where>
             <if test="pageable.sort != null">
@@ -94,6 +102,23 @@
                AND DATE(s.game_date) = DATE(#{gameDate})) AS daily_net_score
         FROM
             tb_bullfighting_record
+        WHERE
+            user_id = #{userId};
+    </select>
+    <select id="userRanking" resultMap="BullfightingScoreMap">
+        SELECT
+            rank_position,
+            score
+        FROM (
+                 SELECT
+                     user_id,
+                     score,
+                     RANK() OVER (ORDER BY score DESC) AS rank_position
+                 FROM
+                     tb_bullfighting_score
+                 WHERE
+                     game_date = DATE(#{date})
+             ) ranked_scores
         WHERE
             user_id = #{userId};
     </select>

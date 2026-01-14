@@ -36,5 +36,13 @@ public class BullfightingScoreEntity {
      * 游戏日期
      */
     private Date gameDate;
+    /**
+     * 用户地址
+     */
+    private String address;
+    /**
+     * 排名
+     */
+    private Integer rank;
 }
 
