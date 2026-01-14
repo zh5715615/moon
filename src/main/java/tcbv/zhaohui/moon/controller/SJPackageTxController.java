@@ -158,8 +158,9 @@ public class SJPackageTxController {
             if (iStage == null) {
                 throw new BizException(SYSTEM_ERROR, "Presale stage not found: " + presaleInfoBean.getStage());
             }
-            prevRoundsVo.setTotal(i == 1 ? iStage.getNumber() + INNER_PRESALE_TOTAL : iStage.getNumber());
-            prevRoundsVo.setSold(iStage.getNumber());
+            int soled = i == 1 ? iStage.getNumber() + INNER_PRESALE_TOTAL : iStage.getNumber();
+            prevRoundsVo.setTotal(soled);
+            prevRoundsVo.setSold(soled);
             prevRoundsVo.setPrice(iStage.getPrice().doubleValue());
             prevRoundsVo.setRound(i);
             prevRoundsVo.setStatus("已完成");
@@ -167,7 +168,7 @@ public class SJPackageTxController {
         }
         PresaleInfoVo.RoundsVo currentRoundsVo = new PresaleInfoVo.RoundsVo();
         currentRoundsVo.setTotal(currentStage.getStage() == 1 ? currentStage.getNumber() + INNER_PRESALE_TOTAL : currentStage.getNumber());
-        currentRoundsVo.setSold(currentSold);
+        currentRoundsVo.setSold(currentStage.getStage() == 1 ? currentSold + INNER_PRESALE_TOTAL : currentSold);
         currentRoundsVo.setPrice(currentStage.getPrice().doubleValue());
         currentRoundsVo.setRound(currentStage.getStage());
         currentRoundsVo.setStatus("进行中");
