@@ -23,7 +23,7 @@ public class EthMathUtil {
 //     */
 //    public static double bigIntegerToDouble(BigInteger bigInteger, int decimals) {
 //        BigDecimal bigDecimal = new BigDecimal(bigInteger);
-//        return bigDecimal.divide(BigDecimal.TEN.pow(decimals)).doubleValue();
+//        return bigDecimal.divide(BigDecimal.TEN.pow(decimals), 2, RoundingMode.HALF_UP).doubleValue();
 //    }
 //
 //    /**

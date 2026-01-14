@@ -25,6 +25,7 @@ import tcbv.zhaohui.moon.utils.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import static tcbv.zhaohui.moon.exceptions.ChainException.*;
@@ -108,7 +109,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
             Tuple2<BigInteger, BigInteger> tuple2 = dappPool.getCurrentRewardPercent(BigInteger.valueOf(region.getLevel())).send();
             BigInteger currentRewardPercent = tuple2.component2();
             BigDecimal decimal = new BigDecimal(currentRewardPercent);
-            return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100));
+            return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100), 2, RoundingMode.HALF_UP);
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query current reward percent failed: " + e.getMessage());
         }

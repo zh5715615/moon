@@ -42,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.*;
@@ -246,7 +247,7 @@ public class EthereumServiceImpl implements EthereumService {
         ethTransactionBean.setToAddress(transaction.getTo());
         BigInteger amountBigInteger = transaction.getValue();
         BigDecimal bigDecimal = new BigDecimal(amountBigInteger);
-        BigDecimal amount = bigDecimal.divide(BigDecimal.TEN.pow(18));
+        BigDecimal amount = bigDecimal.divide(BigDecimal.TEN.pow(18), 2, RoundingMode.HALF_UP);
         ethTransactionBean.setAmount(amount);
         return ethTransactionBean;
     }
@@ -270,7 +271,7 @@ public class EthereumServiceImpl implements EthereumService {
             return 0;
         }
         BigDecimal bigDecimal = new BigDecimal(balance);
-        return bigDecimal.divide(BigDecimal.TEN.pow(18)).doubleValue();
+        return bigDecimal.divide(BigDecimal.TEN.pow(18), 2, RoundingMode.HALF_UP).doubleValue();
     }
 
     @Override

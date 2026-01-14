@@ -113,10 +113,10 @@ public class PledgeController {
             BigDecimal rewardPercent = dappPoolService.getCurrentRewardPercent(pledgeRegion);
             if (web3Config.isEnvProd()) {
                 pledgeRegionVo.setPledgePeriod(pledgeRegion.getPeriodProd());
-                pledgeRegionVo.setPledgeRevenue(rewardPercent.multiply(BigDecimal.valueOf(pledgeRegion.getPeriodProd()).divide(BigDecimal.valueOf(30 * 24 * 3600L))).doubleValue());
+                pledgeRegionVo.setPledgeRevenue(rewardPercent.multiply(BigDecimal.valueOf(pledgeRegion.getPeriodProd()).divide(BigDecimal.valueOf(30 * 24 * 3600L), 2, RoundingMode.HALF_UP)).doubleValue());
             } else {
                 pledgeRegionVo.setPledgePeriod(pledgeRegion.getPeriodTest());
-                pledgeRegionVo.setPledgeRevenue(rewardPercent.multiply(BigDecimal.valueOf(pledgeRegion.getPeriodTest()).divide(BigDecimal.valueOf(30 * 60L))).doubleValue());
+                pledgeRegionVo.setPledgeRevenue(rewardPercent.multiply(BigDecimal.valueOf(pledgeRegion.getPeriodTest()).divide(BigDecimal.valueOf(30 * 60L), 2, RoundingMode.HALF_UP)).doubleValue());
             }
             pledgeRegionVoList.add(pledgeRegionVo);
         }

@@ -26,6 +26,7 @@ import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.PresaleHistoryVo;
 import tcbv.zhaohui.moon.vo.PresaleInfoVo;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -145,7 +146,7 @@ public class SJPackageTxController {
         afterRoundVo.setPrice(afterStage.getPrice().doubleValue());
         double afterSoldPercent = afterStage.getPrice().doubleValue() * PRESALE_SJ_NUMBER_PER;
         afterRoundVo.setCost(afterSoldPercent);
-        double increasePercentage = (afterStage.getPrice().subtract(currentStage.getPrice())).divide(currentStage.getPrice()).doubleValue();
+        double increasePercentage = (afterStage.getPrice().subtract(currentStage.getPrice())).divide(currentStage.getPrice(), 2, RoundingMode.HALF_UP).doubleValue();
         afterRoundVo.setIncreasePercentage(increasePercentage);
         presaleInfoVo.setAfterRound(afterRoundVo);
 
