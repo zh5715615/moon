@@ -168,7 +168,7 @@ public class SJPackageTxController {
         }
         PresaleInfoVo.RoundsVo currentRoundsVo = new PresaleInfoVo.RoundsVo();
         currentRoundsVo.setTotal(currentStage.getStage() == 1 ? currentStage.getNumber() + INNER_PRESALE_TOTAL : currentStage.getNumber());
-        currentRoundsVo.setSold(currentStage.getStage() == 1 ? currentSold + INNER_PRESALE_TOTAL : currentSold);
+        currentRoundsVo.setSold(currentSold);
         currentRoundsVo.setPrice(currentStage.getPrice().doubleValue());
         currentRoundsVo.setRound(currentStage.getStage());
         currentRoundsVo.setStatus("进行中");
