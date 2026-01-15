@@ -25,7 +25,7 @@ web3:
     card-nft:
       address: "0x43B2955aF88BCb97a60E749ac1A24377780674E0"
     dapp-pool:
-      address: "0xc8E92981eBDea1E9b61faF03760772Ab52CFcb6F"
+      address: "0xEcB1f4d85cbA26e31e9cE5f00d0AB45661aB26f8"
 
 star-wars:
   serice:

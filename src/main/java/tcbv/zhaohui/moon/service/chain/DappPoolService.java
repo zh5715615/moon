@@ -21,6 +21,8 @@ public interface DappPoolService {
 
     String modifyPresaleDuration(long duration) throws Exception;
 
+    String createLiquidityPool() throws Exception;
+
     PresaleInfoBean getPackageCnt() throws ChainException;
 
     BigDecimal getCurrentRewardPercent(PledgeRegion region) throws ChainException;

@@ -90,6 +90,12 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
     }
 
     @Override
+    @Web3TxGuard
+    public String createLiquidityPool() throws Exception {
+        return dappPool.createLiquidityPool().send().getTransactionHash();
+    }
+
+    @Override
     public PresaleInfoBean getPackageCnt() throws ChainException {
         try {
             Tuple3<BigInteger, BigInteger, BigInteger> tuple3 = dappPool.getPackageCnt().send();
