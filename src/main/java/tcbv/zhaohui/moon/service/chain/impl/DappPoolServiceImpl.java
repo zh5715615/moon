@@ -115,7 +115,7 @@ public class DappPoolServiceImpl extends EthereumServiceImpl implements DappPool
             Tuple2<BigInteger, BigInteger> tuple2 = dappPool.getCurrentRewardPercent(BigInteger.valueOf(region.getLevel())).send();
             BigInteger currentRewardPercent = tuple2.component2();
             BigDecimal decimal = new BigDecimal(currentRewardPercent);
-            return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            return decimal.divide(Decimal.TEN).divide(Decimal.valueOf(100), 4, RoundingMode.HALF_UP);
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "Query current reward percent failed: " + e.getMessage());
         }
