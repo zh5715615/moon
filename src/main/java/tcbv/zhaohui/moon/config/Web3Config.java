@@ -46,6 +46,9 @@ public class Web3Config {
     @Value("${web3.contract.dapp-pool.address}")
     private String dappPoolContractAddress; //合约地址
 
+    @Value("${web3.contract.game.address}")
+    private String gameContractAddress; //合约地址
+
     @Value("${spring.profiles.active}")
     private String env;
 

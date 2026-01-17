@@ -26,7 +26,7 @@ public class CreateLiquidityPoolTask {
     @Autowired
     private DappPoolService dappPoolService;
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+//    @Scheduled(cron = "0 0/10 * * * ?")
     public void hourlyTask() {
         log.info("当前时间：{}，执行每十分钟任务。", new Date());
         long currentSec = System.currentTimeMillis() / 1000;

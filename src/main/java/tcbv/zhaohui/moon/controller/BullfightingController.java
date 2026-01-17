@@ -9,18 +9,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import tcbv.zhaohui.moon.beans.events.BuyGameTimesEventBean;
 import tcbv.zhaohui.moon.dto.BullfightingStartDto;
+import tcbv.zhaohui.moon.dto.TransactionDto;
+import tcbv.zhaohui.moon.entity.BullfightingPurchaseEntity;
 import tcbv.zhaohui.moon.entity.BullfightingRecordEntity;
 import tcbv.zhaohui.moon.entity.BullfightingScoreEntity;
 import tcbv.zhaohui.moon.game.bullfighting.Card;
 import tcbv.zhaohui.moon.game.bullfighting.PokerDealer;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
+import tcbv.zhaohui.moon.service.BullfightingPurchaseService;
 import tcbv.zhaohui.moon.service.BullfightingRecordService;
 import tcbv.zhaohui.moon.service.BullfightingScoreService;
+import tcbv.zhaohui.moon.service.chain.BullfightingGameSampleService;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.*;
@@ -51,6 +55,12 @@ public class BullfightingController {
 
     @Autowired
     private BullfightingScoreService bullfightingScoreService;
+
+    @Autowired
+    private BullfightingGameSampleService gameSampleService;
+
+    @Autowired
+    private BullfightingPurchaseService bullfightingPurchaseService;
 
     private static final Random random = new Random();
 
@@ -250,9 +260,42 @@ public class BullfightingController {
 
         BullfightingScoreEntity userScoreEntity = this.bullfightingScoreService.userRanking(userId, today);
         BullfightingRankingVo bullfightingRankingVo = new BullfightingRankingVo();
-        bullfightingRankingVo.setRanking(userScoreEntity.getRank());
-        bullfightingRankingVo.setScore(userScoreEntity.getScore());
         bullfightingRankingVo.setRankingList(bullfightingRankingItemVoList);
+        if (userScoreEntity != null) {
+            bullfightingRankingVo.setRanking(userScoreEntity.getRank());
+            bullfightingRankingVo.setScore(userScoreEntity.getScore());
+        }
         return Rsp.okData(bullfightingRankingVo);
+    }
+
+    @PostMapping("/buyGameTimes")
+    @ApiOperation("购买游戏次数")
+    @JwtAddressRequired
+    public Rsp buyGameTimes(@RequestBody @Valid TransactionDto dto) throws Exception {
+        BuyGameTimesEventBean buyGameTimesEventBean = gameSampleService.parseBuyGameTimes(dto.getTxHash());
+        String userId = JwtContext.getUserId();
+        String address = JwtContext.getAddress();
+        BullfightingPurchaseEntity bullfightingPurchaseEntity = new BullfightingPurchaseEntity();
+        bullfightingPurchaseEntity.setAddress(address);
+        bullfightingPurchaseEntity.setUserId(userId);
+        bullfightingPurchaseEntity.setTimes(buyGameTimesEventBean.getTimes());
+        bullfightingPurchaseEntity.setAmount(buyGameTimesEventBean.getAmount().doubleValue());
+        bullfightingPurchaseEntity.setHash(dto.getTxHash());
+        bullfightingPurchaseService.insert(bullfightingPurchaseEntity);
+        return Rsp.ok();
+    }
+
+    @GetMapping("/queryMyReward")
+    @ApiOperation("查询我的奖励")
+    @JwtAddressRequired
+    public Rsp<GameRewardVo> queryMyReward() {
+        return Rsp.ok();
+    }
+
+    @PutMapping("/claimReward")
+    @ApiOperation("领取奖励")
+    @JwtAddressRequired
+    public Rsp claimReward() {
+        return Rsp.ok();
     }
 }

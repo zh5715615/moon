@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="tcbv.zhaohui.moon.dao.BullfightingRewardDao">
+
+        <resultMap type="tcbv.zhaohui.moon.entity.BullfightingRewardEntity" id="BullfightingRewardMap">
+            <result property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="amount" column="amount" jdbcType="NUMERIC"/>
+            <result property="gameDate" column="game_date" jdbcType="TIMESTAMP"/>
+            <result property="hash" column="hash" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+
+        <!--查询单个-->
+        <select id="queryById" resultMap="BullfightingRewardMap">
+            select id, user_id, address, amount, game_date, hash, create_time
+            from tb_bullfighting_reward
+            where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit" resultMap="BullfightingRewardMap">
+            select  id, user_id, address, amount, game_date, hash, create_time
+            from tb_bullfighting_reward
+            <where>
+                <if test="entity.id != null and entity.id != ''">
+                    and id = #{entity.id}
+                </if>
+                <if test="entity.userId != null and entity.userId != ''">
+                    and user_id = #{entity.userId}
+                </if>
+                <if test="entity.address != null and entity.address != ''">
+                    and address = #{entity.address}
+                </if>
+                <if test="entity.amount != null">
+                    and amount = #{entity.amount}
+                </if>
+                <if test="entity.gameDate != null">
+                    and game_date = #{entity.gameDate}
+                </if>
+                <if test="entity.hash != null and entity.hash != ''">
+                    and hash = #{entity.hash}
+                </if>
+                <if test="entity.createTime != null">
+                    and create_time = #{entity.createTime}
+                </if>
+            </where>
+            <if test="pageable.sort != null">
+                ORDER BY
+                <foreach collection="pageable.sort" item="order" separator=",">
+                    ${order.property} ${order.direction}
+                </foreach>
+            </if>
+            limit #{pageable.offset}, #{pageable.pageSize}
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from tb_bullfighting_reward
+            <where>
+                <if test="id != null and id != ''">
+                    and id = #{id}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and user_id = #{userId}
+                </if>
+                <if test="address != null and address != ''">
+                    and address = #{address}
+                </if>
+                <if test="amount != null">
+                    and amount = #{amount}
+                </if>
+                <if test="gameDate != null">
+                    and game_date = #{gameDate}
+                </if>
+                <if test="hash != null and hash != ''">
+                    and hash = #{hash}
+                </if>
+                <if test="createTime != null">
+                    and create_time = #{createTime}
+                </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_bullfighting_reward(id, user_id, address, amount, game_date, hash, create_time)
+            values (#{id}, #{userId}, #{address}, #{amount}, #{gameDate}, #{hash}, #{createTime})
+        </insert>
+
+        <insert id="insertBatch" keyProperty="id" useGeneratedKeys="false">
+            insert into tb_bullfighting_reward(id, user_id, address, amount, game_date, hash, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.address}, #{entity.amount}, #{entity.gameDate}, #{entity.hash}, #{entity.createTime})
+            </foreach>
+        </insert>
+
+        <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+            insert into tb_bullfighting_reward(id, user_id, address, amount, game_date, hash, create_time)
+            values
+            <foreach collection="entities" item="entity" separator=",">
+                (#{entity.id}, #{entity.userId}, #{entity.address}, #{entity.amount}, #{entity.gameDate}, #{entity.hash}, #{entity.createTime})
+            </foreach>
+            on duplicate key update
+                id = values(id),
+                user_id = values(user_id),
+                address = values(address),
+                amount = values(amount),
+                game_date = values(game_date),
+                hash = values(hash),
+                create_time = values(create_time)
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="update">
+            update tb_bullfighting_reward
+            <set>
+                <if test="userId != null and userId != ''">
+                    user_id = #{userId},
+                </if>
+                <if test="address != null and address != ''">
+                    address = #{address},
+                </if>
+                <if test="amount != null">
+                    amount = #{amount},
+                </if>
+                <if test="gameDate != null">
+                    game_date = #{gameDate},
+                </if>
+                <if test="hash != null and hash != ''">
+                    hash = #{hash},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime},
+                </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete from tb_bullfighting_reward where id = #{id}
+        </delete>
+
+    </mapper>
