@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.beans.events.BuyGameTimesEventBean;
-import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
 import tcbv.zhaohui.moon.contract.BullfightingGameSample;
-import tcbv.zhaohui.moon.contract.DappPool;
 import tcbv.zhaohui.moon.exceptions.ChainException;
 import tcbv.zhaohui.moon.service.chain.BullfightingGameSampleService;
 import tcbv.zhaohui.moon.service.chain.EthereumService;
@@ -43,7 +41,7 @@ public class BullfightingGameSampleServiceImpl extends EthereumServiceImpl imple
         super.init(ethereumService);
         TransactionManager transactionManager = new RawTransactionManager(web3j, credentials, web3Config.getChainId());
         bullfightingGame = BullfightingGameSample.load(contractAddress, web3j, transactionManager, contractGasProvider);
-        buyGameTimesMethodId = getMethodId(DappPool.ABI_JSON, BullfightingGameSample.FUNC_BUYGAMETIMES);
+        buyGameTimesMethodId = getMethodId(BullfightingGameSample.ABI_JSON, BullfightingGameSample.FUNC_BUYGAMETIMES);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package tcbv.zhaohui.moon.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
 import tcbv.zhaohui.moon.dao.BullfightingScoreDao;
 import tcbv.zhaohui.moon.entity.BullfightingPurchaseEntity;
 import tcbv.zhaohui.moon.dao.BullfightingPurchaseDao;
@@ -62,6 +63,7 @@ public class BullfightingPurchaseServiceImpl implements BullfightingPurchaseServ
      * @return 实例对象
      */
     @Override
+    @Transactional
     public BullfightingPurchaseEntity insert(BullfightingPurchaseEntity bullfightingPurchaseEntity) {
         bullfightingPurchaseEntity.setId(UUID.randomUUID().toString());
         Date gameDate = new Date();
@@ -78,8 +80,9 @@ public class BullfightingPurchaseServiceImpl implements BullfightingPurchaseServ
             bullfightingScoreDao.update(updateEntity);
         } else {
             bullfightingScoreEntity = new BullfightingScoreEntity();
+            bullfightingScoreEntity.setId(UUID.randomUUID().toString());
             bullfightingScoreEntity.setUserId(bullfightingPurchaseEntity.getUserId());
-            bullfightingScoreEntity.setTimes(times);
+            bullfightingScoreEntity.setTimes(times + 5);
             bullfightingScoreEntity.setUserId(bullfightingPurchaseEntity.getUserId());
             bullfightingScoreEntity.setScore(0);
             bullfightingScoreEntity.setGameDate(gameDate);

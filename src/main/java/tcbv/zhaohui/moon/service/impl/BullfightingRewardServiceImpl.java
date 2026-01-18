@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -54,7 +55,8 @@ public class BullfightingRewardServiceImpl implements BullfightingRewardService 
      */
     @Override
     public BullfightingRewardEntity insert(BullfightingRewardEntity bullfightingRewardEntity) {
-                    bullfightingRewardEntity.setId(UUID.randomUUID().toString());
+        bullfightingRewardEntity.setId(UUID.randomUUID().toString());
+        bullfightingRewardEntity.setCreateTime(new Date());
         this.bullfightingRewardDao.insert(bullfightingRewardEntity);
         return bullfightingRewardEntity;
     }

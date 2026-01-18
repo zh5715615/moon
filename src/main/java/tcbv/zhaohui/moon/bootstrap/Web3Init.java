@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import tcbv.zhaohui.moon.config.Web3Config;
-import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
-import tcbv.zhaohui.moon.service.chain.DappPoolService;
-import tcbv.zhaohui.moon.service.chain.Token20Service;
-import tcbv.zhaohui.moon.service.chain.EthereumService;
+import tcbv.zhaohui.moon.service.chain.*;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -29,6 +26,9 @@ public class Web3Init implements ServletContextListener {
     private Token20Service spaceJediService;
 
     @Autowired
+    private BullfightingGameSampleService gameSampleService;
+
+    @Autowired
     private CardNFTTokenService cardNFTTokenService;
 
     @Autowired
@@ -45,6 +45,7 @@ public class Web3Init implements ServletContextListener {
         spaceJediService.init(ethereumService, web3Config.getSpaceJediContractAddress());
         cardNFTTokenService.init(ethereumService, web3Config.getCardNftContractAddress());
         dappPoolService.init(ethereumService, web3Config.getDappPoolContractAddress());
+        gameSampleService.init(ethereumService, web3Config.getGameContractAddress());
         log.info("================= web3服务初始化完成 =================");
     }
 }
