@@ -53,7 +53,7 @@ public class BullfightingGameSampleServiceImpl extends EthereumServiceImpl imple
     @Override
     public BigDecimal getPoolBalance() throws ChainException {
         try {
-            return new BigDecimal(bullfightingGame.getPoolBalance().send());
+            return EthMathUtil.bigIntegerToBigDecimal(bullfightingGame.getPoolBalance().send(), spaceJediService.getDecimals());
         } catch (Exception e) {
             throw new ChainException(QUERY_EXCEPTION, "getPoolBalance error" + e.getMessage());
         }
