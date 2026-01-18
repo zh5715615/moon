@@ -273,10 +273,10 @@ public class BullfightingController {
             int score = userScoreEntity.getScore();
             bullfightingRankingVo.setRanking(userScoreEntity.getRank());
             bullfightingRankingVo.setScore(score);
-            double todayPrizePool = gameSampleService.getPoolBalance().doubleValue();
-            bullfightingRankingVo.setTodayPrizePool(todayPrizePool);
-            bullfightingRankingVo.setReward(score > 0 ? score : 0);
+            bullfightingRankingVo.setReward(Math.max(score, 0));
         }
+        double todayPrizePool = gameSampleService.getPoolBalance().doubleValue();
+        bullfightingRankingVo.setTodayPrizePool(todayPrizePool);
         return Rsp.okData(bullfightingRankingVo);
     }
 
