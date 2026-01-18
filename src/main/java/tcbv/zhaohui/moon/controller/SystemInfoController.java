@@ -38,6 +38,7 @@ public class SystemInfoController {
                 .spaceJediTokenAddress(web3Config.getSpaceJediContractAddress())
                 .cardNFTAddress(web3Config.getCardNftContractAddress())
                 .dappPoolAddress(web3Config.getDappPoolContractAddress())
+                .bullfightingAddress(web3Config.getGameContractAddress())
                 .build();
         return Rsp.okData(vo);
     }

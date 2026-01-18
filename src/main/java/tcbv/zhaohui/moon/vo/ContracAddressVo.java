@@ -27,4 +27,7 @@ public class ContracAddressVo {
 
     @ApiModelProperty("spaceJediToken地址")
     private String spaceJediTokenAddress;
+
+    @ApiModelProperty("斗牛合约地址")
+    private String bullfightingAddress;
 }
