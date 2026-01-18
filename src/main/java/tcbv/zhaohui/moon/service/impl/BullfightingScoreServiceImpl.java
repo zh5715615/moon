@@ -85,7 +85,14 @@ public class BullfightingScoreServiceImpl implements BullfightingScoreService {
 
     @Override
     public BullfightingUserStatisticsVo userStatistics(String userId, Date gameDate) {
-        return bullfightingScoreDao.statictics(userId, gameDate);
+        BullfightingScoreEntity bullfightingScoreEntity = bullfightingScoreDao.queryByUserId(userId, gameDate);
+        int freeTimes = 5;
+        if (bullfightingScoreEntity != null) {
+            freeTimes = bullfightingScoreEntity.getTimes();
+        }
+        BullfightingUserStatisticsVo statisticsVo = bullfightingScoreDao.statictics(userId, gameDate);
+        statisticsVo.setFreeCount(freeTimes);
+        return statisticsVo;
     }
 
     @Override

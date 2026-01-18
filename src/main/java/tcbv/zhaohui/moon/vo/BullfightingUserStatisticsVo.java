@@ -13,6 +13,9 @@ import lombok.Data;
 @Data
 @ApiModel("斗牛用户信息统计")
 public class BullfightingUserStatisticsVo {
+    @ApiModelProperty("剩余局数")
+    private int freeCount;
+
     @ApiModelProperty("今日局数")
     private int todayCount;
 
