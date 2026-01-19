@@ -80,5 +80,12 @@ public interface BullfightingPurchaseDao {
      * @return 影响行数
      */
     int deleteById(String id);
+
+    /**
+     * 根据hash查询
+     * @param hash 哈希值
+     * @return 实例对象
+     */
+    BullfightingPurchaseEntity queryByHash(@Param("hash") String hash);
 }
 

@@ -84,8 +84,13 @@
                 </if>
             </where>
         </select>
+    <select id="queryByUserIdAndDate" resultMap="BullfightingRewardMap">
+        select  id, user_id, address, amount, game_date, hash, create_time
+        from tb_bullfighting_reward
+        where user_id = #{userId} and DATE(game_date) = DATE(#{gameDate})
+    </select>
 
-        <!--新增所有列-->
+    <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="false">
             insert into tb_bullfighting_reward(id, user_id, address, amount, game_date, hash, create_time)
             values (#{id}, #{userId}, #{address}, #{amount}, #{gameDate}, #{hash}, #{createTime})

@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static tcbv.zhaohui.moon.exceptions.BizException.BULLFIGHTING_TIMES_EXHAUSTEDLY;
+import static tcbv.zhaohui.moon.exceptions.BizException.HASH_ALREADY_HANDLE;
 
 /**
  * 购买斗牛次数记录表(BullfightingPurchase)表服务实现类
@@ -65,6 +66,11 @@ public class BullfightingPurchaseServiceImpl implements BullfightingPurchaseServ
     @Override
     @Transactional
     public BullfightingPurchaseEntity insert(BullfightingPurchaseEntity bullfightingPurchaseEntity) {
+        BullfightingPurchaseEntity queryEntity = bullfightingPurchaseDao.queryByHash(bullfightingPurchaseEntity.getHash());
+        if (queryEntity != null) {
+            throw new BizException(HASH_ALREADY_HANDLE, "购买游戏次数交易已记录");
+        }
+
         bullfightingPurchaseEntity.setId(UUID.randomUUID().toString());
         Date gameDate = new Date();
         bullfightingPurchaseEntity.setCreateTime(gameDate);

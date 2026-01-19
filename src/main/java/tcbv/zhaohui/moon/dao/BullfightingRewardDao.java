@@ -4,6 +4,8 @@ import tcbv.zhaohui.moon.entity.BullfightingRewardEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,5 +82,13 @@ public interface BullfightingRewardDao {
      * @return 影响行数
      */
     int deleteById(String id);
+
+    /**
+     * 根据用户id和日期查询
+     * @param userId 用户id
+     * @param gameDate 游戏日期
+     * @return 奖励记录
+     */
+    BullfightingRewardEntity queryByUserIdAndDate(String userId, Date gameDate);
 }
 

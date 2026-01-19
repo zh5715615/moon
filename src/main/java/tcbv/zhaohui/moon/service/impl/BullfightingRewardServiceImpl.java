@@ -2,6 +2,7 @@ package tcbv.zhaohui.moon.service.impl;
 
 import tcbv.zhaohui.moon.entity.BullfightingRewardEntity;
 import tcbv.zhaohui.moon.dao.BullfightingRewardDao;
+import tcbv.zhaohui.moon.exceptions.BizException;
 import tcbv.zhaohui.moon.service.BullfightingRewardService;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.PageRequest;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.UUID;
+
+import static tcbv.zhaohui.moon.exceptions.BizException.BULLFIGHTING_REWARD_AREADY_GET;
 
 /**
  * 斗牛游戏领取奖励记录(BullfightingReward)表服务实现类
@@ -55,6 +58,11 @@ public class BullfightingRewardServiceImpl implements BullfightingRewardService 
      */
     @Override
     public BullfightingRewardEntity insert(BullfightingRewardEntity bullfightingRewardEntity) {
+        BullfightingRewardEntity queryEntity = bullfightingRewardDao.queryByUserIdAndDate(bullfightingRewardEntity.getUserId(), bullfightingRewardEntity.getGameDate());
+        if (queryEntity != null) {
+            throw new BizException(BULLFIGHTING_REWARD_AREADY_GET, "当天已经领取过奖励了");
+        }
+
         bullfightingRewardEntity.setId(UUID.randomUUID().toString());
         bullfightingRewardEntity.setCreateTime(new Date());
         this.bullfightingRewardDao.insert(bullfightingRewardEntity);

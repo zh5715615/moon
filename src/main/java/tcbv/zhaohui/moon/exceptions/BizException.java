@@ -33,6 +33,8 @@ public class BizException extends RuntimeException{
 
     public static final int BULLFIGHTING_TIMES_EXHAUSTEDLY = 50012;
 
+    public static final int BULLFIGHTING_REWARD_AREADY_GET = 50013;
+
     public static final int SYSTEM_ERROR = 50099;
 
     @Getter

@@ -84,8 +84,13 @@
                 </if>
             </where>
         </select>
+    <select id="queryByHash" resultMap="BullfightingPurchaseMap">
+        select  id, amount, times, user_id, address, hash, create_time
+        from tb_bullfighting_purchase
+        where hash = #{hash}
+    </select>
 
-        <!--新增所有列-->
+    <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="false">
             insert into tb_bullfighting_purchase(id, amount, times, user_id, address, hash, create_time)
             values (#{id}, #{amount}, #{times}, #{userId}, #{address}, #{hash}, #{createTime})
