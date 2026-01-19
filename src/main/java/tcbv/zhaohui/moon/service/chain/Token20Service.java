@@ -91,4 +91,11 @@ public interface Token20Service {
      * @return 精度值
      */
     int getDecimals();
+
+    /**
+     * 启动流动性创建
+     * @return 交易hash
+     * @throws Exception 异常
+     */
+    default String enableLiquidityCreation() throws Exception {return "";}
 }

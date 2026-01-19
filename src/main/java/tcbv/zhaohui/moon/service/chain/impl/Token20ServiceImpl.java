@@ -23,7 +23,7 @@ import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
  */
 public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Service {
 
-    private Token20Contract token20Contract;
+    protected Token20Contract token20Contract;
 
     @Getter
     private int decimals;
@@ -129,5 +129,10 @@ public class Token20ServiceImpl extends EthereumServiceImpl implements Token20Se
     @Override
     public String contractAddress() {
         return contractAddress;
+    }
+
+    @Override
+    public String enableLiquidityCreation() throws Exception {
+        return "";
     }
 }

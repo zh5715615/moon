@@ -51,6 +51,8 @@ public class Token20Contract extends Contract {
 
     public static final String FUNC_DECIMALS = "decimals";
 
+    public static final String FUNC_ENABLELIQUIDITYCREATION = "enableLiquidityCreation";
+
     public static final String FUNC_LARGEAMOUNT = "largeAmount";
 
     public static final String FUNC_LOCKDURATION = "lockDuration";
@@ -237,6 +239,14 @@ public class Token20Contract extends Contract {
                 Arrays.<Type>asList(),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint8>() {}));
         return executeRemoteCallSingleValueReturn(function, BigInteger.class);
+    }
+
+    public RemoteFunctionCall<TransactionReceipt> enableLiquidityCreation() {
+        final org.web3j.abi.datatypes.Function function = new org.web3j.abi.datatypes.Function(
+                FUNC_ENABLELIQUIDITYCREATION,
+                Arrays.<Type>asList(),
+                Collections.<TypeReference<?>>emptyList());
+        return executeRemoteCallTransaction(function);
     }
 
     public RemoteFunctionCall<BigInteger> largeAmount() {
