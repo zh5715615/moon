@@ -4,6 +4,8 @@ import tcbv.zhaohui.moon.entity.BullfightingPurchaseEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Pageable;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,5 +89,12 @@ public interface BullfightingPurchaseDao {
      * @return 实例对象
      */
     BullfightingPurchaseEntity queryByHash(@Param("hash") String hash);
+
+    /**
+     * 查询昨日奖励池
+     * @param date 日期
+     * @return 奖励池总额
+     */
+    int queryRewardPoolByGameDate(@Param("date") Date date);
 }
 

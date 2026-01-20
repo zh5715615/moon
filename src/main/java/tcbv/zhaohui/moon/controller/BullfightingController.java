@@ -35,6 +35,7 @@ import tcbv.zhaohui.moon.vo.*;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -222,19 +223,13 @@ public class BullfightingController {
         return Rsp.okData(RestPage.of(pageVo));
     }
 
-    @GetMapping("/rankingList")
-    @ApiOperation("斗牛排行榜")
-    @JwtAddressRequired
-    public Rsp<BullfightingRankingVo> rankingList() {
-        String address = JwtContext.getAddress();
-        String userId = JwtContext.getUserId();
-        Date today = new Date();
+    private List<BullfightingRankingItemVo> calcRank(String address, Date date) {
         PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "score"));
         BullfightingScoreEntity bullfightingScoreEntity = new BullfightingScoreEntity();
-        bullfightingScoreEntity.setGameDate(today);
+        bullfightingScoreEntity.setGameDate(date);
         Page<BullfightingScoreEntity> pageEntity = this.bullfightingScoreService.queryByPage(bullfightingScoreEntity, pageRequest);
         if (pageEntity.getTotalElements() == 0) {
-            return Rsp.error("今天没有人玩");
+            return Collections.emptyList();
         }
         List<BullfightingRankingItemVo> bullfightingRankingItemVoList = new ArrayList<>();
         for (BullfightingScoreEntity resultEntity : pageEntity.getContent()) {
@@ -266,6 +261,17 @@ public class BullfightingController {
             }
         }
 
+        return bullfightingRankingItemVoList;
+    }
+
+    @GetMapping("/rankingList")
+    @ApiOperation("斗牛排行榜")
+    @JwtAddressRequired
+    public Rsp<BullfightingRankingVo> rankingList() {
+        String address = JwtContext.getAddress();
+        String userId = JwtContext.getUserId();
+        Date today = new Date();
+        List<BullfightingRankingItemVo> bullfightingRankingItemVoList = calcRank(address, today);
         BullfightingScoreEntity userScoreEntity = this.bullfightingScoreService.userRanking(userId, today);
         BullfightingRankingVo bullfightingRankingVo = new BullfightingRankingVo();
         bullfightingRankingVo.setRankingList(bullfightingRankingItemVoList);
@@ -297,7 +303,13 @@ public class BullfightingController {
         return Rsp.ok();
     }
 
-    private int queryYesterdayReward(String userId, Date yesterday) {
+    private double queryYesterdayReward(String userId, String address, Date yesterday) {
+        List<BullfightingRankingItemVo> rankingItemVoList = calcRank(address, yesterday);
+        int totalScore = rankingItemVoList.stream()
+                .mapToInt(BullfightingRankingItemVo::getScore)
+                .filter(score -> score > 0)
+                .sum();
+        int rewardPool = bullfightingPurchaseService.queryRewardPoolByGameDate(yesterday);
         BullfightingScoreEntity userScoreEntity = this.bullfightingScoreService.userRanking(userId, yesterday);
         if (userScoreEntity == null) {
             return 0;
@@ -308,16 +320,16 @@ public class BullfightingController {
         if (userScoreEntity.getScore() < 0) {
             return 0;
         }
-        return userScoreEntity.getScore();
+        return (userScoreEntity.getScore() * 1.0 / totalScore) * (rewardPool * 0.95);
     }
 
     @GetMapping("/queryMyReward")
     @ApiOperation("查询我的奖励")
     @JwtAddressRequired
-    public Rsp<Integer> queryMyReward() {
-        String userId = JwtContext.getUserId();
+    public Rsp<Double> queryMyReward() {
+        String userId = "7396e03c-db0b-4cbb-9994-ac5bd05cc2cb";
         Date yesterday = DateUtil.yesterday();
-        return Rsp.okData(queryYesterdayReward(userId, yesterday));
+        return Rsp.okData(queryYesterdayReward(userId, JwtContext.getAddress(), yesterday));
     }
 
     @PutMapping("/claimReward")
@@ -328,13 +340,14 @@ public class BullfightingController {
         String userId = JwtContext.getUserId();
         Date yesterday = DateUtil.yesterday();
 
-        int reward = queryYesterdayReward(userId, yesterday);
+        double reward = queryYesterdayReward(userId, address, yesterday);
         BigDecimal balance = gameSampleService.getPoolBalance();
         if (balance.compareTo(BigDecimal.ZERO) <= 0) {
             return Rsp.error("奖池余额不足");
         }
         if (reward > 0) {
-            String txHash = gameSampleService.reward(address, BigDecimal.valueOf(reward));
+            BigDecimal bd = BigDecimal.valueOf(reward);
+            String txHash = gameSampleService.reward(address, bd.setScale(0, RoundingMode.FLOOR));
             BullfightingRewardEntity rewardEntity = new BullfightingRewardEntity();
             rewardEntity.setAddress(address);
             rewardEntity.setHash(txHash);

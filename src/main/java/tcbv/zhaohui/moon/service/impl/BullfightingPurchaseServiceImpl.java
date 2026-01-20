@@ -118,4 +118,9 @@ public class BullfightingPurchaseServiceImpl implements BullfightingPurchaseServ
     public boolean deleteById(String id) {
         return this.bullfightingPurchaseDao.deleteById(id) > 0;
     }
+
+    @Override
+    public int queryRewardPoolByGameDate(Date date) {
+        return bullfightingPurchaseDao.queryRewardPoolByGameDate(date);
+    }
 }

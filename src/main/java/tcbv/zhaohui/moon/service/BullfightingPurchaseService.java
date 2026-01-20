@@ -4,6 +4,8 @@ import tcbv.zhaohui.moon.entity.BullfightingPurchaseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Date;
+
 /**
  * 购买斗牛次数记录表(BullfightingPurchase)表服务接口
  *
@@ -51,4 +53,11 @@ public interface BullfightingPurchaseService {
      * @return 是否成功
      */
     boolean deleteById(String id);
+
+    /**
+     * 查询昨日奖励池
+     * @param date 日期
+     * @return 奖励池总额
+     */
+    int queryRewardPoolByGameDate(Date date);
 }

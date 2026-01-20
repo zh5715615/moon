@@ -89,6 +89,9 @@
         from tb_bullfighting_purchase
         where hash = #{hash}
     </select>
+    <select id="queryRewardPoolByGameDate" resultType="java.lang.Integer">
+        select sum(amount) from tb_bullfighting_purchase where Date(create_time) = Date(#{date})
+    </select>
 
     <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="false">
