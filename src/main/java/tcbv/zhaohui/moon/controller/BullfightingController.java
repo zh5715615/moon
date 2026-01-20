@@ -327,7 +327,7 @@ public class BullfightingController {
     @ApiOperation("查询我的奖励")
     @JwtAddressRequired
     public Rsp<Double> queryMyReward() {
-        String userId = "7396e03c-db0b-4cbb-9994-ac5bd05cc2cb";
+        String userId = JwtContext.getUserId();
         Date yesterday = DateUtil.yesterday();
         return Rsp.okData(queryYesterdayReward(userId, JwtContext.getAddress(), yesterday));
     }
