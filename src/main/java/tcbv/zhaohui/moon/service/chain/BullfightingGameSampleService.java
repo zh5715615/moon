@@ -4,6 +4,7 @@ import tcbv.zhaohui.moon.beans.events.BuyGameTimesEventBean;
 import tcbv.zhaohui.moon.exceptions.ChainException;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author: zhaohui
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 public interface BullfightingGameSampleService {
     void init(EthereumService ethereumService, String contractAddress);
 
-    String reward(String userAddress, BigDecimal amount) throws Exception;
+    String reward(List<String> userAddresses, List<BigDecimal> amounts) throws Exception;
 
     BigDecimal getPoolBalance() throws ChainException;
 

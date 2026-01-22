@@ -17,6 +17,9 @@ public class BullfightingRankingItemVo {
     private int rank;
 
     @ApiModelProperty("用户地址")
+    private String userId;
+
+    @ApiModelProperty("用户地址")
     private String address;
 
     @ApiModelProperty("当日积分")

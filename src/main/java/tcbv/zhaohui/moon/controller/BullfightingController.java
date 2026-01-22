@@ -328,35 +328,39 @@ public class BullfightingController {
     @JwtAddressRequired
     public Rsp<Double> queryMyReward() {
         String userId = JwtContext.getUserId();
-        Date yesterday = DateUtil.yesterday();
-        return Rsp.okData(queryYesterdayReward(userId, JwtContext.getAddress(), yesterday));
-    }
-
-    @PutMapping("/claimReward")
-    @ApiOperation("领取奖励")
-    @JwtAddressRequired
-    public Rsp claimReward() throws Exception {
         String address = JwtContext.getAddress();
-        String userId = JwtContext.getUserId();
         Date yesterday = DateUtil.yesterday();
-
         double reward = queryYesterdayReward(userId, address, yesterday);
-        BigDecimal balance = gameSampleService.getPoolBalance();
-        if (balance.compareTo(BigDecimal.ZERO) <= 0) {
-            return Rsp.error("奖池余额不足");
-        }
-        if (reward > 0) {
-            BigDecimal bd = BigDecimal.valueOf(reward);
-            String txHash = gameSampleService.reward(address, bd.setScale(0, RoundingMode.FLOOR));
-            BullfightingRewardEntity rewardEntity = new BullfightingRewardEntity();
-            rewardEntity.setAddress(address);
-            rewardEntity.setHash(txHash);
-            rewardEntity.setUserId(JwtContext.getUserId());
-            rewardEntity.setGameDate(yesterday);
-            rewardEntity.setAmount((double) reward);
-            bullfightingRewardService.insert(rewardEntity);
-            return Rsp.ok();
-        }
-        return Rsp.error("没有可领取的奖励");
+        BigDecimal bd = BigDecimal.valueOf(reward);
+        BigDecimal floorReward = bd.setScale(0, RoundingMode.FLOOR);
+        return Rsp.okData(floorReward.doubleValue());
     }
+
+//    @PutMapping("/claimReward")
+//    @ApiOperation("领取奖励")
+//    @JwtAddressRequired
+//    public Rsp claimReward() throws Exception {
+//        String address = JwtContext.getAddress();
+//        String userId = JwtContext.getUserId();
+//        Date yesterday = DateUtil.yesterday();
+//
+//        double reward = queryYesterdayReward(userId, address, yesterday);
+//        BigDecimal balance = gameSampleService.getPoolBalance();
+//        if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+//            return Rsp.error("奖池余额不足");
+//        }
+//        if (reward > 0) {
+//            BigDecimal bd = BigDecimal.valueOf(reward);
+//            String txHash = gameSampleService.reward(address, bd.setScale(0, RoundingMode.FLOOR));
+//            BullfightingRewardEntity rewardEntity = new BullfightingRewardEntity();
+//            rewardEntity.setAddress(address);
+//            rewardEntity.setHash(txHash);
+//            rewardEntity.setUserId(JwtContext.getUserId());
+//            rewardEntity.setGameDate(yesterday);
+//            rewardEntity.setAmount((double) reward);
+//            bullfightingRewardService.insert(rewardEntity);
+//            return Rsp.ok();
+//        }
+//        return Rsp.error("没有可领取的奖励");
+//    }
 }

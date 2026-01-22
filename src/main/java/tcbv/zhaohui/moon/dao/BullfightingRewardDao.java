@@ -90,5 +90,12 @@ public interface BullfightingRewardDao {
      * @return 奖励记录
      */
     BullfightingRewardEntity queryByUserIdAndDate(String userId, Date gameDate);
+
+    /**
+     * 查询某一天是否已经发放过奖励
+     * @param date 某一天
+     * @return 是否发放过奖励
+     */
+    boolean existGamedate(Date date);
 }
 

@@ -27,7 +27,7 @@ web3:
     dapp-pool:
       address: "0xEcB1f4d85cbA26e31e9cE5f00d0AB45661aB26f8"
     game:
-      address: "0x4780732F3b9D5DFD60535422Ee9D0D64F32c9426"
+      address: "0x93a3F5161e45a87F8472A4Af7A1E9AE4F2Cc65Ad"
 
 star-wars:
   serice:

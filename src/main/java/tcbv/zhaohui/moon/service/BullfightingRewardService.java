@@ -4,6 +4,9 @@ import tcbv.zhaohui.moon.entity.BullfightingRewardEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 斗牛游戏领取奖励记录(BullfightingReward)表服务接口
  *
@@ -51,4 +54,16 @@ public interface BullfightingRewardService {
      * @return 是否成功
      */
     boolean deleteById(String id);
+
+    /**
+     * 批量插入数据
+     */
+    void insertBatch(List<BullfightingRewardEntity> bullfightingRewardEntityList);
+
+    /**
+     * 查询某一天是否已经发放过奖励
+     * @param date 某一天
+     * @return 是否发放过奖励
+     */
+    boolean existGamedate(Date date);
 }

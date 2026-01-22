@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static tcbv.zhaohui.moon.exceptions.BizException.BULLFIGHTING_REWARD_AREADY_GET;
@@ -89,5 +90,15 @@ public class BullfightingRewardServiceImpl implements BullfightingRewardService 
     @Override
     public boolean deleteById(String id) {
         return this.bullfightingRewardDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public void insertBatch(List<BullfightingRewardEntity> bullfightingRewardEntityList) {
+        this.bullfightingRewardDao.insertBatch(bullfightingRewardEntityList);
+    }
+
+    @Override
+    public boolean existGamedate(Date date) {
+        return this.bullfightingRewardDao.existGamedate(date);
     }
 }

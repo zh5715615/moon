@@ -8,6 +8,7 @@ import org.web3j.tx.TransactionManager;
 import tcbv.zhaohui.moon.beans.events.BuyGameTimesEventBean;
 import tcbv.zhaohui.moon.contract.BullfightingGameSample;
 import tcbv.zhaohui.moon.exceptions.ChainException;
+import tcbv.zhaohui.moon.exceptions.Web3TxGuard;
 import tcbv.zhaohui.moon.service.chain.BullfightingGameSampleService;
 import tcbv.zhaohui.moon.service.chain.EthereumService;
 import tcbv.zhaohui.moon.service.chain.Token20Service;
@@ -16,6 +17,8 @@ import tcbv.zhaohui.moon.utils.EthMathUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static tcbv.zhaohui.moon.exceptions.ChainException.QUERY_EXCEPTION;
 
@@ -45,9 +48,16 @@ public class BullfightingGameSampleServiceImpl extends EthereumServiceImpl imple
     }
 
     @Override
-    public String reward(String userAddress, BigDecimal amount) throws Exception {
-        BigInteger amountWei = EthMathUtil.decimalToBigInteger(amount, spaceJediService.getDecimals());
-        return bullfightingGame.reward(userAddress, amountWei).send().getTransactionHash();
+    @Web3TxGuard
+    public String reward(List<String> userAddresses, List<BigDecimal> amounts) throws Exception {
+        if (userAddresses.size() != amounts.size()) {
+            throw new ChainException(QUERY_EXCEPTION, "userAddress and amount length not equal");
+        }
+        List<BigInteger> amountWeis = new ArrayList<>();
+        for (int i = 0; i < amounts.size(); i++) {
+            amountWeis.add(EthMathUtil.decimalToBigInteger(amounts.get(i), spaceJediService.getDecimals()));
+        }
+        return bullfightingGame.reward(userAddresses, amountWeis).send().getTransactionHash();
     }
 
     @Override

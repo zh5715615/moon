@@ -89,6 +89,9 @@
         from tb_bullfighting_reward
         where user_id = #{userId} and DATE(game_date) = DATE(#{gameDate})
     </select>
+    <select id="existGamedate" resultType="java.lang.Boolean">
+        select count(1) from tb_bullfighting_reward where DATE(game_date) = DATE(#{date})
+    </select>
 
     <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="false">
