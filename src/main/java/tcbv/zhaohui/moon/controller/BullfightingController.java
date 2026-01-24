@@ -234,6 +234,7 @@ public class BullfightingController {
         List<BullfightingRankingItemVo> bullfightingRankingItemVoList = new ArrayList<>();
         for (BullfightingScoreEntity resultEntity : pageEntity.getContent()) {
             BullfightingRankingItemVo bullfightingScoreVo = new BullfightingRankingItemVo();
+            bullfightingScoreVo.setUserId(resultEntity.getUserId());
             bullfightingScoreVo.setAddress(resultEntity.getAddress());
             bullfightingScoreVo.setScore(resultEntity.getScore());
             if (address.equals(resultEntity.getAddress())) {
@@ -271,7 +272,7 @@ public class BullfightingController {
         double rewardSum = 0;
         for (BullfightingRankingItemVo rankingItemVo : rankingItemVoList) {
             if (rankingItemVo.getScore() > 0) {
-                double reward = queryYesterdayReward(rankingItemVo.getUserId(), address, today);
+                double reward = queryYesterdayReward(rankingItemVo.getUserId(), rankingItemVo.getAddress(), today);
                 BigDecimal bd = BigDecimal.valueOf(reward);
                 BigDecimal floorReward = bd.setScale(0, RoundingMode.FLOOR);
                 if (reward > 0) {
