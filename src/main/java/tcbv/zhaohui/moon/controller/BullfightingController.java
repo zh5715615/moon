@@ -228,9 +228,11 @@ public class BullfightingController {
         BullfightingScoreEntity bullfightingScoreEntity = new BullfightingScoreEntity();
         bullfightingScoreEntity.setGameDate(date);
         Page<BullfightingScoreEntity> pageEntity = this.bullfightingScoreService.queryByPage(bullfightingScoreEntity, pageRequest);
+
         if (pageEntity.getTotalElements() == 0) {
             return Collections.emptyList();
         }
+
         List<BullfightingRankingItemVo> bullfightingRankingItemVoList = new ArrayList<>();
         for (BullfightingScoreEntity resultEntity : pageEntity.getContent()) {
             BullfightingRankingItemVo bullfightingScoreVo = new BullfightingRankingItemVo();
@@ -243,23 +245,9 @@ public class BullfightingController {
             bullfightingRankingItemVoList.add(bullfightingScoreVo);
         }
 
+        // 简单顺序排名：第1名、第2名、第3名……即使分数相同
         for (int i = 0; i < bullfightingRankingItemVoList.size(); i++) {
-            BullfightingRankingItemVo current = bullfightingRankingItemVoList.get(i);
-
-            if (i == 0) {
-                current.setRank(1);
-            } else {
-                BullfightingRankingItemVo prev = bullfightingRankingItemVoList.get(i - 1);
-
-                // 安全比较：假设 score 是 Integer
-                boolean sameScore = Objects.equals(current.getScore(), prev.getScore());
-
-                if (sameScore) {
-                    current.setRank(prev.getRank());
-                } else {
-                    current.setRank(i + 1);
-                }
-            }
+            bullfightingRankingItemVoList.get(i).setRank(i + 1);
         }
 
         return bullfightingRankingItemVoList;
