@@ -96,5 +96,12 @@ public interface BullfightingPurchaseDao {
      * @return 奖励池总额
      */
     int queryRewardPoolByGameDate(@Param("date") Date date);
+
+    /**
+     * 查询指定日期用户充值总金额，也就是奖池金额。
+     * @param date 日期
+     * @return 充值总金额
+     */
+    double queryTodayRewardPool(Date date);
 }
 

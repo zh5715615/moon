@@ -25,7 +25,7 @@ public interface BullfightingPurchaseService {
      * 分页查询
      *
      * @param bullfightingPurchaseEntity 筛选条件
-     * @param pageRequest      分页对象
+     * @param pageRequest                分页对象
      * @return 查询结果
      */
     Page<BullfightingPurchaseEntity> queryByPage(BullfightingPurchaseEntity bullfightingPurchaseEntity, PageRequest pageRequest);
@@ -56,6 +56,7 @@ public interface BullfightingPurchaseService {
 
     /**
      * 查询昨日奖励池
+     *
      * @param date 日期
      * @return 奖励池总额
      */

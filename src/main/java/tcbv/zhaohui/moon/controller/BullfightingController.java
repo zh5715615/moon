@@ -253,24 +253,6 @@ public class BullfightingController {
         return bullfightingRankingItemVoList;
     }
 
-
-    private BigDecimal queryTodayRewardPool(String address) {
-        Date today = new Date();
-        List<BullfightingRankingItemVo> rankingItemVoList = calcRank(address, today);
-        double rewardSum = 0;
-        for (BullfightingRankingItemVo rankingItemVo : rankingItemVoList) {
-            if (rankingItemVo.getScore() > 0) {
-                double reward = queryYesterdayReward(rankingItemVo.getUserId(), rankingItemVo.getAddress(), today);
-                BigDecimal bd = BigDecimal.valueOf(reward);
-                BigDecimal floorReward = bd.setScale(0, RoundingMode.FLOOR);
-                if (reward > 0) {
-                    rewardSum += floorReward.doubleValue();
-                }
-            }
-        }
-        return BigDecimal.valueOf(rewardSum);
-    }
-
     @GetMapping("/rankingList")
     @ApiOperation("斗牛排行榜")
     @JwtAddressRequired
@@ -289,7 +271,7 @@ public class BullfightingController {
             bullfightingRankingVo.setReward(Math.max(score, 0));
         }
 
-        double todayPrizePool = queryTodayRewardPool(address).doubleValue();
+        double todayPrizePool = this.bullfightingPurchaseService.queryRewardPoolByGameDate(today);
         bullfightingRankingVo.setTodayPrizePool(todayPrizePool);
         return Rsp.okData(bullfightingRankingVo);
     }
