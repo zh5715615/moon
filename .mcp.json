@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "mysql-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@benborla29/mcp-server-mysql"
+      ],
+      "env": {
+        "MYSQL_HOST": "47.92.224.70",
+        "MYSQL_PORT": "15306",
+        "MYSQL_USER": "kunpeng",
+        "MYSQL_PASS": "Zh5715615~",
+        "MYSQL_DB": "moon",
+        "ALLOW_INSERT_OPERATION": "false",
+        "ALLOW_UPDATE_OPERATION": "false",
+        "ALLOW_DELETE_OPERATION": "false"
+      }
+    }
+  }
+}
