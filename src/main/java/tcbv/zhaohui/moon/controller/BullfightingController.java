@@ -20,6 +20,8 @@ import tcbv.zhaohui.moon.entity.BullfightingPurchaseEntity;
 import tcbv.zhaohui.moon.entity.BullfightingRecordEntity;
 import tcbv.zhaohui.moon.entity.BullfightingRewardEntity;
 import tcbv.zhaohui.moon.entity.BullfightingScoreEntity;
+import tcbv.zhaohui.moon.entity.ChainTxTaskEntity;
+import tcbv.zhaohui.moon.enums.ChainTxBizType;
 import tcbv.zhaohui.moon.game.bullfighting.Card;
 import tcbv.zhaohui.moon.game.bullfighting.PokerDealer;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
@@ -28,7 +30,10 @@ import tcbv.zhaohui.moon.service.BullfightingPurchaseService;
 import tcbv.zhaohui.moon.service.BullfightingRecordService;
 import tcbv.zhaohui.moon.service.BullfightingRewardService;
 import tcbv.zhaohui.moon.service.BullfightingScoreService;
+import tcbv.zhaohui.moon.service.ChainTxTaskService;
 import tcbv.zhaohui.moon.service.chain.BullfightingGameSampleService;
+import tcbv.zhaohui.moon.tasks.chain.ChainTaskParams;
+import tcbv.zhaohui.moon.tasks.chain.ChainTxTaskDispatcher;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
 import tcbv.zhaohui.moon.vo.*;
@@ -70,6 +75,12 @@ public class BullfightingController {
 
     @Autowired
     private BullfightingRewardService bullfightingRewardService;
+
+    @Autowired
+    private ChainTxTaskService chainTxTaskService;
+
+    @Autowired
+    private ChainTxTaskDispatcher chainTxTaskDispatcher;
 
     private static final Random random = new Random();
 
@@ -279,18 +290,18 @@ public class BullfightingController {
     @PostMapping("/buyGameTimes")
     @ApiOperation("购买游戏次数")
     @JwtAddressRequired
-    public Rsp buyGameTimes(@RequestBody @Valid TransactionDto dto) throws Exception {
-        BuyGameTimesEventBean buyGameTimesEventBean = gameSampleService.parseBuyGameTimes(dto.getTxHash());
-        String userId = JwtContext.getUserId();
-        String address = JwtContext.getAddress();
-        BullfightingPurchaseEntity bullfightingPurchaseEntity = new BullfightingPurchaseEntity();
-        bullfightingPurchaseEntity.setAddress(address);
-        bullfightingPurchaseEntity.setUserId(userId);
-        bullfightingPurchaseEntity.setTimes(buyGameTimesEventBean.getTimes());
-        bullfightingPurchaseEntity.setAmount(buyGameTimesEventBean.getAmount().doubleValue());
-        bullfightingPurchaseEntity.setHash(dto.getTxHash());
-        bullfightingPurchaseService.insert(bullfightingPurchaseEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> buyGameTimes(@RequestBody @Valid TransactionDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.BULLFIGHTING_BUY_TIMES.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     private double queryYesterdayReward(String userId, String address, Date yesterday) {

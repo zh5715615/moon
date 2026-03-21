@@ -20,7 +20,9 @@ import tcbv.zhaohui.moon.beans.events.SubmitOrderEventBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dto.TradeOrderDto;
 import tcbv.zhaohui.moon.dto.TransactionDto;
+import tcbv.zhaohui.moon.entity.ChainTxTaskEntity;
 import tcbv.zhaohui.moon.entity.NftOrderEntity;
+import tcbv.zhaohui.moon.enums.ChainTxBizType;
 import tcbv.zhaohui.moon.enums.NftOrderStatusEnum;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
@@ -28,12 +30,16 @@ import tcbv.zhaohui.moon.oss.BucketType;
 import tcbv.zhaohui.moon.oss.OssConfig;
 import tcbv.zhaohui.moon.oss.OssService;
 import tcbv.zhaohui.moon.oss.SysOss;
+import tcbv.zhaohui.moon.service.ChainTxTaskService;
 import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.chain.CardNFTTokenService;
 import tcbv.zhaohui.moon.service.NftOrderService;
 import tcbv.zhaohui.moon.syslog.Syslog;
+import tcbv.zhaohui.moon.tasks.chain.ChainTaskParams;
+import tcbv.zhaohui.moon.tasks.chain.ChainTxTaskDispatcher;
 import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.TaskStatusVo;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -73,6 +79,12 @@ public class CardNftController {
 
     @Autowired
     private Web3Config web3Config;
+
+    @Autowired
+    private ChainTxTaskService chainTxTaskService;
+
+    @Autowired
+    private ChainTxTaskDispatcher chainTxTaskDispatcher;
 
     @Syslog(module = "NFT")
     @PostMapping("/mint")
@@ -118,59 +130,53 @@ public class CardNftController {
     @PostMapping("/submitOrder")
     @ApiOperation("挂单卡片")
     @JwtAddressRequired
-    public Rsp<String> submitOrder(@RequestBody @Validated TransactionDto dto) throws Exception {
-        SubmitOrderEventBean submitOrderEventBean = dappPoolService.parseSubmitOrder(dto.getTxHash());
-        String userId = JwtContext.getUserId();
-        String address = JwtContext.getAddress();
-        if (!address.equalsIgnoreCase(submitOrderEventBean.getOwner())) {
-            return Rsp.error("订单不属于当前用户");
-        }
-        NftOrderEntity nftOrderEntity = new NftOrderEntity();
-        nftOrderEntity.setUserId(userId);
-        nftOrderEntity.setTokenId(submitOrderEventBean.getTokenId());
-        nftOrderEntity.setPrice(submitOrderEventBean.getPrice().doubleValue());
-        nftOrderEntity.setStatus(NftOrderStatusEnum.PENDING.getStatus());
-        nftOrderEntity.setAddress(address);
-        nftOrderEntity.setSubmitHash(dto.getTxHash());
-        nftOrderService.insert(nftOrderEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> submitOrder(@RequestBody @Validated TransactionDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.NFT_SUBMIT_ORDER.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     @PostMapping("/tradeOrder")
     @ApiOperation("订单成交")
     @JwtAddressRequired
-    public Rsp<String> tradeOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
-        NFTTradeOrderEventBean tradeOrderBean = dappPoolService.parseTradeOrder(dto.getTxHash());
-        String userId = JwtContext.getUserId();
-        NftOrderEntity nftOrderEntity = new NftOrderEntity();
-        nftOrderEntity.setId(dto.getNftOrderId());
-        nftOrderEntity.setBuyerId(userId);
-        nftOrderEntity.setTokenId(tradeOrderBean.getTokenId());
-        nftOrderEntity.setPrice(tradeOrderBean.getPrice().doubleValue());
-        nftOrderEntity.setTradeHash(dto.getTxHash());
-        nftOrderEntity.setStatus(NftOrderStatusEnum.TRADED.getStatus());
-        nftOrderService.tradeOrder(nftOrderEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> tradeOrder(@RequestBody @Validated TradeOrderDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        params.setNftOrderId(dto.getNftOrderId());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.NFT_TRADE_ORDER.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     @PostMapping("/cancelOrder")
     @ApiOperation("取消订单")
     @JwtAddressRequired
-    public Rsp<String> cancelOrder(@RequestBody @Validated TradeOrderDto dto) throws Exception {
-        CancelOrderEventBean cancleOrderBean = dappPoolService.parseCancelOrder(dto.getTxHash());
-        String userId = JwtContext.getUserId();
-        String address = JwtContext.getAddress();
-        if (!address.equalsIgnoreCase(cancleOrderBean.getOwner())) {
-            return Rsp.error("订单不属于当前用户");
-        }
-        NftOrderEntity nftOrderEntity = new NftOrderEntity();
-        nftOrderEntity.setId(dto.getNftOrderId());
-        nftOrderEntity.setUserId(userId);
-        nftOrderEntity.setTokenId(cancleOrderBean.getTokenId());
-        nftOrderEntity.setCancelHash(dto.getTxHash());
-        nftOrderEntity.setStatus(NftOrderStatusEnum.CANCEL.getStatus());
-        nftOrderEntity.setAddress(address);
-        nftOrderService.cancelOrder(nftOrderEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> cancelOrder(@RequestBody @Validated TradeOrderDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        params.setNftOrderId(dto.getNftOrderId());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.NFT_CANCEL_ORDER.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 }

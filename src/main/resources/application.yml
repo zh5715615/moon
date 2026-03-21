@@ -84,5 +84,14 @@ mybatis:
   mapper-locations: classpath:/mapper/*Dao.xml
   typeAliasesPackage: tcbv.zhaohui.moon.entity
 
+star-wars:
+  chain-task:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 200
+    keep-alive-seconds: 60
+    max-retry: 3
+    retry-delay-seconds: 10
+
 logging:
   config: classpath:logback-spring-dev.xml

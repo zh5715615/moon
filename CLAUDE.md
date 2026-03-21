@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Run
 
 ```bash
+export JAVA_HOME=C:\Program Files\Java\jdk-17
 # Build
 ./mvnw clean package -DskipTests
 
@@ -59,6 +60,17 @@ JWT tokens carry `userId` and wallet `address` as claims. The `JwtAddressInterce
 ### Blockchain integration
 
 `EthereumService` is the central Web3j abstraction (connects to BSC). Contract-specific services (`Token20Service`, `DappPoolService`, `CardNFTTokenService`, `BullfightingGameSampleService`) wrap individual smart contracts. ABI event decoding uses `AbiEventLogDecoder` and `AbiInputDecoder`. Contract addresses and account credentials are configured per profile under the `web3:` config key.
+
+### Async chain-task system
+
+Blockchain-parsing endpoints no longer block HTTP threads. The pattern:
+1. Controller inserts a `tb_chain_tx_task` row (via `ChainTxTaskService`) and calls `ChainTxTaskDispatcher.dispatch(task)`.
+2. `ChainTxTaskDispatcher` submits to `chainTxExecutor` (`ThreadPoolTaskExecutor`). On `ApplicationReadyEvent` it re-queues any PENDING/PROCESSING rows from the previous run.
+3. Inside the thread, `ChainTxWorkerFactory` resolves the `ChainTxWorker` by `bizType` enum, executes it, then deletes the row on success or retries up to `max-retry` times before marking FAILED.
+4. `ChainTaskParams` (userId, address, txHash, pledgeId, nftOrderId) is serialised as JSON into `biz_params`.
+5. Clients poll `GET /api/v1/moon/task/status?taskId=` — status PENDING/PROCESSING/SUCCESS (row deleted)/FAILED.
+
+Workers live in `tasks/chain/worker/`. Config key: `star-wars.chain-task.*`.
 
 ### Key custom config namespace
 

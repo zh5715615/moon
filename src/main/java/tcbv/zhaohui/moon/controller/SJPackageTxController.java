@@ -13,16 +13,23 @@ import org.springframework.web.bind.annotation.*;
 import tcbv.zhaohui.moon.beans.PresaleInfoBean;
 import tcbv.zhaohui.moon.beans.events.BuySpaceJediPackageEventBean;
 import tcbv.zhaohui.moon.dto.TransactionDto;
+import tcbv.zhaohui.moon.entity.ChainTxTaskEntity;
 import tcbv.zhaohui.moon.entity.SjPackageTxEntity;
+import tcbv.zhaohui.moon.enums.ChainTxBizType;
 import tcbv.zhaohui.moon.enums.PresaleStage;
 import tcbv.zhaohui.moon.exceptions.BizException;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
+import tcbv.zhaohui.moon.service.ChainTxTaskService;
 import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.SjPackageTxService;
 import tcbv.zhaohui.moon.syslog.Syslog;
+import tcbv.zhaohui.moon.tasks.chain.ChainTaskParams;
+import tcbv.zhaohui.moon.tasks.chain.ChainTxTaskDispatcher;
 import tcbv.zhaohui.moon.utils.EnumUtil;
+import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.TaskStatusVo;
 import tcbv.zhaohui.moon.vo.PresaleHistoryVo;
 import tcbv.zhaohui.moon.vo.PresaleInfoVo;
 
@@ -54,22 +61,28 @@ public class SJPackageTxController {
     @Autowired
     private SjPackageTxService sjPackageTxService;
 
+    @Autowired
+    private ChainTxTaskService chainTxTaskService;
+
+    @Autowired
+    private ChainTxTaskDispatcher chainTxTaskDispatcher;
+
     @Syslog(module = "SJ-PACKAGE")
     @PostMapping("/buySpaceJediPackage")
     @ApiOperation("购买sj套餐")
     @JwtAddressRequired
-    public Rsp buySpaceJediPackage(@RequestBody @Validated TransactionDto dto) throws Exception {
-        BuySpaceJediPackageEventBean buySpaceJediPackageEventBean  = dappPoolService.parseBuySpaceJediPackage(dto.getTxHash());
-        String userId = JwtContext.getUserId();
-        SjPackageTxEntity sjPackageTxEntity = new SjPackageTxEntity();
-        sjPackageTxEntity.setBuyerId(userId);
-        sjPackageTxEntity.setHash(dto.getTxHash());
-        sjPackageTxEntity.setPacakgeCnt(buySpaceJediPackageEventBean.getBuyCnt());
-        sjPackageTxEntity.setPrice(buySpaceJediPackageEventBean.getPrice().doubleValue());
-        sjPackageTxEntity.setStage(buySpaceJediPackageEventBean.getStage());
-        sjPackageTxEntity.setPacakgeCnt(buySpaceJediPackageEventBean.getBuyCnt());
-        sjPackageTxService.insert(sjPackageTxEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> buySpaceJediPackage(@RequestBody @Validated TransactionDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.SJ_BUY_PACKAGE.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     private int getCurrentStageSold(PresaleStage stage, int totalSold) {

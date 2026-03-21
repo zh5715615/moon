@@ -1,0 +1,68 @@
+---
+description: "Controller 接口层 DTO/VO 文档注解规范"
+globs: ["src/main/java/tcbv/zhaohui/moon/dto/**/*.java", "src/main/java/tcbv/zhaohui/moon/vo/**/*.java"]
+alwaysApply: false
+---
+
+## DTO / VO 文档注解规范
+
+所有 Controller 方法对应的入参 DTO（`dto/` 包）和出参 VO（`vo/` 包）Java 类，**必须**在每个字段上添加 Swagger `@ApiModelProperty` 注解，并在类上添加 `@ApiModel` 注解。
+
+### 类级别
+
+```java
+@ApiModel(description = "简要描述这个 DTO/VO 的用途")
+public class XxxDto {
+    ...
+}
+```
+
+### 字段级别
+
+```java
+@ApiModelProperty(value = "字段含义说明", required = true, example = "示例值")
+private String fieldName;
+```
+
+- `value`：必填，用中文说明字段含义。
+- `required`：入参 DTO 中凡是必传字段须标为 `true`；出参 VO 一般可省略或设为 `false`。
+- `example`：尽量提供有意义的示例值，方便 Swagger UI 展示。
+- 若字段上已有 `@NotBlank` / `@NotNull` 等 Bean Validation 注解，则 `required = true` 与之保持一致。
+
+### 引入依赖（已在 pom.xml 中）
+
+```java
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+```
+
+### 示例
+
+```java
+@ApiModel(description = "下注请求")
+public class BetDto {
+
+    @ApiModelProperty(value = "交易哈希", required = true, example = "0xabc...")
+    @NotBlank
+    private String txHash;
+
+    @ApiModelProperty(value = "下注金额（BNB）", required = true, example = "0.1")
+    @NotNull
+    private BigDecimal amount;
+}
+```
+
+```java
+@ApiModel(description = "任务状态返回")
+public class TaskStatusVo {
+
+    @ApiModelProperty(value = "任务 ID", example = "550e8400-e29b-41d4-a716-446655440000")
+    private String taskId;
+
+    @ApiModelProperty(value = "任务状态：PENDING / PROCESSING / SUCCESS / FAILED", example = "PENDING")
+    private String status;
+
+    @ApiModelProperty(value = "失败原因，仅 FAILED 时有值", example = "链上解析失败")
+    private String errorMsg;
+}
+```

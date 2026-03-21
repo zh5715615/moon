@@ -9,20 +9,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import tcbv.zhaohui.moon.beans.events.PledgeEventBean;
-import tcbv.zhaohui.moon.enums.PledgeRegion;
-import tcbv.zhaohui.moon.beans.events.WithdrawEventBean;
 import tcbv.zhaohui.moon.config.Web3Config;
 import tcbv.zhaohui.moon.dto.TransactionDto;
 import tcbv.zhaohui.moon.dto.WithdrawDto;
+import tcbv.zhaohui.moon.entity.ChainTxTaskEntity;
 import tcbv.zhaohui.moon.entity.PledgeEntity;
+import tcbv.zhaohui.moon.enums.ChainTxBizType;
+import tcbv.zhaohui.moon.enums.PledgeRegion;
 import tcbv.zhaohui.moon.jwt.JwtAddressRequired;
 import tcbv.zhaohui.moon.jwt.JwtContext;
+import tcbv.zhaohui.moon.service.ChainTxTaskService;
 import tcbv.zhaohui.moon.service.chain.DappPoolService;
 import tcbv.zhaohui.moon.service.PledgeService;
 import tcbv.zhaohui.moon.syslog.Syslog;
+import tcbv.zhaohui.moon.tasks.chain.ChainTaskParams;
+import tcbv.zhaohui.moon.tasks.chain.ChainTxTaskDispatcher;
 import tcbv.zhaohui.moon.utils.EnumUtil;
+import tcbv.zhaohui.moon.utils.GsonUtil;
 import tcbv.zhaohui.moon.utils.Rsp;
+import tcbv.zhaohui.moon.vo.TaskStatusVo;
 import tcbv.zhaohui.moon.vo.PledgeHistoryVo;
 import tcbv.zhaohui.moon.vo.PledgeRegionVo;
 import tcbv.zhaohui.moon.vo.PromoteHistoryVo;
@@ -57,49 +62,47 @@ public class PledgeController {
     @Autowired
     private Web3Config web3Config;
 
+    @Autowired
+    private ChainTxTaskService chainTxTaskService;
+
+    @Autowired
+    private ChainTxTaskDispatcher chainTxTaskDispatcher;
+
     @Syslog(module = "PLEDGE")
     @PostMapping("/invoke")
     @ApiOperation("质押")
     @JwtAddressRequired
-    public Rsp invoke(@RequestBody @Valid TransactionDto dto) throws Exception {
-        PledgeEventBean pledgeEventBean = dappPoolService.parsedPledge(dto.getTxHash());
-        PledgeRegion pledgeRegion = pledgeEventBean.getRegion();
-        Date now = new Date();
-        String userId = JwtContext.getUserId();
-        String address = JwtContext.getAddress();
-        PledgeEntity pledgeEntity = new PledgeEntity();
-        pledgeEntity.setUserId(userId);
-        pledgeEntity.setAddress(address);
-        pledgeEntity.setRegion(pledgeRegion.getLevel());
-        pledgeEntity.setAmount(pledgeEventBean.getPledgeAmount().doubleValue());
-        int expire = web3Config.isEnvProd() ? pledgeRegion.getPeriodProd() : pledgeRegion.getPeriodTest();
-        Date expireTime = DateUtils.addSeconds(now, expire);
-        pledgeEntity.setExpireTime(expireTime);
-        pledgeEntity.setCreateTime(now);
-        pledgeEntity.setPledgeHash(dto.getTxHash());
-        pledgeService.insert(pledgeEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> invoke(@RequestBody @Valid TransactionDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.PLEDGE_INVOKE.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     @Syslog(module = "PLEDGE")
     @PostMapping("/withdraw")
     @ApiOperation("提取质押奖励")
     @JwtAddressRequired
-    public Rsp withdraw(@RequestBody @Valid WithdrawDto dto) throws Exception {
-        WithdrawEventBean withdrawEventBean = dappPoolService.parsedWithdraw(dto.getTxHash());
-        PledgeRegion pledgeRegion = withdrawEventBean.getRegion();
-        String userId = JwtContext.getUserId();
-        String address = JwtContext.getAddress();
-
-        PledgeEntity pledgeEntity = new PledgeEntity();
-        pledgeEntity.setUserId(userId);
-        pledgeEntity.setAddress(address);
-        pledgeEntity.setRegion(pledgeRegion.getLevel());
-        pledgeEntity.setWithdrawAmount(withdrawEventBean.getWithrawAmount().doubleValue());
-        pledgeEntity.setId(dto.getPledgeId());
-        pledgeEntity.setWithdrawHash(dto.getTxHash());
-        pledgeService.withdraw(pledgeEntity);
-        return Rsp.ok();
+    public Rsp<TaskStatusVo> withdraw(@RequestBody @Valid WithdrawDto dto) {
+        ChainTaskParams params = new ChainTaskParams();
+        params.setTxHash(dto.getTxHash());
+        params.setUserId(JwtContext.getUserId());
+        params.setAddress(JwtContext.getAddress());
+        params.setPledgeId(dto.getPledgeId());
+        ChainTxTaskEntity task = new ChainTxTaskEntity();
+        task.setTxHash(dto.getTxHash());
+        task.setBizType(ChainTxBizType.PLEDGE_WITHDRAW.name());
+        task.setBizParams(GsonUtil.toJson(params, false));
+        chainTxTaskService.insert(task);
+        chainTxTaskDispatcher.dispatch(task);
+        return Rsp.okData(TaskStatusVo.of(task.getId(), 0, null));
     }
 
     @GetMapping("/region")

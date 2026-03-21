@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tcbv.zhaohui.moon.dao.ChainTxTaskDao">
+
+    <resultMap id="BaseMap" type="tcbv.zhaohui.moon.entity.ChainTxTaskEntity">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="txHash" column="tx_hash" jdbcType="VARCHAR"/>
+        <result property="bizType" column="biz_type" jdbcType="VARCHAR"/>
+        <result property="bizParams" column="biz_params" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="retryCount" column="retry_count" jdbcType="INTEGER"/>
+        <result property="errorMsg" column="error_msg" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="tcbv.zhaohui.moon.entity.ChainTxTaskEntity">
+        INSERT INTO tb_chain_tx_task (id, tx_hash, biz_type, biz_params, status, retry_count, create_time, update_time)
+        VALUES (#{id}, #{txHash}, #{bizType}, #{bizParams}, #{status}, #{retryCount}, #{createTime}, #{updateTime})
+    </insert>
+
+    <select id="queryById" resultMap="BaseMap">
+        SELECT * FROM tb_chain_tx_task WHERE id = #{id}
+    </select>
+
+    <select id="queryPending" resultMap="BaseMap">
+        SELECT * FROM tb_chain_tx_task WHERE status IN (0, 1) ORDER BY create_time ASC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE tb_chain_tx_task SET status = #{status}, update_time = NOW() WHERE id = #{id}
+    </update>
+
+    <update id="updateFailed">
+        UPDATE tb_chain_tx_task SET status = 3, error_msg = #{errorMsg}, update_time = NOW() WHERE id = #{id}
+    </update>
+
+    <update id="updateRetry">
+        UPDATE tb_chain_tx_task SET status = 0, retry_count = #{retryCount}, update_time = NOW() WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM tb_chain_tx_task WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -4,7 +4,10 @@
       "Bash(mysql:*)",
       "Bash(command -v java)",
       "Bash(java -version)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Read(//mnt/f/prj/Moon/**)",
+      "Bash(./mvnw compile:*)",
+      "Bash(mvn compile:*)"
     ]
   }
 }
