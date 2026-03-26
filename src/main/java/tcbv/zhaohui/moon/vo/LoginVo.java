@@ -17,7 +17,7 @@ public class LoginVo {
     @ApiModelProperty("钱包地址")
     private String address;
 
-    @ApiModelProperty("用户id")
+    @ApiModelProperty("过期时间戳(ms)")
     private long expired;
 
     @ApiModelProperty("token")
